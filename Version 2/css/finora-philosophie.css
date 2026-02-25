@@ -111,13 +111,28 @@
 }
 
 .page-philosophie .philosophie-pillars .pillar-card {
+    position: relative;
     border-radius: 32px;
     padding: 40px;
     padding-bottom: 100px;
     box-shadow: 0 10px 10px 0 rgba(255, 255, 255, 0);
     transition: transform 0.35s var(--ease-out-expo), box-shadow 0.35s var(--ease-out-expo);
 }
-
+.page-philosophie .philosophie-pillars .pillar-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-smooth);
+    border-radius: 32px 32px 0 0;
+}
+.page-philosophie .philosophie-pillars .pillar-card:hover::before {
+    opacity: 1;
+}
 .page-philosophie .philosophie-pillars .pillar-card:hover {
     box-shadow: var(--shadow-card);
     transform: translateY(-2px);
@@ -303,6 +318,24 @@
     transition: transform 0.35s var(--ease-out-expo), box-shadow 0.35s var(--ease-out-expo);
 }
 
+.page-philosophie .audience-card {
+    position: relative;
+}
+.page-philosophie .audience-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-smooth);
+    border-radius: 32px 32px 0 0;
+}
+.page-philosophie .audience-card:hover::before {
+    opacity: 1;
+}
 .page-philosophie .audience-card:hover {
     box-shadow: var(--shadow-card);
     transform: translateY(-2px);
@@ -554,6 +587,24 @@
     transition: transform 0.35s var(--ease-out-expo), box-shadow 0.35s var(--ease-out-expo);
 }
 
+.page-philosophie .step-card {
+    position: relative;
+}
+.page-philosophie .step-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-smooth);
+    border-radius: 32px 32px 0 0;
+}
+.page-philosophie .step-card:hover::before {
+    opacity: 1;
+}
 .page-philosophie .step-card:hover {
     box-shadow: var(--shadow-card);
     transform: translateY(-2px);

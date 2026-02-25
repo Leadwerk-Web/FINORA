@@ -444,7 +444,7 @@ button {
 }
 
 .hero.hero--altersvorsorge {
-  background-image: url(../assets/images/X8A7461_prev-e1770203109373.jpg);
+  background-image: url(../assets/images/_X8A7478_prev.jpg);
 }
 
 .hero.hero--investment {
@@ -492,6 +492,7 @@ button {
   line-height: 1.03em;
   margin: 0 auto 12px;
   padding-top: 0;
+  text-align: center;
 }
 
 .hero.hero--immobilien .hero-text h1 strong {
@@ -506,6 +507,8 @@ button {
   max-width: 720px;
   margin: 0 auto;
   padding-right: 0;
+  align-items: center;
+  text-align: center;
 }
 
 .hero::after {

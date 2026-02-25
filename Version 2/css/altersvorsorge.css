@@ -10,7 +10,7 @@
 /* --- Hero (.et_pb_section_0) --- */
 .page-altersvorsorge .hero.hero--altersvorsorge {
     background-position: center bottom;
-    background-image: linear-gradient(0deg, #043c43 32%, rgba(4, 60, 67, 0.84) 100%), url('../assets/images/Finanzwelt-sw.png') !important;
+    background-image: linear-gradient(0deg, #043c43 32%, rgba(4, 60, 67, 0.84) 100%), url('../assets/images/_X8A7478_prev.jpg') !important;
     background-size: cover;
     background-repeat: no-repeat;
     background-color: #003c43 !important;
@@ -118,34 +118,54 @@
     background-color: #90b4b2;
 }
 
-/* --- Section 1 (.et_pb_section_1) --- */
+/* --- Section 1: wie Immobilien-Intro (oberer Abschnitt) --- */
 .page-altersvorsorge .section-meaning {
     background: #ffffff;
-    border-radius: 10vw 0 0 0;
-    overflow: hidden;
-    padding: 70px 0 90px;
+    padding: 60px 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.page-altersvorsorge .section-meaning .container--wide {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
 }
 
 .page-altersvorsorge .section-meaning .two-col--meaning {
+    gap: 56px;
     align-items: flex-start;
+    flex-direction: row;
     flex-wrap: nowrap;
-    gap: 0;
 }
 
 .page-altersvorsorge .section-meaning .col-img {
-    flex: 0 0 40%;
+    flex: 0 0 38%;
+    min-width: 0;
+    max-width: 42%;
 }
 
 .page-altersvorsorge .section-meaning .col-text {
-    flex: 0 0 60%;
+    flex: 1 1 0;
+    min-width: 280px;
 }
 
+/* Bild mit Erbanlage-Effekt (abgerundet rechts, Schatten, Hover) */
 .page-altersvorsorge .section-meaning .col-img img {
     border-radius: 16px 16px 8vw 16px;
-    overflow: hidden;
-    margin-right: -73px;
-    max-width: 659px;
     width: 100%;
+    margin-top: 40px;
+    margin-right: 0;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), var(--glow-accent);
+    transition: transform 0.6s var(--ease-out-expo), box-shadow 0.6s var(--ease-out-expo);
+}
+.page-altersvorsorge .section-meaning .col-img:hover img {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2), 0 0 80px rgba(144, 180, 178, 0.18);
 }
 
 .page-altersvorsorge .section-meaning .col-text h2 {
@@ -156,6 +176,12 @@
     line-height: 1.2em;
     margin-top: 40px;
     margin-bottom: 2px;
+    text-align: left;
+}
+
+.page-altersvorsorge .section-meaning .col-text h2 strong {
+    font-weight: 700;
+    color: #191919;
 }
 
 .page-altersvorsorge .section-meaning .col-text p {
@@ -163,19 +189,20 @@
     font-weight: 300;
     font-size: 18px;
     line-height: 1.8em;
+    margin-top: 20px;
+    margin-bottom: 0;
 }
 
 .page-altersvorsorge .section-meaning .col-text p:first-of-type {
-    margin-top: 50px;
-    margin-bottom: 24px;
+    margin-top: 20px;
 }
 
 .page-altersvorsorge .section-meaning .col-text p:last-of-type {
-    margin-bottom: 75px;
+    margin-bottom: 0;
 }
 
 .page-altersvorsorge .section-meaning .btn-section {
-    margin-top: 0;
+    margin-top: 25px;
 }
 
 /* --- Section 2 (.et_pb_section_2) --- */
@@ -315,6 +342,12 @@
     margin-right: -73px;
     width: 100%;
     max-width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), var(--glow-accent);
+    transition: transform 0.6s var(--ease-out-expo), box-shadow 0.6s var(--ease-out-expo);
+}
+.page-altersvorsorge .section-private-vorsorge .col-img:hover img {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2), 0 0 80px rgba(144, 180, 178, 0.18);
 }
 
 /* --- Section 4 + 8 (.et_pb_section_4 / .et_pb_section_8) --- */
@@ -448,6 +481,12 @@
     margin-top: 70px;
     margin-right: -73px;
     width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), var(--glow-accent);
+    transition: transform 0.6s var(--ease-out-expo), box-shadow 0.6s var(--ease-out-expo);
+}
+.page-altersvorsorge .section-favorites .tabs-img:hover img {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2), 0 0 80px rgba(144, 180, 178, 0.18);
 }
 
 .page-altersvorsorge .section-favorites .tabs-content {
@@ -577,6 +616,7 @@
 }
 
 .page-altersvorsorge .section-audience .audience-card {
+    position: relative;
     width: 90%;
     max-width: 1400px;
     margin: 40px auto;
@@ -587,7 +627,21 @@
     box-shadow: 0 10px 10px 0 rgba(255, 255, 255, 0);
     transition: transform 0.35s var(--ease-out-expo), box-shadow 0.35s var(--ease-out-expo);
 }
-
+.page-altersvorsorge .section-audience .audience-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-smooth);
+    border-radius: 32px 32px 0 0;
+}
+.page-altersvorsorge .section-audience .audience-card:hover::before {
+    opacity: 1;
+}
 .page-altersvorsorge .section-audience .audience-card:hover {
     box-shadow: var(--shadow-card);
     transform: translateY(-2px);
@@ -683,20 +737,21 @@
 }
 
 .page-altersvorsorge .section-concepts .concepts-image-col {
-    border-radius: 0 0 10vw 0;
     overflow: hidden;
     padding: 40px;
-    transition: transform 0.35s var(--ease-out-expo), box-shadow 0.35s var(--ease-out-expo);
-}
-
-.page-altersvorsorge .section-concepts .concepts-image-col:hover {
-    transform: translateY(-2px);
 }
 
 .page-altersvorsorge .section-concepts .concepts-image-wrap {
-    border-radius: 0 0 10vw 0;
+    border-radius: 16px 16px 8vw 16px;
     overflow: hidden;
     height: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), var(--glow-accent);
+    transition: transform 0.6s var(--ease-out-expo), box-shadow 0.6s var(--ease-out-expo);
+}
+
+.page-altersvorsorge .section-concepts .concepts-image-col:hover .concepts-image-wrap {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2), 0 0 80px rgba(144, 180, 178, 0.18);
 }
 
 .page-altersvorsorge .section-concepts .concepts-image-wrap img {
@@ -704,16 +759,32 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    border-radius: 16px 16px 8vw 16px;
 }
 
 .page-altersvorsorge .section-concepts .concepts-text-col {
+    position: relative;
     border-radius: 32px;
     overflow: hidden;
     padding: 7%;
     box-shadow: 0 10px 10px 0 rgba(255, 255, 255, 0);
     transition: transform 0.35s var(--ease-out-expo), box-shadow 0.35s var(--ease-out-expo);
 }
-
+.page-altersvorsorge .section-concepts .concepts-text-col::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-smooth);
+    border-radius: 32px 32px 0 0;
+}
+.page-altersvorsorge .section-concepts .concepts-text-col:hover::before {
+    opacity: 1;
+}
 .page-altersvorsorge .section-concepts .concepts-text-col:hover {
     box-shadow: var(--shadow-card);
     transform: translateY(-2px);
