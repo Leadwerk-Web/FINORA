@@ -1677,8 +1677,8 @@
   margin-bottom: 20px;
 }
 
-/* Zugeklappt: nur Karten OHNE .is-expanded zeigen gekürzten Text */
-.testimonial-card:not(.is-expanded) .testimonial-text {
+/* Zugeklappt: Standard – gekürzter Text */
+.testimonial-card .testimonial-text {
   display: -webkit-box;
   -webkit-line-clamp: 6;
   -webkit-box-orient: vertical;
@@ -1686,8 +1686,8 @@
   max-height: 10.2em;
 }
 
-/* Nur die eine Karte MIT .is-expanded zeigt vollen Text */
-.testimonial-card.is-expanded .testimonial-text {
+/* Nur die Karte mit data-expanded="true" zeigt vollen Text */
+.testimonial-card[data-expanded="true"] .testimonial-text {
   display: block;
   -webkit-line-clamp: unset;
   overflow: visible;

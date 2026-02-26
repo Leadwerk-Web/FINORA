@@ -294,33 +294,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // =========================================================
     // 4. TESTIMONIAL EXPAND/COLLAPSE (nur die geklickte Kachel öffnen)
+    // Inline-Styles setzen, damit garantiert nur eine Karte den vollen Text zeigt.
     // =========================================================
+    var COLLAPSED_STYLE = { overflow: 'hidden', maxHeight: '10.2em', WebkitLineClamp: '6', display: '-webkit-box' };
+    var EXPANDED_STYLE = { overflow: 'visible', maxHeight: 'none', WebkitLineClamp: 'unset', display: 'block' };
+
+    function setTestimonialTextStyle(el, expanded) {
+        var s = el.style;
+        var obj = expanded ? EXPANDED_STYLE : COLLAPSED_STYLE;
+        s.overflow = obj.overflow;
+        s.maxHeight = obj.maxHeight;
+        s.webkitLineClamp = obj.WebkitLineClamp;
+        s.display = obj.display;
+    }
+
+    // Beim Start alle Zitate per Inline-Style zuklappen (einheitlicher Ausgangszustand)
+    (function () {
+        var list = document.querySelectorAll('.testimonials .testimonial-text');
+        for (var k = 0; k < list.length; k++) {
+            setTestimonialTextStyle(list[k], false);
+        }
+    })();
+
     document.addEventListener('click', function (e) {
-        const btn = e.target && e.target.closest('.testimonials .lw-more-btn');
+        var btn = e.target && e.target.closest('.testimonials .lw-more-btn');
         if (!btn) return;
 
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-        const card = btn.closest('.testimonial-card');
-        const section = card && card.closest('.testimonials');
-        if (!section || !card) return;
 
-        const wasExpanded = card.classList.contains('is-expanded');
+        var card = btn.closest('.testimonial-card');
+        if (!card) return;
+        var section = card.closest('.testimonials');
+        if (!section) return;
 
-        // 1. Bei allen Karten in dieser Sektion is-expanded entfernen
-        var cards = section.querySelectorAll('.testimonial-card');
-        for (var i = 0; i < cards.length; i++) {
-            cards[i].classList.remove('is-expanded');
+        var textEl = card.querySelector('.testimonial-text');
+        if (!textEl) return;
+        var wasExpanded = textEl.style.overflow === 'visible';
+
+        // 1. Alle Zitate in dieser Sektion zuklappen (per Inline-Style)
+        var allTexts = section.querySelectorAll('.testimonial-text');
+        for (var i = 0; i < allTexts.length; i++) {
+            setTestimonialTextStyle(allTexts[i], false);
         }
         var buttons = section.querySelectorAll('.lw-more-btn');
-        for (var j = 0; j < buttons.length; j++) {
-            buttons[j].innerHTML = 'Mehr <span class="lw-arrow">&darr;</span>';
+        for (i = 0; i < buttons.length; i++) {
+            buttons[i].innerHTML = 'Mehr <span class="lw-arrow">&darr;</span>';
         }
 
-        // 2. Nur diese eine Karte wieder öffnen
+        // 2. Nur diese eine Karte aufklappen
         if (!wasExpanded) {
-            card.classList.add('is-expanded');
+            setTestimonialTextStyle(textEl, true);
             btn.innerHTML = 'Weniger <span class="lw-arrow">&uarr;</span>';
         }
     }, true);
