@@ -6,7 +6,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // =========================================================
-    // 0. HERO SLIDER (Startseite – Leistungen-Style, 5s Auto, Pfeile)
+    // 0. HERO SLIDER (Startseite - Leistungen-Style, 5s Auto, Pfeile)
     // =========================================================
     const heroSlider = document.getElementById('hero-slider');
     if (heroSlider) {
@@ -72,10 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================
-    // 0B. MOUSE FOLLOWER (nur Startseite, dezent Finora-Style)
+    // 0B. MOUSE FOLLOWER (alle Seiten, dezent Finora-Style)
     // =========================================================
     const cursorFollower = document.getElementById('cursor-follower');
-    if (cursorFollower && document.body.classList.contains('page-home')) {
+    if (cursorFollower) {
         let mouseX = 0, mouseY = 0;
         let posX = 0, posY = 0;
         let rafId = null;
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
         animEls.forEach(el => observer.observe(el));
 
-        // Drei Säulen: kein Observer – Scroll-Effekt über scrollPillarCards()
+        // Drei Säulen: kein Observer - Scroll-Effekt über scrollPillarCards()
     } else {
         document.querySelectorAll('.anim').forEach(el => el.classList.add('is-visible'));
     }
@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
             buttons[i].innerHTML = 'Mehr <span class="lw-arrow">&darr;</span>';
         }
 
-        // 2. Nur diese eine Karte aufklappen – Karte wächst mit, Footer bleibt unter dem Text
+        // 2. Nur diese eine Karte aufklappen - Karte wächst mit, Footer bleibt unter dem Text
         if (!wasExpanded) {
             card.setAttribute('data-expanded', 'true');
             setTestimonialTextStyle(textEl, true);
@@ -363,25 +363,180 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, true);
 
-    // Testimonial-Punkte: Anzahl Karten anzeigen (über dem Karussell)
-    const testimonialsSection = document.querySelector('.testimonials');
-    const testimonialsTrack = testimonialsSection && testimonialsSection.querySelector('.testimonials-track');
-    const firstGrid = testimonialsTrack && testimonialsTrack.querySelector('.testimonials-grid');
-    const cardCount = firstGrid ? firstGrid.querySelectorAll('.testimonial-card').length : 0;
-    if (testimonialsSection && testimonialsTrack && cardCount > 0) {
-        const dotsWrap = document.createElement('div');
-        dotsWrap.className = 'testimonials-dots-wrap';
-        dotsWrap.setAttribute('aria-hidden', 'true');
-        const dotsEl = document.createElement('div');
-        dotsEl.className = 'testimonials-dots';
-        for (let i = 0; i < cardCount; i++) {
-            const dot = document.createElement('span');
-            dot.className = 'testimonial-dot';
-            dotsEl.appendChild(dot);
+    // =========================================================
+    // 4B. TESTIMONIALS CAROUSEL (Dots, Drag, Swipe)
+    // =========================================================
+    document.querySelectorAll('.testimonials').forEach(function (section) {
+        var track = section.querySelector('.testimonials-track');
+        if (!track) return;
+        var inner = track.querySelector('.testimonials-track-inner');
+        if (!inner) return;
+
+        var grids = inner.querySelectorAll('.testimonials-grid');
+        for (var g = 1; g < grids.length; g++) grids[g].remove();
+
+        var firstGrid = inner.querySelector('.testimonials-grid');
+        if (!firstGrid) return;
+        var cards = Array.from(firstGrid.querySelectorAll('.testimonial-card'));
+        if (!cards.length) return;
+
+        var nav = document.createElement('div');
+        nav.className = 'testimonials-nav';
+        var dots = [];
+        cards.forEach(function (_, idx) {
+            var dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'testimonials-nav-dot';
+            dot.setAttribute('aria-label', 'Karte ' + (idx + 1));
+            dot.addEventListener('click', function () { scrollToCard(idx); });
+            nav.appendChild(dot);
+            dots.push(dot);
+        });
+        track.parentNode.insertBefore(nav, track.nextSibling);
+
+        function getActiveIndex() {
+            var trackRect = track.getBoundingClientRect();
+            var center = trackRect.left + trackRect.width / 2;
+            var closest = 0;
+            var minDist = Infinity;
+            cards.forEach(function (card, i) {
+                var r = card.getBoundingClientRect();
+                var cardCenter = r.left + r.width / 2;
+                var dist = Math.abs(cardCenter - center);
+                if (dist < minDist) { minDist = dist; closest = i; }
+            });
+            return closest;
         }
-        dotsWrap.appendChild(dotsEl);
-        testimonialsSection.insertBefore(dotsWrap, testimonialsTrack);
-    }
+
+        function updateDots() {
+            var active = getActiveIndex();
+            dots.forEach(function (d, i) {
+                d.classList.toggle('is-active', i === active);
+            });
+        }
+
+        function scrollToCard(idx) {
+            var card = cards[idx];
+            if (!card) return;
+            var cardCenter = card.offsetLeft + card.offsetWidth / 2;
+            var trackCenter = track.offsetWidth / 2;
+            track.scrollTo({ left: cardCenter - trackCenter, behavior: 'smooth' });
+        }
+
+        var scrollTimer = null;
+        track.addEventListener('scroll', function () {
+            if (scrollTimer) cancelAnimationFrame(scrollTimer);
+            scrollTimer = requestAnimationFrame(updateDots);
+        }, { passive: true });
+
+        var isDragging = false, startX = 0, scrollLeft = 0;
+
+        track.addEventListener('mousedown', function (e) {
+            if (e.button !== 0) return;
+            isDragging = true;
+            startX = e.pageX - track.offsetLeft;
+            scrollLeft = track.scrollLeft;
+            track.classList.add('is-grabbing');
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            var x = e.pageX - track.offsetLeft;
+            track.scrollLeft = scrollLeft - (x - startX);
+        });
+
+        document.addEventListener('mouseup', function () {
+            if (!isDragging) return;
+            isDragging = false;
+            track.classList.remove('is-grabbing');
+            track.style.scrollSnapType = 'x mandatory';
+            var idx = getActiveIndex();
+            scrollToCard(idx);
+        });
+
+        updateDots();
+        scrollToCard(0);
+
+        var autoPlayInterval = 5000;
+        var autoTimer = null;
+
+        function startAutoPlay() {
+            stopAutoPlay();
+            autoTimer = setInterval(function () {
+                var current = getActiveIndex();
+                var next = (current + 1) % cards.length;
+                scrollToCard(next);
+            }, autoPlayInterval);
+        }
+
+        function stopAutoPlay() {
+            if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+        }
+
+        track.addEventListener('mouseenter', stopAutoPlay);
+        track.addEventListener('mouseleave', startAutoPlay);
+        track.addEventListener('touchstart', stopAutoPlay, { passive: true });
+        track.addEventListener('touchend', function () {
+            setTimeout(startAutoPlay, 3000);
+        }, { passive: true });
+
+        startAutoPlay();
+    });
+
+    // =========================================================
+    // 4C. TIMELINE CARD COLLAPSE / EXPAND
+    // =========================================================
+    document.querySelectorAll('.timeline.timeline--horizontal .timeline-item__card').forEach(function (card) {
+        var ul = card.querySelector('ul');
+        if (!ul) return;
+
+        var detailNodes = [];
+        var foundUl = false;
+        var children = Array.from(card.childNodes);
+        children.forEach(function (node) {
+            if (node === ul) foundUl = true;
+            if (foundUl && node.nodeType === 1) detailNodes.push(node);
+        });
+
+        if (!detailNodes.length) return;
+
+        var wrapper = document.createElement('div');
+        wrapper.className = 'timeline-card__details';
+        card.insertBefore(wrapper, detailNodes[0]);
+        detailNodes.forEach(function (n) { wrapper.appendChild(n); });
+
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'timeline-card__toggle';
+        btn.innerHTML = '<span class="timeline-card__toggle-label">Mehr lesen</span> <span class="timeline-card__toggle-arrow">\u25BC</span>';
+        btn.setAttribute('aria-expanded', 'false');
+        card.appendChild(btn);
+
+        btn.addEventListener('click', function () {
+            var isOpen = card.classList.contains('is-expanded');
+            if (isOpen) {
+                wrapper.style.maxHeight = wrapper.scrollHeight + 'px';
+                requestAnimationFrame(function () {
+                    wrapper.style.maxHeight = '0';
+                });
+                card.classList.remove('is-expanded');
+                btn.querySelector('.timeline-card__toggle-label').textContent = 'Mehr lesen';
+                btn.setAttribute('aria-expanded', 'false');
+            } else {
+                wrapper.style.maxHeight = wrapper.scrollHeight + 'px';
+                card.classList.add('is-expanded');
+                btn.querySelector('.timeline-card__toggle-label').textContent = 'Weniger';
+                btn.setAttribute('aria-expanded', 'true');
+                wrapper.addEventListener('transitionend', function handler() {
+                    if (card.classList.contains('is-expanded')) {
+                        wrapper.style.maxHeight = 'none';
+                    }
+                    wrapper.removeEventListener('transitionend', handler);
+                });
+            }
+        });
+    });
 
     // =========================================================
     // 5. FINORA SERVICE SLIDER
@@ -598,6 +753,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Vielen Dank für deine Nachricht! Wir melden uns in Kürze bei dir.');
                 contactForm.reset();
             }
+        });
+    }
+
+    // =========================================================
+    // 6. COUNTER ANIMATION (Calc-V2 KPI Strip)
+    // =========================================================
+    var counterEls = document.querySelectorAll('[data-count]');
+    if (counterEls.length) {
+        var counted = new Set();
+
+        function formatNumber(n) {
+            return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function animateCounter(el) {
+            var target = parseInt(el.getAttribute('data-count'), 10);
+            if (isNaN(target)) return;
+            var duration = 2000;
+            var start = null;
+            var prefix = el.textContent.trim().charAt(0) === '+' ? '+' : '';
+            var suffix = '';
+            var text = el.textContent.trim();
+            if (text.indexOf('%') !== -1) suffix = ' %';
+            else if (text.indexOf('x') !== -1) suffix = 'x';
+            else suffix = '\u00a0\u20ac';
+
+            function step(timestamp) {
+                if (!start) start = timestamp;
+                var progress = Math.min((timestamp - start) / duration, 1);
+                var eased = 1 - Math.pow(1 - progress, 3);
+                var current = Math.round(eased * target);
+                el.textContent = prefix + formatNumber(current) + suffix;
+                if (progress < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+        var counterObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting && !counted.has(entry.target)) {
+                    counted.add(entry.target);
+                    animateCounter(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        counterEls.forEach(function (el) {
+            counterObserver.observe(el);
         });
     }
 

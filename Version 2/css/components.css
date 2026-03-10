@@ -27,7 +27,7 @@
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
 }
 
-/* Gleiche Breite wie Inhaltsbereich (70px wie Hero) – Logo und Inhalt bilden eine vertikale Linie */
+/* Gleiche Breite wie Inhaltsbereich (70px wie Hero) - Logo und Inhalt bilden eine vertikale Linie */
 .header-row {
   display: flex;
   align-items: center;
@@ -64,7 +64,7 @@
   gap: 20px;
 }
 
-/* Sprachumschalter – modernes „A“-Icon statt Weltkugel */
+/* Sprachumschalter - modernes „A“-Icon statt Weltkugel */
 .header-lang {
   position: relative;
 }
@@ -414,7 +414,7 @@
   }
 }
 
-/* Inner page hero: Zweispaltig – Text links, Bilder rechts */
+/* Inner page hero: Zweispaltig - Text links, Bilder rechts */
 .hero.hero--altersvorsorge .hero-content,
 .hero.hero--investment .hero-content,
 .hero.hero--immobilien .hero-content,
@@ -606,7 +606,7 @@
   letter-spacing: 0.02em;
 }
 
-/* Hero-CTA-Container: mittig ausgerichtet (Texte und Button zentriert) – Badge ausgenommen */
+/* Hero-CTA-Container: mittig ausgerichtet (Texte und Button zentriert) - Badge ausgenommen */
 .hero .hero-text > div:not(.hero-badge) {
   text-align: center;
   width: 100%;
@@ -658,7 +658,7 @@
   display: block;
 }
 
-/* Hero CTA Button – min 44px touch target (accessibility) */
+/* Hero CTA Button - min 44px touch target (accessibility) */
 .btn {
   display: inline-block;
   font-family: var(--font-heading);
@@ -715,7 +715,7 @@
   display: none !important;
 }
 
-/* Hero Service Blurbs (bottom row) – im Flow, fester Abstand zum CTA (kein Überlappen) */
+/* Hero Service Blurbs (bottom row) - im Flow, fester Abstand zum CTA (kein Überlappen) */
 .hero-services {
   position: relative;
   width: 90%;
@@ -1505,62 +1505,30 @@
   font-weight: 700;
 }
 
-/* Punkte über dem Karussell: zeigen Anzahl der Karten */
-.testimonials-dots-wrap {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.testimonials-dots {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.testimonial-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(4, 60, 67, 0.25);
-  flex-shrink: 0;
-}
-
-/* Testimonials: Slider-Track (Leadwerk-Style, infinite scroll), max. 3 Kacheln sichtbar */
+/* Testimonials: Snap-Karussell mit Dots-Navigation */
 .testimonials-track {
   position: relative;
   width: 100%;
-  max-width: calc(3 * 380px + 2 * 24px);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   margin: 0 auto;
-  padding: 24px 0;
+  padding: 12px 60px 20px;
+  cursor: grab;
+  user-select: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
 }
 
-/* Verlauf links: Hintergrundfarbe → transparent über den Kacheln */
-.testimonials-track::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 100px;
-  background: linear-gradient(to right, #f4f5f5 0%, transparent 100%);
-  pointer-events: none;
-  z-index: 2;
+.testimonials-track::-webkit-scrollbar {
+  display: none;
 }
 
-/* Verlauf rechts: transparent → Hintergrundfarbe über den Kacheln */
-.testimonials-track::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 100px;
-  background: linear-gradient(to left, #f4f5f5 0%, transparent 100%);
-  pointer-events: none;
-  z-index: 2;
+.testimonials-track.is-grabbing {
+  cursor: grabbing;
+  scroll-snap-type: none;
 }
 
 .testimonials-track-inner {
@@ -1568,17 +1536,7 @@
   align-items: flex-start;
   gap: 24px;
   width: max-content;
-  animation: testimonial-scroll 45s linear infinite;
-  padding: 12px 0 20px;
-}
-
-.testimonials-track-inner:hover {
-  animation-play-state: paused;
-}
-
-@keyframes testimonial-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  padding: 0;
 }
 
 .testimonials-grid {
@@ -1588,15 +1546,44 @@
   flex-shrink: 0;
 }
 
-/* Ein Satz Karten = 50% der Track-Breite (zweite Hälfte ist Duplikat) */
-.testimonials-track-inner .testimonials-grid {
+/* Dots-Navigation unterhalb des Karussells */
+.testimonials-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 28px;
+  padding: 0;
+}
+
+.testimonials-nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: rgba(4, 60, 67, 0.18);
+  cursor: pointer;
+  transition: all 0.3s ease;
   flex-shrink: 0;
+}
+
+.testimonials-nav-dot:hover {
+  background: rgba(4, 60, 67, 0.4);
+  transform: scale(1.2);
+}
+
+.testimonials-nav-dot.is-active {
+  background: var(--color-primary);
+  width: 28px;
+  border-radius: 5px;
 }
 
 .testimonial-card {
   flex: 0 0 auto;
-  width: min(380px, 90vw);
-  min-width: 320px;
+  width: min(440px, 85vw);
+  min-width: min(340px, 80vw);
+  scroll-snap-align: center;
   display: flex;
   flex-direction: column;
   background: #fff;
@@ -2063,26 +2050,42 @@
   color: var(--color-white);
 }
 
+.footer-contact p a {
+  color: var(--color-white);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.footer-contact p a:hover {
+  opacity: 0.75;
+}
+
 .footer-bottom {
   background-color: var(--color-primary);
   background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 1%, rgba(0, 0, 0, 0.45) 99%);
   text-align: center;
-  padding: 20px 0;
+  padding: 20px var(--container-padding);
   color: var(--color-white);
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16px;
+  font-size: clamp(13px, 3.5vw, 16px);
 }
 
 .footer-bottom a {
   color: var(--color-white);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.footer-bottom a:hover {
+  opacity: 0.75;
 }
 
 /* Full-width footer logo with gradient overlay (bottom = footer color → top = transparent) */
 .footer-logo-full {
   position: relative;
-  width: 100vw;
-  max-width: 100vw;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0 32px;
   overflow: hidden;
@@ -2308,7 +2311,7 @@
   animation: scaleIn 1.2s var(--ease-out-expo) 1 both;
 }
 
-/* Drei Säulen: Scroll-Effekt (JS setzt transform) – Karten immer sichtbar, kein .anim-Versteck */
+/* Drei Säulen: Scroll-Effekt (JS setzt transform) - Karten immer sichtbar, kein .anim-Versteck */
 .pillars-grid .pillar-card,
 .pillars-grid.process-card-wrap .pillar-card {
   opacity: 1;
@@ -2574,20 +2577,16 @@
   }
 
   .testimonials-grid {
-    flex-direction: column;
-    max-width: 440px;
-    margin: 0 auto;
+    max-width: none;
   }
 
-  /* Slider-Track: horizontal bleiben für Endlosschleife */
-  .testimonials-track .testimonials-grid {
-    flex-direction: row;
-    max-width: none;
-    margin: 0;
-  }
   .testimonials-track .testimonial-card {
     min-width: 280px;
     width: min(340px, 85vw);
+  }
+
+  .testimonials-track {
+    padding: 12px 20px 20px;
   }
 
   /* FAQ */
@@ -2796,7 +2795,7 @@
   }
 }
 
-/* Extra small (max 360px) – notch/small devices */
+/* Extra small (max 360px) - notch/small devices */
 @media (max-width: 360px) {
   .header-row {
     padding-inline: 10px;
@@ -2827,7 +2826,7 @@
   }
 }
 
-/* Medium (600px–768px) – large phones / small tablets */
+/* Medium (600px-768px) - large phones / small tablets */
 @media (min-width: 600px) and (max-width: 768px) {
   .hero-services {
     display: grid;
@@ -2841,7 +2840,7 @@
   }
 }
 
-/* Large desktop (1280px+) – cap max widths for readability */
+/* Large desktop (1280px+) - cap max widths for readability */
 @media (min-width: 1280px) {
   .container { max-width: 1080px; }
   .container--wide { max-width: 1200px; }
@@ -2854,7 +2853,7 @@
    ============================================================ */
 
 /* --- 16. PAGE HERO (Inner pages: Über Finora, Kontakt, etc.) --- */
-/* 100vh, Hintergrund ab oben, symmetrische Abstände – Text/CTA gleichmäßig oben/unten */
+/* 100vh, Hintergrund ab oben, symmetrische Abstände - Text/CTA gleichmäßig oben/unten */
 .page-hero {
   position: relative;
   min-height: 100vh;
@@ -3313,7 +3312,259 @@
   line-height: 1.8em;
 }
 
-/* --- 21. FLIP CARDS (Investment) – Expand-on-Hover --- */
+/* --- 20b. HORIZONTAL TIMELINE — Modern Stepper Layout --- */
+
+.timeline.timeline--horizontal {
+    display: flex;
+    gap: 20px;
+    max-width: 100%;
+    padding: 0;
+    align-items: stretch;
+    position: relative;
+}
+
+.timeline.timeline--horizontal::before {
+    content: '';
+    position: absolute;
+    top: 27px;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: auto;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--color-accent) 8%, var(--color-accent) 92%, transparent);
+    transform: none;
+}
+
+.timeline.timeline--horizontal .timeline-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.timeline.timeline--horizontal .timeline-item:nth-child(odd),
+.timeline.timeline--horizontal .timeline-item:nth-child(even) {
+    margin-left: 0;
+}
+
+.timeline.timeline--horizontal .timeline-item::before,
+.timeline.timeline--horizontal .timeline-item:nth-child(odd)::before,
+.timeline.timeline--horizontal .timeline-item:nth-child(even)::before {
+    display: none;
+}
+
+.timeline.timeline--horizontal .timeline-item__number {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--color-primary);
+    background: #fff;
+    border: 2px solid var(--color-accent);
+    border-radius: 50%;
+    z-index: 2;
+    margin-bottom: 20px;
+    box-shadow: 0 0 0 6px rgba(144, 180, 178, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
+    transition: all 0.35s ease;
+}
+
+.timeline.timeline--horizontal .timeline-item__card {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    padding: 24px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid rgba(144, 180, 178, 0.12);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    overflow: hidden;
+}
+
+.timeline.timeline--horizontal .timeline-item__card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent), rgba(4, 60, 67, 0.4));
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    border-radius: 16px 16px 0 0;
+}
+
+.timeline.timeline--horizontal .timeline-item:hover .timeline-item__number {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(4, 60, 67, 0.1), 0 6px 20px rgba(4, 60, 67, 0.15);
+}
+
+.timeline.timeline--horizontal .timeline-item:hover .timeline-item__card {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1), 0 0 24px rgba(144, 180, 178, 0.12);
+    border-color: rgba(144, 180, 178, 0.3);
+}
+
+.timeline.timeline--horizontal .timeline-item:hover .timeline-item__card::before {
+    opacity: 1;
+}
+
+.timeline.timeline--horizontal .timeline-item__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 12px;
+    font-size: 18px;
+    color: var(--color-accent);
+    background: rgba(144, 180, 178, 0.08);
+    border-radius: 10px;
+    border: 1px solid rgba(144, 180, 178, 0.12);
+}
+
+.timeline.timeline--horizontal .timeline-item__card h4 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--color-primary);
+    margin: 0 0 8px;
+    line-height: 1.3;
+}
+
+.timeline.timeline--horizontal .timeline-item__card p {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: #555;
+    margin: 0 0 8px;
+}
+
+.timeline.timeline--horizontal .timeline-item__card p:last-child,
+.timeline.timeline--horizontal .timeline-item__card p:last-of-type {
+    margin-bottom: 0;
+}
+
+.timeline.timeline--horizontal .timeline-item__card ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0 0 8px;
+}
+
+.timeline.timeline--horizontal .timeline-item__card li {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: #555;
+    padding-left: 14px;
+    position: relative;
+    margin-bottom: 3px;
+}
+
+.timeline.timeline--horizontal .timeline-item__card li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 5px;
+    height: 5px;
+    background: var(--color-accent);
+    border-radius: 50%;
+}
+
+.timeline.timeline--horizontal .timeline-item__card li:last-child {
+    margin-bottom: 0;
+}
+
+/* Timeline card: collapsible details */
+.timeline-card__details {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+}
+
+.timeline-item__card.is-expanded .timeline-card__details {
+    opacity: 1;
+}
+
+.timeline-card__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-primary);
+    letter-spacing: 0.02em;
+    transition: color 0.2s ease, gap 0.2s ease;
+}
+
+.timeline-card__toggle:hover {
+    color: var(--color-accent);
+    gap: 8px;
+}
+
+.timeline-card__toggle-arrow {
+    display: inline-block;
+    font-size: 11px;
+    transition: transform 0.35s ease;
+}
+
+.timeline-item__card.is-expanded .timeline-card__toggle-arrow {
+    transform: rotate(180deg);
+}
+
+@media (max-width: 991px) {
+    .timeline.timeline--horizontal {
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .timeline.timeline--horizontal::before {
+        display: none;
+    }
+
+    .timeline.timeline--horizontal .timeline-item {
+        flex: 0 0 calc(50% - 10px);
+    }
+}
+
+@media (max-width: 600px) {
+    .timeline.timeline--horizontal .timeline-item {
+        flex: 0 0 100%;
+    }
+}
+
+/* --- 21. FLIP CARDS (Investment) - Expand-on-Hover --- */
 .flip-grid {
   display: flex;
   gap: 20px;
@@ -3777,7 +4028,7 @@
   margin-top: 5px;
 }
 
-/* Flipbox Grid – Expand-on-Hover (Vorderseite: Icon + Titel; Hover: Kachel vergrößert, Text erscheint) */
+/* Flipbox Grid - Expand-on-Hover (Vorderseite: Icon + Titel; Hover: Kachel vergrößert, Text erscheint) */
 .flipbox-grid {
   display: flex;
   gap: 20px;
@@ -3917,6 +4168,24 @@
   .flip-box:hover {
     flex: 1 1 auto;
     min-width: 0;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .flip-box .flip-box-inner {
+    height: auto;
+    min-height: 280px;
+  }
+
+  .flip-box .flip-box-back {
+    max-height: 180px;
+    opacity: 1;
+    transform: translateY(0);
+    transition: none;
+  }
+
+  .flip-box .flip-box-front {
+    padding-bottom: 4px;
   }
 }
 
