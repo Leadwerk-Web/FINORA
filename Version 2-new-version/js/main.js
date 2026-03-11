@@ -30,8 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const t = copy[locale];
     const syncLiquidGlass = (root) => {
-        if (window.FinoraLiquidGlass && typeof window.FinoraLiquidGlass.refresh === 'function') {
-            window.FinoraLiquidGlass.refresh(root || document);
+        if (typeof window.initializeGlassPanels === 'function') {
+            window.initializeGlassPanels(root || document);
+        }
+        if (window.LiquidGlassFilter && typeof window.LiquidGlassFilter.scheduleAllSync === 'function') {
+            window.LiquidGlassFilter.scheduleAllSync();
         }
     };
 
@@ -508,7 +511,8 @@ document.addEventListener('DOMContentLoaded', () => {
         cards.forEach(function (_, idx) {
             var dot = document.createElement('button');
             dot.type = 'button';
-            dot.className = 'testimonials-nav-dot';
+            dot.className = 'testimonials-nav-dot glass-panel glass-button';
+            dot.dataset.glassSource = '.testimonials, .glass-panel';
             dot.setAttribute('aria-label', t.card + ' ' + (idx + 1));
             dot.addEventListener('click', function () { scrollToCard(idx); });
             nav.appendChild(dot);
@@ -636,7 +640,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         var btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'timeline-card__toggle';
+        btn.className = 'timeline-card__toggle glass-panel glass-button';
+        btn.dataset.glassSource = '.glass-panel';
         btn.innerHTML = '<span class="timeline-card__toggle-label">' + t.timelineMore + '</span> <span class="timeline-card__toggle-arrow">\u25BC</span>';
         btn.setAttribute('aria-expanded', 'false');
         card.appendChild(btn);
@@ -697,7 +702,8 @@ document.addEventListener('DOMContentLoaded', () => {
             items.forEach((btn, idx) => {
                 const dot = document.createElement('button');
                 dot.type = 'button';
-                dot.className = 'fs-dot';
+                dot.className = 'fs-dot glass-panel glass-button';
+                dot.dataset.glassSource = '.slider-section, .glass-panel';
                 dot.dataset.index = idx.toString();
                 dotsWrap.appendChild(dot);
             });

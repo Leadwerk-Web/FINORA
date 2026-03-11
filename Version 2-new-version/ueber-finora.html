@@ -18,7 +18,7 @@
 <body class="page-ueber">
 <div aria-hidden="true" class="cursor-follower" id="cursor-follower"></div>
 <!-- ============ HEADER ============ -->
-<header class="site-header">
+<header class="site-header glass-panel" data-glass-source=".hero-slide.is-active, .hero, .legal-content, .site-footer">
 <div class="header-row">
 <div class="header-logo">
 <a href="index.html">
@@ -29,7 +29,7 @@
 <ul class="nav-menu">
 <li>
 <a href="#">Leistungen</a>
-<ul class="sub-menu">
+<ul class="sub-menu glass-panel" data-glass-source=".hero-slide.is-active, .hero, .legal-content, .site-header">
 <li><a href="immobilien-beratung.html">Immobilien-Beratung</a></li>
 <li><a href="erbanlage-beratung.html">Erbanlage-Beratung</a></li>
 <li><a href="altersvorsorge.html">Altersvorsorge-Beratung</a></li>
@@ -43,23 +43,23 @@
 </nav>
 <div class="header-cta">
 <div aria-label="Sprache w&auml;hlen" class="header-lang" role="group">
-<button aria-expanded="false" aria-haspopup="true" aria-label="Sprache wechseln" class="header-lang-btn" title="Sprache wechseln" type="button">
+<button aria-expanded="false" aria-haspopup="true" aria-label="Sprache wechseln" class="header-lang-btn glass-panel glass-button" data-glass-source=".glass-panel" title="Sprache wechseln" type="button">
 <span aria-hidden="true" class="header-lang-icon">
 <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
 </span>
 <span class="header-lang-label">DE</span>
 </button>
-<div class="header-lang-dropdown" hidden="">
+<div class="header-lang-dropdown glass-panel" data-glass-source=".hero-slide.is-active, .hero, .legal-content, .site-header" hidden="">
 <a class="header-lang-option is-active" href="ueber-finora.html" hreflang="de" lang="de">Deutsch</a>
 <a class="header-lang-option" href="en/ueber-finora.html" hreflang="en" lang="en">English</a>
 </div>
 </div>
 </div>
-<button aria-label="Men&uuml; &ouml;ffnen" class="mobile-menu-toggle">
+<button aria-label="Men&uuml; &ouml;ffnen" class="mobile-menu-toggle glass-panel glass-button" data-glass-source=".glass-panel">
 <span></span><span></span><span></span>
 </button>
 </div>
-<div class="mobile-menu">
+<div class="mobile-menu glass-panel" data-glass-source=".hero-slide.is-active, .hero, .legal-content, .site-header">
 <a href="#">Leistungen</a>
 <div class="sub-menu">
 <a href="immobilien-beratung.html">Immobilien-Beratung</a>
@@ -77,14 +77,14 @@
 <section class="hero hero--ueber">
 <div class="hero-content">
 <div class="hero-text">
-<div class="hero-badge anim" style="animation-delay:100ms">
+<div class="hero-badge anim glass-panel glass-button" data-glass-source=".glass-panel, .hero-slide.is-active, .hero, .slider-section, .content-section, .site-footer" style="animation-delay:100ms">
 <span class="badge-dot"></span>
                     &Uuml;ber Finora
                 </div>
 <h1 class="anim">Finora beginnt mit <strong>Zuh&ouml;ren</strong></h1>
 <p class="hero-subtitle anim" style="animation-delay:300ms">Finanzplanung, die zu deinem Leben passt, verst&auml;ndlich, strukturiert und ohne Verkaufsdruck.</p>
 <div style="text-align:center">
-<a class="btn anim" href="kontakt.html" style="animation-delay:600ms">Kostenloses Erstgespr&auml;ch vereinbaren</a>
+<a class="btn anim glass-panel glass-button" data-glass-source=".glass-panel, .hero-slide.is-active, .hero, .content-section, .center-cta, .final-cta-section, .slider-section, .site-footer" href="kontakt.html" style="animation-delay:600ms">Kostenloses Erstgespr&auml;ch vereinbaren</a>
 <span class="hero-microcopy anim" style="animation-delay:700ms">15&nbsp;Min &middot; unverbindlich &middot; online</span>
 </div>
 </div>
@@ -131,7 +131,7 @@
 <p>Wir konzentrieren uns auf wenige Kernbereiche, daf&uuml;r mit echter Expertise. Damit du Beratung bekommst, die strukturiert besser ist, nicht nur &bdquo;gut gemeint&ldquo;.</p>
 </div>
 </div>
-<a class="btn btn--dark btn-section anim" href="kontakt.html" style="animation-delay:420ms">Kostenloses Erstgespr&auml;ch vereinbaren</a>
+<a class="btn btn--dark btn-section anim glass-panel glass-button" data-glass-source=".glass-panel, .hero-slide.is-active, .hero, .content-section, .center-cta, .final-cta-section, .slider-section, .site-footer" href="kontakt.html" style="animation-delay:420ms">Kostenloses Erstgespr&auml;ch vereinbaren</a>
 </div>
 <div class="why-finora-right anim anim--right">
 <img alt="Kevin Hudel - Finora" height="1300" loading="lazy" src="assets/images/X8A6580_prev-scaled-1.jpg" width="867"/>
@@ -151,7 +151,7 @@
 <div class="anim" style="max-width: 800px; margin: 0 auto; margin-bottom: 40px; animation-delay:100ms">
 <p>Wissen ist heute &uuml;berall verf&uuml;gbar. Viele er&ouml;ffnen selbst ein Depot und kennen Begriffe wie ETF-Sparplan oder MSCI World. Genau deshalb ver&auml;ndert sich auch der Anspruch an Beratung: Es geht weniger um Produkte, und mehr um einen <strong>sauberen Plan</strong>.</p>
 </div>
-<a class="btn anim" href="kontakt.html">Mehr als klassische Finanzberatung</a>
+<a class="btn anim glass-panel glass-button" data-glass-source=".glass-panel, .hero-slide.is-active, .hero, .content-section, .center-cta, .final-cta-section, .slider-section, .site-footer" href="kontakt.html">Mehr als klassische Finanzberatung</a>
 </div>
 </section>
 <!-- ============ WAS BEDEUTET DAS ============ -->
@@ -165,7 +165,7 @@
 <p>Heute geht es weniger darum, &bdquo;irgendetwas&ldquo; anzubieten, sondern darum, <strong>Komplexit&auml;t zu reduzieren</strong> und Entscheidungen sicher zu machen.</p>
 <p>Viele Menschen wollen keine Verkaufsgespr&auml;che, sondern einen Partner, der strukturiert denkt, verst&auml;ndlich erkl&auml;rt und sauber begleitet.</p>
 <p>Finora steht f&uuml;r <strong>Spezialisierung, Fokus und Prozessqualit&auml;t</strong>, damit du Entscheidungen triffst, die langfristig tragen.</p>
-<a class="btn btn--dark btn-section" href="kontakt.html" style="margin-top: 20px;">Qualit&auml;t statt Verkaufsgespr&auml;ch</a>
+<a class="btn btn--dark btn-section glass-panel glass-button" data-glass-source=".glass-panel, .hero-slide.is-active, .hero, .content-section, .center-cta, .final-cta-section, .slider-section, .site-footer" href="kontakt.html" style="margin-top: 20px;">Qualit&auml;t statt Verkaufsgespr&auml;ch</a>
 </div>
 <div class="col-text anim anim--right">
 <div class="blurb">
@@ -222,7 +222,7 @@
 </div>
 </div>
 <div class="how-bottom anim" style="animation-delay:140ms">
-<a class="btn" href="">Jetzt den ersten Schritt machen</a>
+<a class="btn glass-panel glass-button" data-glass-source=".glass-panel, .hero-slide.is-active, .hero, .content-section, .center-cta, .final-cta-section, .slider-section, .site-footer" href="">Jetzt den ersten Schritt machen</a>
 </div>
 </div>
 </section>
@@ -235,7 +235,7 @@
 <div aria-label="Kundenstimmen Karussell" class="testimonials-track">
 <div class="testimonials-track-inner">
 <div class="testimonials-grid">
-<div class="testimonial-card anim">
+<div class="testimonial-card anim glass-panel" data-glass-source=".hero-slide.is-active, .hero, .slider-section, .content-section, .center-cta, .final-cta-section, .how-it-works, .testimonials, .faq, .site-footer, .legal-content">
 <div class="testimonial-percent">+<span class="testimonial-percent__num">42</span>%</div>
 <p class="testimonial-ersparnis">Mehr Ersparnis</p>
 <div class="testimonial-quote-wrap">
@@ -250,7 +250,7 @@
                             zuversichtlich, meine finanziellen Ziele zu erreichen. Ich kann jedem nur empfehlen, seine
                             Unterst&uuml;tzung in Anspruch zu nehmen.&ldquo;</p>
 </div>
-<button class="lw-more-btn">Mehr <span class="lw-arrow">&darr;</span></button>
+<button class="lw-more-btn glass-panel glass-button" data-glass-source=".glass-panel, .hero-slide.is-active, .hero, .content-section, .center-cta, .final-cta-section, .slider-section, .site-footer">Mehr <span class="lw-arrow">&darr;</span></button>
 <div class="testimonial-footer">
 <span aria-hidden="true" class="testimonial-initials">JI</span>
 <div class="testimonial-meta">
@@ -259,7 +259,7 @@
 </div>
 </div>
 </div>
-<div class="testimonial-card anim">
+<div class="testimonial-card anim glass-panel" data-glass-source=".hero-slide.is-active, .hero, .slider-section, .content-section, .center-cta, .final-cta-section, .how-it-works, .testimonials, .faq, .site-footer, .legal-content">
 <div class="testimonial-percent">+<span class="testimonial-percent__num">38</span>%</div>
 <p class="testimonial-ersparnis">Mehr Ersparnis</p>
 <div class="testimonial-quote-wrap">
@@ -271,7 +271,7 @@
                             planen k&ouml;nnen.<br/><br/>Er ist gut erreichbar und antwortet schnell auf dringende
                             Anliegen.<br/><br/>Wir k&ouml;nnen ihn als Finanz- und Versicherungsberater w&auml;rmstens empfehlen.&ldquo;</p>
 </div>
-<button class="lw-more-btn">Mehr <span class="lw-arrow">&darr;</span></button>
+<button class="lw-more-btn glass-panel glass-button" data-glass-source=".glass-panel, .hero-slide.is-active, .hero, .content-section, .center-cta, .final-cta-section, .slider-section, .site-footer">Mehr <span class="lw-arrow">&darr;</span></button>
 <div class="testimonial-footer">
 <span aria-hidden="true" class="testimonial-initials">F</span>
 <div class="testimonial-meta">
@@ -280,7 +280,7 @@
 </div>
 </div>
 </div>
-<div class="testimonial-card anim">
+<div class="testimonial-card anim glass-panel" data-glass-source=".hero-slide.is-active, .hero, .slider-section, .content-section, .center-cta, .final-cta-section, .how-it-works, .testimonials, .faq, .site-footer, .legal-content">
 <div class="testimonial-percent">+<span class="testimonial-percent__num">55</span>%</div>
 <p class="testimonial-ersparnis">Mehr Ersparnis</p>
 <div class="testimonial-quote-wrap">
@@ -290,7 +290,7 @@
                             Finanzmarktkenntnisse geben mir Sicherheit bei meinen Entscheidungen. Ich kann Kevin jedem
                             w&auml;rmstens empfehlen, der einen professionellen und vertrauensw&uuml;rdigen Finanzberater sucht.&ldquo;</p>
 </div>
-<button class="lw-more-btn">Mehr <span class="lw-arrow">&darr;</span></button>
+<button class="lw-more-btn glass-panel glass-button" data-glass-source=".glass-panel, .hero-slide.is-active, .hero, .content-section, .center-cta, .final-cta-section, .slider-section, .site-footer">Mehr <span class="lw-arrow">&darr;</span></button>
 <div class="testimonial-footer">
 <span aria-hidden="true" class="testimonial-initials">BK</span>
 <div class="testimonial-meta">
@@ -311,31 +311,31 @@
 <div class="faq-right anim anim--right">
 <h2>Fragen zu Finanzen? <strong>Hier gibt&rsquo;s Klartext.</strong></h2>
 <p class="faq-intro">Hier findest du Antworten auf die Fragen, die uns am h&auml;ufigsten gestellt werden, klar und ohne Fachchinesisch.</p>
-<div class="accordion-item is-open">
+<div class="accordion-item is-open glass-panel" data-glass-source=".hero-slide.is-active, .hero, .slider-section, .content-section, .center-cta, .final-cta-section, .how-it-works, .testimonials, .faq, .site-footer, .legal-content">
 <h5 class="accordion-title">Warum &uuml;berhaupt noch Beratung?</h5>
 <div class="accordion-content">
 <p>Weil die entscheidenden Fragen nicht &bdquo;Welches Produkt?&ldquo;, sondern &bdquo;Welcher Plan?&ldquo; sind: Ziele, Risiko, Struktur, Kosten, Umsetzung, und gute Entscheidungen, wenn M&auml;rkte schwanken. Genau dabei hilft Finora.</p>
 </div>
 </div>
-<div class="accordion-item">
+<div class="accordion-item glass-panel" data-glass-source=".hero-slide.is-active, .hero, .slider-section, .content-section, .center-cta, .final-cta-section, .how-it-works, .testimonials, .faq, .site-footer, .legal-content">
 <h5 class="accordion-title">Was kostet die Beratung?</h5>
 <div class="accordion-content">
 <p>Das h&auml;ngt vom Umfang ab. Im Erstgespr&auml;ch bekommst du eine transparente Einsch&auml;tzung, welche Schritte sinnvoll sind, und was sie kosten.</p>
 </div>
 </div>
-<div class="accordion-item">
+<div class="accordion-item glass-panel" data-glass-source=".hero-slide.is-active, .hero, .slider-section, .content-section, .center-cta, .final-cta-section, .how-it-works, .testimonials, .faq, .site-footer, .legal-content">
 <h5 class="accordion-title">Wie verdient Finora Geld?</h5>
 <div class="accordion-content">
 <p>Transparent und nachvollziehbar. Du wei&szlig;t, wof&uuml;r du zahlst, und warum eine Empfehlung ausgesprochen wird.</p>
 </div>
 </div>
-<div class="accordion-item">
+<div class="accordion-item glass-panel" data-glass-source=".hero-slide.is-active, .hero, .slider-section, .content-section, .center-cta, .final-cta-section, .how-it-works, .testimonials, .faq, .site-footer, .legal-content">
 <h5 class="accordion-title">Kann die Beratung auf Englisch stattfinden?</h5>
 <div class="accordion-content">
 <p>Ja. Du kannst die Beratung auf Deutsch oder Englisch in Anspruch nehmen.</p>
 </div>
 </div>
-<div class="accordion-item">
+<div class="accordion-item glass-panel" data-glass-source=".hero-slide.is-active, .hero, .slider-section, .content-section, .center-cta, .final-cta-section, .how-it-works, .testimonials, .faq, .site-footer, .legal-content">
 <h5 class="accordion-title">Muss ich mich nach dem ersten Gespr&auml;ch direkt entscheiden?</h5>
 <div class="accordion-content">
 <p>Nein. Das Erstgespr&auml;ch ist unverbindlich. Du nimmst Klarheit mit, und entscheidest in Ruhe.</p>
@@ -346,7 +346,7 @@
 </section>
 <!-- ============ FOOTER ============ -->
 <footer class="site-footer">
-<div class="footer-main">
+<div class="footer-main glass-panel" data-glass-source=".site-footer">
 <div class="footer-col">
 <img alt="Finora Logo" class="footer-logo" height="212" loading="lazy" src="assets/images/Logo-final-weiss-rz.png" width="922"/>
 <p class="footer-desc">Finora bietet unabh&auml;ngige Investment- und Finanzberatung in Deutschland. Fokus: Altersvorsorge, Investment, Immobilien und steueroptimierte Strukturierung, verst&auml;ndlich erkl&auml;rt und strukturiert begleitet.</p>
@@ -371,15 +371,15 @@
 </div>
 <div class="footer-col footer-contact">
 <h4>Kontakt</h4>
-<div class="contact-item">
+<div class="contact-item glass-panel" data-glass-source=".site-footer">
 <span class="contact-icon"></span>
 <p>Brauerstr. 17<br/>76137 Karlsruhe</p>
 </div>
-<div class="contact-item">
+<div class="contact-item glass-panel" data-glass-source=".site-footer">
 <span class="contact-icon"></span>
 <p>Tel.: <a href="tel:+4915128915214">01512 8915214</a></p>
 </div>
-<div class="contact-item">
+<div class="contact-item glass-panel" data-glass-source=".site-footer">
 <span class="contact-icon"></span>
 <p><a href="mailto:hallo@finora.de">hallo@finora.de</a></p>
 </div>

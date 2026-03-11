@@ -18,7 +18,7 @@
 <body class="page-legal">
 <div aria-hidden="true" class="cursor-follower" id="cursor-follower"></div>
 <!-- ============ HEADER ============ -->
-<header class="site-header">
+<header class="site-header glass-panel" data-glass-source=".hero-slide.is-active, .hero, .legal-content, .site-footer">
 <div class="header-row">
 <div class="header-logo">
 <a href="index.html">
@@ -29,7 +29,7 @@
 <ul class="nav-menu">
 <li>
 <a href="#">Leistungen</a>
-<ul class="sub-menu">
+<ul class="sub-menu glass-panel" data-glass-source=".hero-slide.is-active, .hero, .legal-content, .site-header">
 <li><a href="immobilien-beratung.html">Immobilien-Beratung</a></li>
 <li><a href="erbanlage-beratung.html">Erbanlage-Beratung</a></li>
 <li><a href="altersvorsorge.html">Altersvorsorge-Beratung</a></li>
@@ -43,7 +43,7 @@
 </nav>
 <div class="header-cta">
 <div aria-label="Sprache w&auml;hlen" class="header-lang" role="group">
-<button aria-expanded="false" aria-haspopup="true" aria-label="Sprache wechseln" class="header-lang-btn" title="Sprache wechseln" type="button">
+<button aria-expanded="false" aria-haspopup="true" aria-label="Sprache wechseln" class="header-lang-btn glass-panel glass-button" data-glass-source=".glass-panel" title="Sprache wechseln" type="button">
 <span aria-hidden="true" class="header-lang-icon">
 <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <circle cx="12" cy="12" r="10"></circle>
@@ -53,17 +53,17 @@
 </span>
 <span class="header-lang-label">DE</span>
 </button>
-<div class="header-lang-dropdown" hidden="">
+<div class="header-lang-dropdown glass-panel" data-glass-source=".hero-slide.is-active, .hero, .legal-content, .site-header" hidden="">
 <a class="header-lang-option is-active" href="impressum.html" hreflang="de" lang="de">Deutsch</a>
 <a class="header-lang-option" href="en/impressum.html" hreflang="en" lang="en">English</a>
 </div>
 </div>
 </div>
-<button aria-label="Men&uuml; &ouml;ffnen" class="mobile-menu-toggle">
+<button aria-label="Men&uuml; &ouml;ffnen" class="mobile-menu-toggle glass-panel glass-button" data-glass-source=".glass-panel">
 <span></span><span></span><span></span>
 </button>
 </div>
-<div class="mobile-menu">
+<div class="mobile-menu glass-panel" data-glass-source=".hero-slide.is-active, .hero, .legal-content, .site-header">
 <a href="#">Leistungen</a>
 <div class="sub-menu">
 <a href="immobilien-beratung.html">Immobilien-Beratung</a>
@@ -80,7 +80,7 @@
 <section class="content-section content-section--white legal-content">
 <div class="container--narrow">
 <h1 class="legal-title anim">Impressum</h1>
-<div class="legal-body anim" style="animation-delay:100ms">
+<div class="legal-body anim glass-panel" data-glass-source=".legal-content" style="animation-delay:100ms">
 <h2>Angaben gem&auml;&szlig; &sect; 5 TMG</h2>
 <p>
                     Kevin Hudel<br/>
@@ -156,7 +156,7 @@
 </section>
 <!-- ============ FOOTER ============ -->
 <footer class="site-footer">
-<div class="footer-main">
+<div class="footer-main glass-panel" data-glass-source=".site-footer">
 <div class="footer-col">
 <img alt="Finora Logo" class="footer-logo" height="212" loading="lazy" src="assets/images/Logo-final-weiss-rz.png" width="922"/>
 <p class="footer-desc">Finora bietet unabh&auml;ngige Finanzberatung f&uuml;r Expats, Erben,
@@ -183,15 +183,15 @@
 </div>
 <div class="footer-col footer-contact">
 <h4>Kontakt</h4>
-<div class="contact-item">
+<div class="contact-item glass-panel" data-glass-source=".site-footer">
 <span class="contact-icon"></span>
 <p>Brauerstr. 17<br/>76137 Karlsruhe</p>
 </div>
-<div class="contact-item">
+<div class="contact-item glass-panel" data-glass-source=".site-footer">
 <span class="contact-icon"></span>
 <p>Tel.: <a href="tel:+4915128915214">01512 8915214</a></p>
 </div>
-<div class="contact-item">
+<div class="contact-item glass-panel" data-glass-source=".site-footer">
 <span class="contact-icon"></span>
 <p><a href="mailto:hallo@finora.de">hallo@finora.de</a></p>
 </div>

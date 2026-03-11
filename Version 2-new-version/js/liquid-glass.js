@@ -15,286 +15,11 @@ const MathUtils = {
     }
 };
 
-class LiquidGlassRenderer {
-    constructor() {
-        this.canvas = document.createElement("canvas");
-        this.gl = this.canvas.getContext("webgl", {
-            alpha: true,
-            antialias: true,
-            premultipliedAlpha: true
-        });
-
-        if (!this.gl) {
-            throw new Error("WebGL is unavailable.");
-        }
-
-        const vertexShaderSource = `
-            attribute vec2 a_position;
-            attribute vec2 a_texCoord;
-            varying vec2 v_texCoord;
-
-            void main() {
-                gl_Position = vec4(a_position, 0.0, 1.0);
-                v_texCoord = a_texCoord;
-            }
-        `;
-
-        const fragmentShaderSource = `
-            precision mediump float;
-
-            varying vec2 v_texCoord;
-            uniform sampler2D u_source;
-            uniform sampler2D u_displacement;
-            uniform sampler2D u_specular;
-            uniform vec2 u_resolution;
-            uniform float u_strength;
-            uniform float u_blur;
-            uniform float u_saturation;
-            uniform float u_brightness;
-            uniform float u_contrast;
-            uniform vec3 u_tintColorA;
-            uniform vec3 u_tintColorB;
-            uniform float u_tintAlphaA;
-            uniform float u_tintAlphaB;
-            uniform vec3 u_rimColor;
-            uniform float u_rimAlpha;
-            uniform vec3 u_shadowColor;
-            uniform float u_shadowAlpha;
-            uniform float u_fillAlpha;
-            uniform float u_specularBoost;
-
-            vec3 tone(vec3 color) {
-                float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
-                vec3 saturated = mix(vec3(luminance), color, u_saturation);
-                vec3 contrasted = (saturated - 0.5) * u_contrast + 0.5;
-                return contrasted * u_brightness;
-            }
-
-            void main() {
-                vec2 displacement = (texture2D(u_displacement, v_texCoord).rg - vec2(0.5)) * 2.0;
-                float edge = clamp(length(displacement), 0.0, 1.0);
-                vec2 offset = displacement * (u_strength / u_resolution);
-                vec2 blurStep = vec2(u_blur) / u_resolution;
-
-                vec4 center = texture2D(u_source, clamp(v_texCoord, 0.001, 0.999));
-                vec4 sample0 = texture2D(u_source, clamp(v_texCoord + offset, 0.001, 0.999));
-                vec4 sample1 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, 0.0), 0.001, 0.999));
-                vec4 sample2 = texture2D(u_source, clamp(v_texCoord + offset - vec2(blurStep.x, 0.0), 0.001, 0.999));
-                vec4 sample3 = texture2D(u_source, clamp(v_texCoord + offset + vec2(0.0, blurStep.y), 0.001, 0.999));
-                vec4 sample4 = texture2D(u_source, clamp(v_texCoord + offset - vec2(0.0, blurStep.y), 0.001, 0.999));
-                vec4 sample5 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, blurStep.y), 0.001, 0.999));
-                vec4 sample6 = texture2D(u_source, clamp(v_texCoord + offset + vec2(-blurStep.x, blurStep.y), 0.001, 0.999));
-                vec4 sample7 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, -blurStep.y), 0.001, 0.999));
-                vec4 sample8 = texture2D(u_source, clamp(v_texCoord + offset + vec2(-blurStep.x, -blurStep.y), 0.001, 0.999));
-
-                vec4 refracted = sample0 * 0.28
-                    + sample1 * 0.11 + sample2 * 0.11
-                    + sample3 * 0.11 + sample4 * 0.11
-                    + sample5 * 0.07 + sample6 * 0.07
-                    + sample7 * 0.07 + sample8 * 0.07;
-                vec4 base = mix(center, refracted, smoothstep(0.04, 0.32, edge));
-                vec3 shaded = tone(base.rgb);
-                float tintMix = pow(clamp(1.0 - v_texCoord.y, 0.0, 1.0), 1.15);
-                vec3 tintColor = mix(u_tintColorB, u_tintColorA, tintMix);
-                float tintAlpha = mix(u_tintAlphaB, u_tintAlphaA, tintMix);
-                vec3 tinted = mix(shaded, tintColor, tintAlpha);
-                float edgeMask = smoothstep(0.08, 0.88, edge);
-                float rimMask = pow(edgeMask, 1.35);
-                float specWindow = pow(clamp(1.0 - v_texCoord.y, 0.0, 1.0), 2.2) * (1.0 - edgeMask * 0.42);
-                vec4 spec = texture2D(u_specular, v_texCoord);
-                vec3 highlight = u_rimColor * ((rimMask * u_rimAlpha) + (specWindow * u_rimAlpha * 0.42));
-                vec3 sheen = spec.rgb * spec.a * u_specularBoost * u_rimColor;
-                float shadowMask = edgeMask * mix(0.72, 1.18, clamp(v_texCoord.y, 0.0, 1.0));
-                vec3 combined = tinted + highlight + sheen - (u_shadowColor * shadowMask * u_shadowAlpha);
-
-                gl_FragColor = vec4(clamp(combined, 0.0, 1.0), max(base.a, u_fillAlpha));
-            }
-        `;
-
-        this.program = this.createProgram(vertexShaderSource, fragmentShaderSource);
-        this.gl.useProgram(this.program);
-
-        const positions = new Float32Array([
-            -1, -1,
-             1, -1,
-            -1,  1,
-             1,  1
-        ]);
-
-        const texCoords = new Float32Array([
-            0, 1,
-            1, 1,
-            0, 0,
-            1, 0
-        ]);
-
-        this.positionBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
-
-        const positionLocation = this.gl.getAttribLocation(this.program, "a_position");
-        this.gl.enableVertexAttribArray(positionLocation);
-        this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
-
-        this.texCoordBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texCoordBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, texCoords, this.gl.STATIC_DRAW);
-
-        const texCoordLocation = this.gl.getAttribLocation(this.program, "a_texCoord");
-        this.gl.enableVertexAttribArray(texCoordLocation);
-        this.gl.vertexAttribPointer(texCoordLocation, 2, this.gl.FLOAT, false, 0, 0);
-
-        this.sourceTexture = this.createTexture();
-        this.displacementTexture = this.createTexture();
-        this.specularTexture = this.createTexture();
-
-        this.uniforms = {
-            source: this.gl.getUniformLocation(this.program, "u_source"),
-            displacement: this.gl.getUniformLocation(this.program, "u_displacement"),
-            specular: this.gl.getUniformLocation(this.program, "u_specular"),
-            resolution: this.gl.getUniformLocation(this.program, "u_resolution"),
-            strength: this.gl.getUniformLocation(this.program, "u_strength"),
-            blur: this.gl.getUniformLocation(this.program, "u_blur"),
-            saturation: this.gl.getUniformLocation(this.program, "u_saturation"),
-            brightness: this.gl.getUniformLocation(this.program, "u_brightness"),
-            contrast: this.gl.getUniformLocation(this.program, "u_contrast"),
-            tintColorA: this.gl.getUniformLocation(this.program, "u_tintColorA"),
-            tintColorB: this.gl.getUniformLocation(this.program, "u_tintColorB"),
-            tintAlphaA: this.gl.getUniformLocation(this.program, "u_tintAlphaA"),
-            tintAlphaB: this.gl.getUniformLocation(this.program, "u_tintAlphaB"),
-            rimColor: this.gl.getUniformLocation(this.program, "u_rimColor"),
-            rimAlpha: this.gl.getUniformLocation(this.program, "u_rimAlpha"),
-            shadowColor: this.gl.getUniformLocation(this.program, "u_shadowColor"),
-            shadowAlpha: this.gl.getUniformLocation(this.program, "u_shadowAlpha"),
-            fillAlpha: this.gl.getUniformLocation(this.program, "u_fillAlpha"),
-            specularBoost: this.gl.getUniformLocation(this.program, "u_specularBoost")
-        };
-    }
-
-    createProgram(vertexShaderSource, fragmentShaderSource) {
-        const vertexShader = this.compileShader(this.gl.VERTEX_SHADER, vertexShaderSource);
-        const fragmentShader = this.compileShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
-        const program = this.gl.createProgram();
-
-        this.gl.attachShader(program, vertexShader);
-        this.gl.attachShader(program, fragmentShader);
-        this.gl.linkProgram(program);
-
-        if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
-            throw new Error(this.gl.getProgramInfoLog(program) || "Failed to link WebGL program.");
-        }
-
-        return program;
-    }
-
-    compileShader(type, source) {
-        const shader = this.gl.createShader(type);
-        this.gl.shaderSource(shader, source);
-        this.gl.compileShader(shader);
-
-        if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-            throw new Error(this.gl.getShaderInfoLog(shader) || "Failed to compile WebGL shader.");
-        }
-
-        return shader;
-    }
-
-    createTexture() {
-        const texture = this.gl.createTexture();
-        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
-        return texture;
-    }
-
-    updateTexture(texture, source) {
-        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-        this.gl.pixelStorei(this.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, source);
-    }
-
-    applyStyleUniforms(styleUniforms) {
-        this.gl.uniform3f(this.uniforms.tintColorA, styleUniforms.tintColorA[0], styleUniforms.tintColorA[1], styleUniforms.tintColorA[2]);
-        this.gl.uniform3f(this.uniforms.tintColorB, styleUniforms.tintColorB[0], styleUniforms.tintColorB[1], styleUniforms.tintColorB[2]);
-        this.gl.uniform1f(this.uniforms.tintAlphaA, styleUniforms.tintAlphaA);
-        this.gl.uniform1f(this.uniforms.tintAlphaB, styleUniforms.tintAlphaB);
-        this.gl.uniform3f(this.uniforms.rimColor, styleUniforms.rimColor[0], styleUniforms.rimColor[1], styleUniforms.rimColor[2]);
-        this.gl.uniform1f(this.uniforms.rimAlpha, styleUniforms.rimAlpha);
-        this.gl.uniform3f(this.uniforms.shadowColor, styleUniforms.shadowColor[0], styleUniforms.shadowColor[1], styleUniforms.shadowColor[2]);
-        this.gl.uniform1f(this.uniforms.shadowAlpha, styleUniforms.shadowAlpha);
-        this.gl.uniform1f(this.uniforms.fillAlpha, styleUniforms.fillAlpha);
-        this.gl.uniform1f(this.uniforms.specularBoost, styleUniforms.specularBoost);
-    }
-
-    ensureSize(width, height) {
-        if (this.canvas.width !== width || this.canvas.height !== height) {
-            this.canvas.width = width;
-            this.canvas.height = height;
-        }
-
-        this.gl.viewport(0, 0, width, height);
-    }
-
-    render(instance, sourceCanvas) {
-        const width = instance.renderCanvas.width;
-        const height = instance.renderCanvas.height;
-
-        if (!width || !height || !instance.renderContext || !instance.displacementCanvas || !instance.specularCanvas) {
-            return;
-        }
-
-        this.ensureSize(width, height);
-        this.gl.useProgram(this.program);
-
-        this.updateTexture(this.sourceTexture, sourceCanvas);
-        this.updateTexture(this.displacementTexture, instance.displacementCanvas);
-        this.updateTexture(this.specularTexture, instance.specularCanvas);
-
-        this.gl.uniform2f(this.uniforms.resolution, width, height);
-        this.gl.uniform1f(this.uniforms.strength, instance._maxDisplacement || 1);
-        this.gl.uniform1f(this.uniforms.blur, instance.options.canvasBlur);
-        this.gl.uniform1f(this.uniforms.saturation, instance.options.saturate);
-        this.gl.uniform1f(this.uniforms.brightness, instance.options.brightness);
-        this.gl.uniform1f(this.uniforms.contrast, instance.options.contrast);
-        this.applyStyleUniforms(instance.styleUniforms);
-
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.sourceTexture);
-        this.gl.uniform1i(this.uniforms.source, 0);
-
-        this.gl.activeTexture(this.gl.TEXTURE1);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.displacementTexture);
-        this.gl.uniform1i(this.uniforms.displacement, 1);
-
-        this.gl.activeTexture(this.gl.TEXTURE2);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.specularTexture);
-        this.gl.uniform1i(this.uniforms.specular, 2);
-
-        this.gl.clearColor(0, 0, 0, 0);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
-
-        instance.renderContext.clearRect(0, 0, width, height);
-        instance.renderContext.drawImage(this.canvas, 0, 0, width, height);
-    }
-}
-
 class LiquidGlassFilter {
     static instances = new Set();
     static imageCache = new Map();
     static syncRaf = null;
     static globalListenersAttached = false;
-    static sharedRenderer = null;
-
-    static getSharedRenderer() {
-        if (!this.sharedRenderer) {
-            this.sharedRenderer = new LiquidGlassRenderer();
-        }
-
-        return this.sharedRenderer;
-    }
 
     static attachGlobalListeners() {
         if (this.globalListenersAttached) {
@@ -314,11 +39,7 @@ class LiquidGlassFilter {
 
         this.syncRaf = window.requestAnimationFrame(() => {
             this.syncRaf = null;
-            LiquidGlassFilter.instances.forEach((instance) => {
-                if (instance.isVisible !== false) {
-                    instance.handleViewportChange();
-                }
-            });
+            LiquidGlassFilter.instances.forEach((instance) => instance.handleViewportChange());
         });
     }
 
@@ -495,7 +216,6 @@ class LiquidGlassFilter {
         this.element = element;
         this.sourceSelector = options.sourceSelector || element.dataset.glassSource || "";
         this.mode = "webgl";
-        this.isVisible = true;
         this.options = {
             surfaceType: options.surfaceType || "convex_squircle",
             bezelWidth: options.bezelWidth || 30,
@@ -514,12 +234,20 @@ class LiquidGlassFilter {
 
         this.buildRaf = null;
         this.renderRaf = null;
+        this.temporarySyncRaf = null;
+        this.resizeObserver = null;
+        this.mutationObserver = null;
         this.sourceMutationObserver = null;
+        this.sourceElement = null;
 
         try {
+            this.refreshSourceElement();
+            if (!this.sourceElement) {
+                return;
+            }
+
             this.setupLayers();
             this.setupWebGL();
-            this.refreshSourceElement();
 
             this.element._liquidGlassInstance = this;
             LiquidGlassFilter.instances.add(this);
@@ -528,43 +256,64 @@ class LiquidGlassFilter {
             this.buildWebGLAssets();
             this.renderWebGL();
             this.setupObservers();
+            this.setupTransitionSync();
         } catch (error) {
             console.error("Liquid glass initialization failed.", error);
             this.disableEnhancement();
         }
     }
 
-    setVisibility(isVisible) {
-        this.isVisible = isVisible;
-        if (isVisible) {
-            this.scheduleBuild();
-        }
+    getSourceCandidates() {
+        return (this.sourceSelector || "")
+            .split(",")
+            .map((candidate) => candidate.trim())
+            .filter(Boolean);
     }
 
-    resolveFromSelector(selector) {
-        const normalized = (selector || "").trim();
-        if (!normalized) {
+    resolveSourceCandidate(selector) {
+        if (!selector) {
             return null;
         }
 
-        const matches = [];
-        const parent = this.element.parentElement;
-        if (parent) {
-            const closest = parent.closest(normalized);
-            if (closest && closest !== this.element) {
-                matches.push(closest);
+        if (selector === ".glass-panel") {
+            const parentGlass = this.element.parentElement ? this.element.parentElement.closest(".glass-panel") : null;
+            return parentGlass && parentGlass !== this.element ? parentGlass : null;
+        }
+
+        const ancestorMatch = this.element.closest(selector);
+        if (ancestorMatch && ancestorMatch !== this.element) {
+            return ancestorMatch;
+        }
+
+        const parentGlass = this.element.parentElement ? this.element.parentElement.closest(".glass-panel") : null;
+        if (parentGlass) {
+            if (parentGlass.matches(selector) && parentGlass !== this.element) {
+                return parentGlass;
+            }
+
+            const scopedMatch = parentGlass.querySelector(selector);
+            if (scopedMatch && scopedMatch !== this.element) {
+                return scopedMatch;
             }
         }
 
         const nearestSection = this.element.closest("section, header, footer, main, article, body");
-        if (nearestSection && typeof nearestSection.querySelectorAll === "function") {
-            matches.push(...nearestSection.querySelectorAll(normalized));
+        if (nearestSection) {
+            const sectionMatch = nearestSection.querySelector(selector);
+            if (sectionMatch && sectionMatch !== this.element) {
+                return sectionMatch;
+            }
         }
 
-        matches.push(...document.querySelectorAll(normalized));
+        const globalMatch = document.querySelector(selector);
+        return globalMatch && globalMatch !== this.element ? globalMatch : null;
+    }
 
-        for (const match of matches) {
-            if (match && match !== this.element) {
+    resolveSourceElement() {
+        const candidates = this.getSourceCandidates();
+        for (const candidate of candidates) {
+            const match = this.resolveSourceCandidate(candidate);
+            if (match) {
                 return match;
             }
         }
@@ -573,39 +322,32 @@ class LiquidGlassFilter {
     }
 
     refreshSourceElement() {
-        const selectors = [];
-        if (this.sourceSelector) {
-            selectors.push(this.sourceSelector);
-        }
-        selectors.push(".liquid-scene", ".hero-slide.is-active, .hero, #hero-slider, .legal-content, .site-footer");
-
-        let nextSource = null;
-        for (const selector of selectors) {
-            nextSource = this.resolveFromSelector(selector);
-            if (nextSource) {
-                break;
-            }
-        }
-
+        const nextSource = this.resolveSourceElement();
         if (nextSource === this.sourceElement) {
             return;
         }
 
-        this.sourceElement = nextSource;
+        if (this.resizeObserver && this.sourceElement) {
+            this.resizeObserver.unobserve(this.sourceElement);
+        }
 
         if (this.sourceMutationObserver) {
             this.sourceMutationObserver.disconnect();
             this.sourceMutationObserver = null;
         }
 
+        this.sourceElement = nextSource;
+
         if (!this.sourceElement) {
             return;
         }
 
+        if (this.resizeObserver) {
+            this.resizeObserver.observe(this.sourceElement);
+        }
+
         this.sourceMutationObserver = new MutationObserver(() => {
-            if (this.isVisible !== false) {
-                this.scheduleRender();
-            }
+            this.scheduleRender();
         });
 
         this.sourceMutationObserver.observe(this.sourceElement, {
@@ -614,64 +356,295 @@ class LiquidGlassFilter {
         });
 
         if (this.sourceElement instanceof HTMLImageElement && !this.sourceElement.complete) {
-            this.sourceElement.addEventListener("load", () => this.scheduleBuild(), { once: true });
+            this.sourceElement.addEventListener("load", () => this.scheduleRender(), { once: true });
         }
     }
 
     setupLayers() {
-        this.element.classList.add("liquid-enhanced");
+        this.element.classList.add("glass-enhanced");
 
-        this.backdropLayer = document.createElement("span");
-        this.backdropLayer.className = "liquid-backdrop-layer";
+        this.backdropLayer = document.createElement("div");
+        this.backdropLayer.className = "glass-backdrop-layer";
         this.backdropLayer.setAttribute("aria-hidden", "true");
-        this.element.insertBefore(this.backdropLayer, this.element.firstChild);
+
+        this.tintLayer = document.createElement("div");
+        this.tintLayer.className = "glass-tint-layer";
+        this.tintLayer.setAttribute("aria-hidden", "true");
+
+        this.specularLayer = document.createElement("div");
+        this.specularLayer.className = "glass-specular-layer";
+        this.specularLayer.setAttribute("aria-hidden", "true");
+
+        this.contentLayer = document.createElement("div");
+        this.contentLayer.className = "glass-content-layer";
+
+        const fragment = document.createDocumentFragment();
+        while (this.element.firstChild) {
+            fragment.appendChild(this.element.firstChild);
+        }
+
+        this.contentLayer.appendChild(fragment);
+        this.element.append(this.backdropLayer, this.tintLayer, this.specularLayer, this.contentLayer);
     }
 
     setupWebGL() {
         this.renderCanvas = document.createElement("canvas");
-        this.renderCanvas.className = "liquid-render-surface";
+        this.renderCanvas.className = "glass-render-surface";
         this.renderCanvas.setAttribute("aria-hidden", "true");
         this.backdropLayer.appendChild(this.renderCanvas);
-        this.renderContext = this.renderCanvas.getContext("2d");
-        if (!this.renderContext) {
-            throw new Error("2D canvas context is unavailable.");
-        }
-        this.renderContext.imageSmoothingEnabled = true;
-        this.renderContext.imageSmoothingQuality = "high";
 
         this.captureCanvas = document.createElement("canvas");
         this.captureContext = this.captureCanvas.getContext("2d");
-        if (!this.captureContext) {
-            throw new Error("2D canvas context is unavailable.");
-        }
         this.captureContext.imageSmoothingEnabled = true;
         this.captureContext.imageSmoothingQuality = "high";
-        this.renderer = LiquidGlassFilter.getSharedRenderer();
+
+        this.gl = this.renderCanvas.getContext("webgl", {
+            alpha: true,
+            antialias: true,
+            premultipliedAlpha: true
+        });
+
+        if (!this.gl) {
+            throw new Error("WebGL is unavailable.");
+        }
+
+        const vertexShaderSource = `
+            attribute vec2 a_position;
+            attribute vec2 a_texCoord;
+            varying vec2 v_texCoord;
+
+            void main() {
+                gl_Position = vec4(a_position, 0.0, 1.0);
+                v_texCoord = a_texCoord;
+            }
+        `;
+
+        const fragmentShaderSource = `
+            precision mediump float;
+
+            varying vec2 v_texCoord;
+            uniform sampler2D u_source;
+            uniform sampler2D u_displacement;
+            uniform sampler2D u_specular;
+            uniform vec2 u_resolution;
+            uniform float u_strength;
+            uniform float u_blur;
+            uniform float u_saturation;
+            uniform float u_brightness;
+            uniform float u_contrast;
+
+            vec3 tone(vec3 color) {
+                float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+                vec3 saturated = mix(vec3(luminance), color, u_saturation);
+                vec3 contrasted = (saturated - 0.5) * u_contrast + 0.5;
+                return contrasted * u_brightness;
+            }
+
+            void main() {
+                vec2 displacement = (texture2D(u_displacement, v_texCoord).rg - vec2(0.5)) * 2.0;
+                float edge = clamp(length(displacement), 0.0, 1.0);
+                vec2 offset = displacement * (u_strength / u_resolution);
+                vec2 blurStep = vec2(u_blur) / u_resolution;
+
+                vec4 center = texture2D(u_source, clamp(v_texCoord, 0.001, 0.999));
+                vec4 sample0 = texture2D(u_source, clamp(v_texCoord + offset, 0.001, 0.999));
+                vec4 sample1 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, 0.0), 0.001, 0.999));
+                vec4 sample2 = texture2D(u_source, clamp(v_texCoord + offset - vec2(blurStep.x, 0.0), 0.001, 0.999));
+                vec4 sample3 = texture2D(u_source, clamp(v_texCoord + offset + vec2(0.0, blurStep.y), 0.001, 0.999));
+                vec4 sample4 = texture2D(u_source, clamp(v_texCoord + offset - vec2(0.0, blurStep.y), 0.001, 0.999));
+                vec4 sample5 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, blurStep.y), 0.001, 0.999));
+                vec4 sample6 = texture2D(u_source, clamp(v_texCoord + offset + vec2(-blurStep.x, blurStep.y), 0.001, 0.999));
+                vec4 sample7 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, -blurStep.y), 0.001, 0.999));
+                vec4 sample8 = texture2D(u_source, clamp(v_texCoord + offset + vec2(-blurStep.x, -blurStep.y), 0.001, 0.999));
+
+                vec4 refracted = sample0 * 0.28
+                    + sample1 * 0.11 + sample2 * 0.11
+                    + sample3 * 0.11 + sample4 * 0.11
+                    + sample5 * 0.07 + sample6 * 0.07
+                    + sample7 * 0.07 + sample8 * 0.07;
+                vec4 base = mix(center, refracted, smoothstep(0.04, 0.32, edge));
+                vec3 shaded = tone(base.rgb);
+                vec4 spec = texture2D(u_specular, v_texCoord);
+                vec3 combined = min(shaded + spec.rgb * spec.a * 0.85, 1.0);
+
+                gl_FragColor = vec4(combined, base.a);
+            }
+        `;
+
+        this.program = this.createProgram(vertexShaderSource, fragmentShaderSource);
+        this.gl.useProgram(this.program);
+
+        const positions = new Float32Array([
+            -1, -1,
+             1, -1,
+            -1,  1,
+             1,  1
+        ]);
+
+        const texCoords = new Float32Array([
+            0, 1,
+            1, 1,
+            0, 0,
+            1, 0
+        ]);
+
+        this.positionBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
+
+        const positionLocation = this.gl.getAttribLocation(this.program, "a_position");
+        this.gl.enableVertexAttribArray(positionLocation);
+        this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+
+        this.texCoordBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texCoordBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, texCoords, this.gl.STATIC_DRAW);
+
+        const texCoordLocation = this.gl.getAttribLocation(this.program, "a_texCoord");
+        this.gl.enableVertexAttribArray(texCoordLocation);
+        this.gl.vertexAttribPointer(texCoordLocation, 2, this.gl.FLOAT, false, 0, 0);
+
+        this.sourceTexture = this.createTexture();
+        this.displacementTexture = this.createTexture();
+        this.specularTexture = this.createTexture();
+
+        this.uniforms = {
+            source: this.gl.getUniformLocation(this.program, "u_source"),
+            displacement: this.gl.getUniformLocation(this.program, "u_displacement"),
+            specular: this.gl.getUniformLocation(this.program, "u_specular"),
+            resolution: this.gl.getUniformLocation(this.program, "u_resolution"),
+            strength: this.gl.getUniformLocation(this.program, "u_strength"),
+            blur: this.gl.getUniformLocation(this.program, "u_blur"),
+            saturation: this.gl.getUniformLocation(this.program, "u_saturation"),
+            brightness: this.gl.getUniformLocation(this.program, "u_brightness"),
+            contrast: this.gl.getUniformLocation(this.program, "u_contrast")
+        };
+    }
+
+    createProgram(vertexShaderSource, fragmentShaderSource) {
+        const vertexShader = this.compileShader(this.gl.VERTEX_SHADER, vertexShaderSource);
+        const fragmentShader = this.compileShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
+        const program = this.gl.createProgram();
+
+        this.gl.attachShader(program, vertexShader);
+        this.gl.attachShader(program, fragmentShader);
+        this.gl.linkProgram(program);
+
+        if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+            throw new Error(this.gl.getProgramInfoLog(program) || "Failed to link WebGL program.");
+        }
+
+        return program;
+    }
+
+    compileShader(type, source) {
+        const shader = this.gl.createShader(type);
+        this.gl.shaderSource(shader, source);
+        this.gl.compileShader(shader);
+
+        if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+            throw new Error(this.gl.getShaderInfoLog(shader) || "Failed to compile WebGL shader.");
+        }
+
+        return shader;
+    }
+
+    createTexture() {
+        const texture = this.gl.createTexture();
+        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+        return texture;
+    }
+
+    updateTexture(texture, source) {
+        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+        this.gl.pixelStorei(this.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, source);
     }
 
     setupObservers() {
-        this.resizeObserver = new ResizeObserver(() => {
-            if (this.isVisible !== false) {
-                this.scheduleBuild();
-            }
+        this.resizeObserver = new ResizeObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.target === this.element) {
+                    this.refreshSourceElement();
+                    this.scheduleBuild();
+                } else {
+                    this.scheduleRender();
+                }
+            });
         });
 
         this.resizeObserver.observe(this.element);
+        if (this.sourceElement) {
+            this.resizeObserver.observe(this.sourceElement);
+        }
 
         this.mutationObserver = new MutationObserver(() => {
-            if (this.isVisible !== false) {
-                this.scheduleRender();
-            }
+            this.refreshSourceElement();
+            this.scheduleRender();
         });
 
         this.mutationObserver.observe(this.element, {
             attributes: true,
             attributeFilter: ["class", "style", "hidden"]
         });
+
+        if (this.sourceElement instanceof HTMLImageElement) {
+            if (this.sourceElement.complete) {
+                this.scheduleRender();
+            } else {
+                this.sourceElement.addEventListener("load", () => this.scheduleRender(), { once: true });
+            }
+        }
+    }
+
+    setupTransitionSync() {
+        const startSync = () => this.startTemporarySync(this.options.transitionSyncDuration);
+
+        this.element.addEventListener("transitionrun", startSync);
+        this.element.addEventListener("transitionstart", startSync);
+        this.element.addEventListener("transitionend", () => this.scheduleRender());
+
+        if (this.sourceElement instanceof HTMLImageElement) {
+            this.sourceElement.addEventListener("transitionrun", startSync);
+            this.sourceElement.addEventListener("transitionstart", startSync);
+            this.sourceElement.addEventListener("transitionend", () => this.scheduleRender());
+        }
+
+        const productCard = this.element.closest(".product-card");
+        if (productCard) {
+            productCard.addEventListener("mouseenter", startSync);
+            productCard.addEventListener("mouseleave", startSync);
+        }
     }
 
     handleViewportChange() {
+        this.refreshSourceElement();
         this.scheduleRender();
+    }
+
+    startTemporarySync(duration = 700) {
+        if (this.temporarySyncRaf) {
+            window.cancelAnimationFrame(this.temporarySyncRaf);
+            this.temporarySyncRaf = null;
+        }
+
+        const startedAt = performance.now();
+
+        const tick = (timestamp) => {
+            this.renderWebGL();
+
+            if (timestamp - startedAt < duration) {
+                this.temporarySyncRaf = window.requestAnimationFrame(tick);
+            } else {
+                this.temporarySyncRaf = null;
+            }
+        };
+
+        this.temporarySyncRaf = window.requestAnimationFrame(tick);
     }
 
     scheduleBuild() {
@@ -705,24 +678,6 @@ class LiquidGlassFilter {
         };
     }
 
-    syncStyleUniforms() {
-        const styles = window.getComputedStyle(this.element);
-        this.styleUniforms = {
-            tintColorA: parseRGBTriplet(styles.getPropertyValue("--liquid-tint-rgb-a"), [255, 255, 255]).map((value) => value / 255),
-            tintColorB: parseRGBTriplet(styles.getPropertyValue("--liquid-tint-rgb-b"), [255, 255, 255]).map((value) => value / 255),
-            tintAlphaA: safeNumber(styles.getPropertyValue("--liquid-tint-alpha-a"), 0.24),
-            tintAlphaB: safeNumber(styles.getPropertyValue("--liquid-tint-alpha-b"), 0.08),
-            rimColor: parseRGBTriplet(styles.getPropertyValue("--liquid-rim-rgb"), [255, 255, 255]).map((value) => value / 255),
-            rimAlpha: safeNumber(styles.getPropertyValue("--liquid-rim-alpha"), 0.46),
-            shadowColor: parseRGBTriplet(styles.getPropertyValue("--liquid-shadow-rgb"), [7, 21, 32]).map((value) => value / 255),
-            shadowAlpha: safeNumber(styles.getPropertyValue("--liquid-shadow-alpha"), 0.18),
-            fillAlpha: safeNumber(styles.getPropertyValue("--liquid-fill-alpha"), 0.96),
-            specularBoost: safeNumber(styles.getPropertyValue("--liquid-specular-boost"), 0.85)
-        };
-
-        return this.styleUniforms;
-    }
-
     buildWebGLAssets() {
         this.refreshSourceElement();
 
@@ -741,9 +696,20 @@ class LiquidGlassFilter {
         }
 
         const precomputed1D = this.calculateDisplacementMap1D();
-        this.displacementCanvas = this.calculateDisplacementCanvas(width, height, precomputed1D);
-        this.specularCanvas = this.calculateSpecularCanvas(width, height);
-        this.syncStyleUniforms();
+        const displacementCanvas = this.calculateDisplacementCanvas(width, height, precomputed1D);
+        const specularCanvas = this.calculateSpecularCanvas(width, height);
+
+        this.updateTexture(this.displacementTexture, displacementCanvas);
+        this.updateTexture(this.specularTexture, specularCanvas);
+
+        this.gl.viewport(0, 0, width, height);
+        this.gl.useProgram(this.program);
+        this.gl.uniform2f(this.uniforms.resolution, width, height);
+        this.gl.uniform1f(this.uniforms.strength, this._maxDisplacement);
+        this.gl.uniform1f(this.uniforms.blur, this.options.canvasBlur);
+        this.gl.uniform1f(this.uniforms.saturation, this.options.saturate);
+        this.gl.uniform1f(this.uniforms.brightness, this.options.brightness);
+        this.gl.uniform1f(this.uniforms.contrast, this.options.contrast);
     }
 
     getSourceDescriptor() {
@@ -753,9 +719,9 @@ class LiquidGlassFilter {
             return null;
         }
 
-        if (this.sourceElement.classList.contains("liquid-panel")) {
+        if (this.sourceElement.classList.contains("glass-panel")) {
             return {
-                type: "liquid",
+                type: "glass",
                 element: this.sourceElement
             };
         }
@@ -770,7 +736,6 @@ class LiquidGlassFilter {
         const styles = window.getComputedStyle(this.sourceElement);
         const hasBackgroundImage = styles.backgroundImage && styles.backgroundImage !== "none";
         const hasBackgroundColor = !isTransparentColor(styles.backgroundColor);
-
         if (hasBackgroundImage || hasBackgroundColor) {
             return {
                 type: "background",
@@ -803,8 +768,8 @@ class LiquidGlassFilter {
             return this.drawImageSource(descriptor.element) ? this.captureCanvas : null;
         }
 
-        if (descriptor.type === "liquid") {
-            return this.drawLiquidSource(descriptor.element) ? this.captureCanvas : null;
+        if (descriptor.type === "glass") {
+            return this.drawGlassSource(descriptor.element) ? this.captureCanvas : null;
         }
 
         return null;
@@ -815,7 +780,7 @@ class LiquidGlassFilter {
         const targetRect = this.element.getBoundingClientRect();
         const backgroundColor = descriptor.styles.backgroundColor;
 
-        if (backgroundColor && backgroundColor !== "rgba(0, 0, 0, 0)" && backgroundColor !== "transparent") {
+        if (!isTransparentColor(backgroundColor)) {
             this.captureContext.fillStyle = backgroundColor;
             this.captureContext.fillRect(
                 sourceRect.left - targetRect.left,
@@ -835,13 +800,7 @@ class LiquidGlassFilter {
             return false;
         }
 
-        const drawRect = LiquidGlassFilter.computeBackgroundDrawRect(
-            descriptor.styles,
-            sourceRect.width,
-            sourceRect.height,
-            image.naturalWidth,
-            image.naturalHeight
-        );
+        const drawRect = LiquidGlassFilter.computeBackgroundDrawRect(descriptor.styles, sourceRect.width, sourceRect.height, image.naturalWidth, image.naturalHeight);
 
         this.captureContext.drawImage(
             image,
@@ -889,13 +848,13 @@ class LiquidGlassFilter {
         return true;
     }
 
-    drawLiquidSource(sourcePanel) {
+    drawGlassSource(sourcePanel) {
         const sourceInstance = sourcePanel._liquidGlassInstance;
         if (!sourceInstance || sourceInstance === this) {
             return false;
         }
 
-        const sourceCanvas = sourceInstance.renderCanvas;
+        const sourceCanvas = sourceInstance.renderCanvas || sourceInstance.captureSourceToCanvas();
         if (!sourceCanvas) {
             return false;
         }
@@ -915,7 +874,7 @@ class LiquidGlassFilter {
     }
 
     renderWebGL() {
-        if (this.mode !== "webgl" || !this.renderer || this.isVisible === false) {
+        if (this.mode !== "webgl" || !this.gl) {
             return;
         }
 
@@ -924,8 +883,25 @@ class LiquidGlassFilter {
             return;
         }
 
-        this.syncStyleUniforms();
-        this.renderer.render(this, sourceCanvas);
+        this.updateTexture(this.sourceTexture, sourceCanvas);
+
+        this.gl.useProgram(this.program);
+
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.sourceTexture);
+        this.gl.uniform1i(this.uniforms.source, 0);
+
+        this.gl.activeTexture(this.gl.TEXTURE1);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.displacementTexture);
+        this.gl.uniform1i(this.uniforms.displacement, 1);
+
+        this.gl.activeTexture(this.gl.TEXTURE2);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.specularTexture);
+        this.gl.uniform1i(this.uniforms.specular, 2);
+
+        this.gl.clearColor(0, 0, 0, 0);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
     }
 
     calculateDisplacementMap1D(samples = 128) {
@@ -1116,89 +1092,27 @@ class LiquidGlassFilter {
             window.cancelAnimationFrame(this.renderRaf);
         }
 
-        [this.backdropLayer].forEach((layer) => {
-            if (layer && layer.parentNode === this.element) {
-                layer.remove();
+        if (this.temporarySyncRaf) {
+            window.cancelAnimationFrame(this.temporarySyncRaf);
+        }
+
+        if (this.contentLayer && this.contentLayer.isConnected) {
+            const fragment = document.createDocumentFragment();
+            while (this.contentLayer.firstChild) {
+                fragment.appendChild(this.contentLayer.firstChild);
             }
-        });
+
+            this.element.replaceChildren(fragment);
+        }
 
         if (this.element) {
-            this.element.classList.remove("liquid-enhanced");
+            this.element.classList.remove("glass-enhanced");
             delete this.element._liquidGlassInstance;
         }
     }
 }
 
-const LIQUID_SCENE_RULES = [
-    {
-        selector: ".hero, #hero-slider, .slider-section, .how-it-works, .center-cta, .final-cta-section, .immobilien-calc-v2, .section-finanzwelt, .site-footer",
-        tone: "dark"
-    },
-    {
-        selector: ".pillars, .why-finora, .testimonials, .faq, .legal-content, .content-section--white, .content-section--light, .content-section--gray",
-        tone: "light"
-    }
-];
-
-const LIQUID_PANEL_RULES = [
-    {
-        selector: ".site-header",
-        profile: "chrome",
-        source: ".hero-slide.is-active, .hero, #hero-slider, .legal-content, .liquid-scene"
-    },
-    {
-        selector: ".header-lang-btn, .mobile-menu-toggle",
-        profile: "button",
-        source: ".liquid-panel"
-    },
-    {
-        selector: ".btn, .hero-slider-arrow, .fs-nav-btn",
-        profile: "button",
-        source: ".liquid-scene"
-    },
-    {
-        selector: ".hero-badge, .testimonials-nav-dot, .fs-item, .tab-nav button, .btn.btn-audience",
-        profile: "chip",
-        source: ".liquid-scene"
-    },
-    {
-        selector: ".header-lang-dropdown, .nav-menu .sub-menu, .mobile-menu",
-        profile: "menu",
-        source: ".hero-slide.is-active, .hero, #hero-slider, .liquid-scene"
-    },
-    {
-        selector: ".hero-services .service-item, .pillar-card, .audience-card:not([aria-hidden=\"true\"]), .fs-card, .testimonial-card, .accordion-item, .timeline-item__card, .contact-form-card, .kontakt-info-card, .tab-panel",
-        profile: "card",
-        source: ".liquid-scene"
-    },
-    {
-        selector: ".calc-v2__card, .calc-v2__kpi-strip",
-        profile: "metric",
-        source: ".liquid-scene"
-    },
-    {
-        selector: ".approach-tile__front, .approach-tile__back, .flip-card-front, .flip-card-back, .flip-box-front, .flip-box-back",
-        profile: "card",
-        source: ".liquid-scene"
-    },
-    {
-        selector: ".footer-main",
-        profile: "chrome",
-        source: ".site-footer"
-    },
-    {
-        selector: ".footer-contact .contact-item",
-        profile: "chip",
-        source: ".site-footer"
-    },
-    {
-        selector: ".legal-body",
-        profile: "legal",
-        source: ".legal-content"
-    }
-];
-
-const LIQUID_PROFILE_PRESETS = {
+const GLASS_PRESETS = {
     chrome: {
         surfaceType: "convex_squircle",
         bezelWidth: 18,
@@ -1278,14 +1192,14 @@ const LIQUID_PROFILE_PRESETS = {
     }
 };
 
-function parseRGBTriplet(value, fallback) {
-    const normalized = (value || "").trim().replace(/,/g, " ");
-    const parts = normalized.split(/\s+/).filter(Boolean).map(Number);
-    if (parts.length >= 3 && parts.every((part) => Number.isFinite(part))) {
-        return parts.slice(0, 3);
-    }
-    return fallback;
-}
+const GLASS_PRESET_RULES = [
+    { selector: ".site-header, .footer-main", preset: "chrome" },
+    { selector: ".header-lang-dropdown, .nav-menu .sub-menu, .mobile-menu", preset: "menu" },
+    { selector: ".header-lang-btn, .mobile-menu-toggle, .btn, .hero-slider-arrow, .fs-nav-btn, .lw-more-btn, .timeline-card__toggle, .fs-dot", preset: "button" },
+    { selector: ".hero-badge, .testimonials-nav-dot, .fs-item, .tab-nav button, .btn.btn-audience", preset: "chip" },
+    { selector: ".calc-v2__card, .calc-v2__kpi-strip", preset: "metric" },
+    { selector: ".legal-body", preset: "legal" }
+];
 
 function queryWithin(root, selector) {
     if (!root || !selector) {
@@ -1336,181 +1250,117 @@ function isTransparentColor(value) {
     return false;
 }
 
-const FinoraLiquidGlass = {
-    started: false,
-    panelObserver: null,
-    mutationObserver: null,
+function supportsWebGL() {
+    try {
+        const canvas = document.createElement("canvas");
+        return !!(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
+    } catch (error) {
+        return false;
+    }
+}
 
-    supports() {
-        try {
-            const canvas = document.createElement("canvas");
-            return !!(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
-        } catch (error) {
-            return false;
+function getPresetName(element) {
+    for (const rule of GLASS_PRESET_RULES) {
+        if (element.matches(rule.selector)) {
+            return rule.preset;
         }
-    },
+    }
 
-    computeRadius(element, profile) {
-        const computed = window.getComputedStyle(element);
-        const radius = safeNumber(computed.borderTopLeftRadius, 24);
+    return element.classList.contains("glass-button") ? "button" : "card";
+}
 
-        if (profile === "button" && radius < 10) {
-            return 12;
-        }
+function computeRadius(element, presetName) {
+    const computed = window.getComputedStyle(element);
+    const radius = safeNumber(computed.borderTopLeftRadius, 24);
 
-        if (profile === "chip" && radius < 10) {
-            return 14;
-        }
+    if (presetName === "button" && radius < 10) {
+        return 12;
+    }
 
-        return Math.max(10, Math.min(42, radius || 24));
-    },
+    if (presetName === "chip" && radius < 10) {
+        return 14;
+    }
 
-    annotateScenes(root) {
-        LIQUID_SCENE_RULES.forEach((rule) => {
-            queryWithin(root, rule.selector).forEach((element) => {
-                if (!(element instanceof HTMLElement)) {
-                    return;
-                }
+    return Math.max(10, Math.min(42, radius || 24));
+}
 
-                if (!element.dataset.liquidTone) {
-                    element.dataset.liquidTone = rule.tone;
-                }
+function getDefaultSource(element) {
+    if (element.matches(".site-header")) {
+        return ".hero-slide.is-active, .hero, .legal-content, .site-footer";
+    }
 
-                if (element.dataset.liquidTone !== rule.tone && element.classList.contains("liquid-scene")) {
-                    return;
-                }
+    if (element.matches(".header-lang-btn, .mobile-menu-toggle")) {
+        return ".glass-panel";
+    }
 
-                element.classList.add("liquid-scene", `liquid-scene--${rule.tone}`);
+    if (element.matches(".header-lang-dropdown, .nav-menu .sub-menu, .mobile-menu")) {
+        return ".hero-slide.is-active, .hero, .legal-content, .site-header";
+    }
 
-                const computed = window.getComputedStyle(element);
-                if (!(computed.backgroundImage || "").includes("url(")) {
-                    element.classList.add("liquid-scene--textured");
-                }
-            });
-        });
-    },
+    if (element.matches(".footer-main, .footer-contact .contact-item")) {
+        return ".site-footer";
+    }
 
-    annotatePanels(root) {
-        LIQUID_PANEL_RULES.forEach((rule) => {
-            queryWithin(root, rule.selector).forEach((element) => {
-                if (!(element instanceof HTMLElement) || element.dataset.liquidSkip === "true") {
-                    return;
-                }
+    if (element.matches(".legal-body")) {
+        return ".legal-content";
+    }
 
-                element.classList.add("liquid-panel");
-                if (rule.profile === "button" || rule.profile === "chip") {
-                    element.classList.add("liquid-button");
-                }
+    return ".glass-panel, .hero-slide.is-active, .hero, .slider-section, .content-section, .center-cta, .final-cta-section, .how-it-works, .testimonials, .faq, .site-footer, .legal-content";
+}
 
-                if (!element.dataset.glassProfile) {
-                    element.dataset.glassProfile = rule.profile;
-                }
+function getGlassOptions(element) {
+    const presetName = getPresetName(element);
+    const preset = GLASS_PRESETS[presetName] || GLASS_PRESETS.card;
 
-                if (!element.dataset.glassSource) {
-                    element.dataset.glassSource = rule.source || ".liquid-scene";
-                }
-            });
-        });
-    },
+    return {
+        ...preset,
+        sourceSelector: element.dataset.glassSource || getDefaultSource(element),
+        refractiveIndex: 1.5,
+        edgeRadius: computeRadius(element, presetName)
+    };
+}
 
-    initPanel(element) {
-        if (!(element instanceof HTMLElement) || element._liquidGlassInstance || element.dataset.liquidFailed === "true") {
+function initializeGlassPanels(root = document) {
+    if (!supportsWebGL()) {
+        return;
+    }
+
+    document.documentElement.classList.add("webgl-liquid-glass");
+
+    LiquidGlassFilter.instances.forEach((instance) => {
+        instance.refreshSourceElement();
+        instance.scheduleRender();
+    });
+
+    queryWithin(root, ".glass-panel").forEach((panel) => {
+        if (!(panel instanceof HTMLElement)) {
             return;
         }
 
-        const profile = element.dataset.glassProfile || "card";
-        const preset = LIQUID_PROFILE_PRESETS[profile] || LIQUID_PROFILE_PRESETS.card;
+        if (panel._liquidGlassInstance) {
+            panel._liquidGlassInstance.refreshSourceElement();
+            panel._liquidGlassInstance.scheduleRender();
+            return;
+        }
+
+        if (panel.dataset.glassFailed === "true") {
+            return;
+        }
 
         try {
-            new LiquidGlassFilter(element, {
-                ...preset,
-                sourceSelector: element.dataset.glassSource || ".liquid-scene",
-                refractiveIndex: 1.5,
-                edgeRadius: this.computeRadius(element, profile)
-            });
+            new LiquidGlassFilter(panel, getGlassOptions(panel));
         } catch (error) {
-            element.dataset.liquidFailed = "true";
+            panel.dataset.glassFailed = "true";
             console.error("Liquid glass initialization failed.", error);
         }
-    },
+    });
 
-    observePanels(root) {
-        queryWithin(root, ".liquid-panel").forEach((panel) => {
-            if (panel instanceof HTMLElement) {
-                this.panelObserver.observe(panel);
-            }
-        });
-    },
-
-    refresh(root = document) {
-        if (!this.started || !this.panelObserver) {
-            return;
-        }
-
-        this.annotateScenes(root);
-        this.annotatePanels(root);
-        this.observePanels(root);
-        LiquidGlassFilter.scheduleAllSync();
-    },
-
-    start() {
-        if (this.started) {
-            this.refresh(document);
-            return;
-        }
-
-        if (!this.supports()) {
-            return;
-        }
-
-        this.started = true;
-        document.documentElement.classList.add("webgl-liquid-glass");
-
-        this.panelObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                const element = entry.target;
-                if (!(element instanceof HTMLElement)) {
-                    return;
-                }
-
-                if (entry.isIntersecting) {
-                    this.initPanel(element);
-                }
-
-                if (element._liquidGlassInstance) {
-                    element._liquidGlassInstance.setVisibility(entry.isIntersecting);
-                }
-            });
-        }, {
-            rootMargin: "180px 0px 180px 0px",
-            threshold: 0
-        });
-
-        this.annotateScenes(document);
-        this.annotatePanels(document);
-        this.observePanels(document);
-        LiquidGlassFilter.scheduleAllSync();
-
-        this.mutationObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                mutation.addedNodes.forEach((node) => {
-                    if (node instanceof HTMLElement) {
-                        this.refresh(node);
-                    }
-                });
-            });
-        });
-
-        this.mutationObserver.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    }
-};
+    LiquidGlassFilter.scheduleAllSync();
+}
 
 window.LiquidGlassFilter = LiquidGlassFilter;
-window.FinoraLiquidGlass = FinoraLiquidGlass;
+window.initializeGlassPanels = initializeGlassPanels;
 
 document.addEventListener("DOMContentLoaded", () => {
-    FinoraLiquidGlass.start();
+    initializeGlassPanels(document);
 });
