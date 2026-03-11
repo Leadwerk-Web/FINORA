@@ -358,7 +358,7 @@
 }
 
 .hero.hero--altersvorsorge {
-  background-image: url(../assets/images/_X8A7478_prev.jpg);
+  background-image: url(../assets/images/X8A7478_prev.jpg);
 }
 
 .hero.hero--investment {
@@ -2531,8 +2531,14 @@
 
   .why-finora-left,
   .why-finora-right {
+    flex: 0 0 100%;
+    max-width: 100%;
     width: 100%;
     padding: 0;
+  }
+
+  .why-finora .row {
+    gap: 36px;
   }
 
   .why-finora-left h2 {
@@ -2548,6 +2554,9 @@
   }
 
   .why-finora-right img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
     margin-top: 70px;
     margin-right: 0;
   }
@@ -2706,6 +2715,10 @@
     padding: 90px 0;
   }
 
+  .why-finora .row {
+    gap: 28px;
+  }
+
   .why-finora-left h2 {
     font-size: 26px;
   }
@@ -2715,7 +2728,23 @@
   }
 
   .why-finora-right img {
-    margin-top: 55px;
+    margin-top: 12px;
+  }
+
+  .why-finora-left .about-text {
+    margin: 28px 0 36px;
+  }
+
+  .why-finora .blurb {
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .why-finora .blurb-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+    border-radius: 14px;
   }
 
   .how-it-works {
@@ -3875,18 +3904,23 @@
     padding: 30px 20px;
   }
 
-  .timeline::before {
+  .timeline:not(.timeline--horizontal)::before {
     left: 20px;
   }
 
-  .timeline-item {
+  .timeline:not(.timeline--horizontal) .timeline-item {
     width: calc(100% - 50px);
     margin-left: 50px !important;
   }
 
-  .timeline-item::before {
+  .timeline:not(.timeline--horizontal) .timeline-item::before {
     left: -38px !important;
     right: auto !important;
+  }
+
+  .timeline.timeline--horizontal .timeline-item {
+    width: 100%;
+    margin-left: 0 !important;
   }
 
   .flip-grid {

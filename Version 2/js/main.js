@@ -15,9 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const prevBtn = heroSlider.querySelector('.hero-slider-prev');
         const nextBtn = heroSlider.querySelector('.hero-slider-next');
         const AUTOPLAY_MS = 5000;
+        const allowAutoplay = !window.matchMedia('(hover: none), (pointer: coarse)').matches
+            && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         let currentSlideIndex = 0;
         let autoplayTimer = null;
-        let autoplayStopped = false;
+        let autoplayStopped = !allowAutoplay;
 
         function stopAutoplay() {
             autoplayStopped = true;
@@ -60,7 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextSlide();
             });
         }
-        heroSlider.addEventListener('mouseenter', stopAutoplay);
+        if (allowAutoplay) {
+            heroSlider.addEventListener('mouseenter', stopAutoplay);
+        }
 
         if (slides.length) {
             slides.forEach(function (s) { s.classList.remove('is-active'); });
@@ -112,9 +116,68 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.querySelector('.mobile-menu-toggle');
     const mobileMenu = document.querySelector('.mobile-menu');
     if (menuToggle && mobileMenu) {
-        menuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('is-open');
-            menuToggle.classList.toggle('is-active');
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+
+        function closeMenu() {
+            mobileMenu.classList.remove('is-open');
+            menuToggle.classList.remove('is-active');
+            document.body.classList.remove('has-mobile-menu-open');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            menuToggle.setAttribute('aria-label', 'Menü öffnen');
+            mobileMenu.setAttribute('aria-hidden', 'true');
+        }
+
+        function openMenu() {
+            mobileMenu.classList.add('is-open');
+            menuToggle.classList.add('is-active');
+            document.body.classList.add('has-mobile-menu-open');
+            menuToggle.setAttribute('aria-expanded', 'true');
+            menuToggle.setAttribute('aria-label', 'Menü schließen');
+            mobileMenu.setAttribute('aria-hidden', 'false');
+        }
+
+        function toggleMenu() {
+            if (mobileMenu.classList.contains('is-open')) {
+                closeMenu();
+                return;
+            }
+            openMenu();
+        }
+
+        menuToggle.setAttribute('aria-expanded', 'false');
+        mobileMenu.setAttribute('aria-hidden', 'true');
+
+        menuToggle.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toggleMenu();
+        });
+
+        mobileMenu.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        mobileMenuLinks.forEach((link) => {
+            link.addEventListener('click', () => {
+                closeMenu();
+            });
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!mobileMenu.classList.contains('is-open')) return;
+            if (event.target.closest('.site-header')) return;
+            closeMenu();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeMenu();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 980) {
+                closeMenu();
+            }
         });
     }
 
@@ -143,6 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.site-header');
     const heroSection = document.querySelector('.hero');
     const heroVideo = document.querySelector('.hero-video');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const isCoarsePointer = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+    const enableDecorativeMotion = !prefersReducedMotion.matches && !isCoarsePointer;
+    const howSection = document.querySelector('.how-it-works');
     if (header || heroSection) {
         const scrollThreshold = 50;
         let ticking = false;
@@ -151,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 requestAnimationFrame(() => {
                     const y = window.scrollY;
                     if (header) header.classList.toggle('is-scrolled', y > scrollThreshold);
-                    if (heroSection && y < window.innerHeight) {
+                    if (enableDecorativeMotion && heroSection && y < window.innerHeight) {
                         const parallaxY = y * 0.3;
                         const parallaxOpacity = 1 - (y / window.innerHeight) * 0.4;
                         heroSection.style.setProperty('--parallax-y', parallaxY + 'px');
@@ -161,8 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             heroText.style.opacity = Math.max(parallaxOpacity, 0);
                         }
                     }
-                    const howSection = document.querySelector('.how-it-works');
-                    if (howSection) {
+                    if (enableDecorativeMotion && howSection) {
                         const rect = howSection.getBoundingClientRect();
                         const parallaxY = rect.top * 0.35;
                         howSection.style.setProperty('--how-parallax-y', parallaxY + 'px');
@@ -173,14 +239,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, { passive: true });
 
-        const howSection = document.querySelector('.how-it-works');
-        if (howSection) {
+        if (enableDecorativeMotion && howSection) {
             const setHowParallax = () => {
                 const rect = howSection.getBoundingClientRect();
                 howSection.style.setProperty('--how-parallax-y', (rect.top * 0.35) + 'px');
             };
             setHowParallax();
             window.addEventListener('resize', setHowParallax);
+        } else {
+            if (heroSection) {
+                heroSection.style.removeProperty('--parallax-y');
+                const heroText = heroSection.querySelector('.hero-text');
+                if (heroText) {
+                    heroText.style.removeProperty('transform');
+                    heroText.style.removeProperty('opacity');
+                }
+            }
+            if (howSection) {
+                howSection.style.removeProperty('--how-parallax-y');
+            }
         }
     }
 
@@ -234,6 +311,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!grid) return;
         const cards = grid.querySelectorAll('.pillar-card');
         if (cards.length < 3) return;
+
+        if (window.innerWidth <= 980) {
+            cards.forEach((card) => {
+                card.style.transform = 'none';
+            });
+            return;
+        }
 
         const rect = section.getBoundingClientRect();
         const vh = window.innerHeight;
@@ -474,14 +558,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
         }
 
-        track.addEventListener('mouseenter', stopAutoPlay);
-        track.addEventListener('mouseleave', startAutoPlay);
-        track.addEventListener('touchstart', stopAutoPlay, { passive: true });
-        track.addEventListener('touchend', function () {
-            setTimeout(startAutoPlay, 3000);
-        }, { passive: true });
+        var disableAutoPlay = window.matchMedia('(hover: none), (pointer: coarse)').matches
+            || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        startAutoPlay();
+        if (!disableAutoPlay) {
+            track.addEventListener('mouseenter', stopAutoPlay);
+            track.addEventListener('mouseleave', startAutoPlay);
+            track.addEventListener('touchstart', stopAutoPlay, { passive: true });
+            track.addEventListener('touchend', function () {
+                setTimeout(startAutoPlay, 3000);
+            }, { passive: true });
+
+            startAutoPlay();
+        }
     });
 
     // =========================================================
