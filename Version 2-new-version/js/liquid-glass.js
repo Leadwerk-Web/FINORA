@@ -15,11 +15,286 @@ const MathUtils = {
     }
 };
 
+class LiquidGlassRenderer {
+    constructor() {
+        this.canvas = document.createElement("canvas");
+        this.gl = this.canvas.getContext("webgl", {
+            alpha: true,
+            antialias: true,
+            premultipliedAlpha: true
+        });
+
+        if (!this.gl) {
+            throw new Error("WebGL is unavailable.");
+        }
+
+        const vertexShaderSource = `
+            attribute vec2 a_position;
+            attribute vec2 a_texCoord;
+            varying vec2 v_texCoord;
+
+            void main() {
+                gl_Position = vec4(a_position, 0.0, 1.0);
+                v_texCoord = a_texCoord;
+            }
+        `;
+
+        const fragmentShaderSource = `
+            precision mediump float;
+
+            varying vec2 v_texCoord;
+            uniform sampler2D u_source;
+            uniform sampler2D u_displacement;
+            uniform sampler2D u_specular;
+            uniform vec2 u_resolution;
+            uniform float u_strength;
+            uniform float u_blur;
+            uniform float u_saturation;
+            uniform float u_brightness;
+            uniform float u_contrast;
+            uniform vec3 u_tintColorA;
+            uniform vec3 u_tintColorB;
+            uniform float u_tintAlphaA;
+            uniform float u_tintAlphaB;
+            uniform vec3 u_rimColor;
+            uniform float u_rimAlpha;
+            uniform vec3 u_shadowColor;
+            uniform float u_shadowAlpha;
+            uniform float u_fillAlpha;
+            uniform float u_specularBoost;
+
+            vec3 tone(vec3 color) {
+                float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+                vec3 saturated = mix(vec3(luminance), color, u_saturation);
+                vec3 contrasted = (saturated - 0.5) * u_contrast + 0.5;
+                return contrasted * u_brightness;
+            }
+
+            void main() {
+                vec2 displacement = (texture2D(u_displacement, v_texCoord).rg - vec2(0.5)) * 2.0;
+                float edge = clamp(length(displacement), 0.0, 1.0);
+                vec2 offset = displacement * (u_strength / u_resolution);
+                vec2 blurStep = vec2(u_blur) / u_resolution;
+
+                vec4 center = texture2D(u_source, clamp(v_texCoord, 0.001, 0.999));
+                vec4 sample0 = texture2D(u_source, clamp(v_texCoord + offset, 0.001, 0.999));
+                vec4 sample1 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, 0.0), 0.001, 0.999));
+                vec4 sample2 = texture2D(u_source, clamp(v_texCoord + offset - vec2(blurStep.x, 0.0), 0.001, 0.999));
+                vec4 sample3 = texture2D(u_source, clamp(v_texCoord + offset + vec2(0.0, blurStep.y), 0.001, 0.999));
+                vec4 sample4 = texture2D(u_source, clamp(v_texCoord + offset - vec2(0.0, blurStep.y), 0.001, 0.999));
+                vec4 sample5 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, blurStep.y), 0.001, 0.999));
+                vec4 sample6 = texture2D(u_source, clamp(v_texCoord + offset + vec2(-blurStep.x, blurStep.y), 0.001, 0.999));
+                vec4 sample7 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, -blurStep.y), 0.001, 0.999));
+                vec4 sample8 = texture2D(u_source, clamp(v_texCoord + offset + vec2(-blurStep.x, -blurStep.y), 0.001, 0.999));
+
+                vec4 refracted = sample0 * 0.28
+                    + sample1 * 0.11 + sample2 * 0.11
+                    + sample3 * 0.11 + sample4 * 0.11
+                    + sample5 * 0.07 + sample6 * 0.07
+                    + sample7 * 0.07 + sample8 * 0.07;
+                vec4 base = mix(center, refracted, smoothstep(0.04, 0.32, edge));
+                vec3 shaded = tone(base.rgb);
+                float tintMix = pow(clamp(1.0 - v_texCoord.y, 0.0, 1.0), 1.15);
+                vec3 tintColor = mix(u_tintColorB, u_tintColorA, tintMix);
+                float tintAlpha = mix(u_tintAlphaB, u_tintAlphaA, tintMix);
+                vec3 tinted = mix(shaded, tintColor, tintAlpha);
+                float edgeMask = smoothstep(0.08, 0.88, edge);
+                float rimMask = pow(edgeMask, 1.35);
+                float specWindow = pow(clamp(1.0 - v_texCoord.y, 0.0, 1.0), 2.2) * (1.0 - edgeMask * 0.42);
+                vec4 spec = texture2D(u_specular, v_texCoord);
+                vec3 highlight = u_rimColor * ((rimMask * u_rimAlpha) + (specWindow * u_rimAlpha * 0.42));
+                vec3 sheen = spec.rgb * spec.a * u_specularBoost * u_rimColor;
+                float shadowMask = edgeMask * mix(0.72, 1.18, clamp(v_texCoord.y, 0.0, 1.0));
+                vec3 combined = tinted + highlight + sheen - (u_shadowColor * shadowMask * u_shadowAlpha);
+
+                gl_FragColor = vec4(clamp(combined, 0.0, 1.0), max(base.a, u_fillAlpha));
+            }
+        `;
+
+        this.program = this.createProgram(vertexShaderSource, fragmentShaderSource);
+        this.gl.useProgram(this.program);
+
+        const positions = new Float32Array([
+            -1, -1,
+             1, -1,
+            -1,  1,
+             1,  1
+        ]);
+
+        const texCoords = new Float32Array([
+            0, 1,
+            1, 1,
+            0, 0,
+            1, 0
+        ]);
+
+        this.positionBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
+
+        const positionLocation = this.gl.getAttribLocation(this.program, "a_position");
+        this.gl.enableVertexAttribArray(positionLocation);
+        this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+
+        this.texCoordBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texCoordBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, texCoords, this.gl.STATIC_DRAW);
+
+        const texCoordLocation = this.gl.getAttribLocation(this.program, "a_texCoord");
+        this.gl.enableVertexAttribArray(texCoordLocation);
+        this.gl.vertexAttribPointer(texCoordLocation, 2, this.gl.FLOAT, false, 0, 0);
+
+        this.sourceTexture = this.createTexture();
+        this.displacementTexture = this.createTexture();
+        this.specularTexture = this.createTexture();
+
+        this.uniforms = {
+            source: this.gl.getUniformLocation(this.program, "u_source"),
+            displacement: this.gl.getUniformLocation(this.program, "u_displacement"),
+            specular: this.gl.getUniformLocation(this.program, "u_specular"),
+            resolution: this.gl.getUniformLocation(this.program, "u_resolution"),
+            strength: this.gl.getUniformLocation(this.program, "u_strength"),
+            blur: this.gl.getUniformLocation(this.program, "u_blur"),
+            saturation: this.gl.getUniformLocation(this.program, "u_saturation"),
+            brightness: this.gl.getUniformLocation(this.program, "u_brightness"),
+            contrast: this.gl.getUniformLocation(this.program, "u_contrast"),
+            tintColorA: this.gl.getUniformLocation(this.program, "u_tintColorA"),
+            tintColorB: this.gl.getUniformLocation(this.program, "u_tintColorB"),
+            tintAlphaA: this.gl.getUniformLocation(this.program, "u_tintAlphaA"),
+            tintAlphaB: this.gl.getUniformLocation(this.program, "u_tintAlphaB"),
+            rimColor: this.gl.getUniformLocation(this.program, "u_rimColor"),
+            rimAlpha: this.gl.getUniformLocation(this.program, "u_rimAlpha"),
+            shadowColor: this.gl.getUniformLocation(this.program, "u_shadowColor"),
+            shadowAlpha: this.gl.getUniformLocation(this.program, "u_shadowAlpha"),
+            fillAlpha: this.gl.getUniformLocation(this.program, "u_fillAlpha"),
+            specularBoost: this.gl.getUniformLocation(this.program, "u_specularBoost")
+        };
+    }
+
+    createProgram(vertexShaderSource, fragmentShaderSource) {
+        const vertexShader = this.compileShader(this.gl.VERTEX_SHADER, vertexShaderSource);
+        const fragmentShader = this.compileShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
+        const program = this.gl.createProgram();
+
+        this.gl.attachShader(program, vertexShader);
+        this.gl.attachShader(program, fragmentShader);
+        this.gl.linkProgram(program);
+
+        if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+            throw new Error(this.gl.getProgramInfoLog(program) || "Failed to link WebGL program.");
+        }
+
+        return program;
+    }
+
+    compileShader(type, source) {
+        const shader = this.gl.createShader(type);
+        this.gl.shaderSource(shader, source);
+        this.gl.compileShader(shader);
+
+        if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+            throw new Error(this.gl.getShaderInfoLog(shader) || "Failed to compile WebGL shader.");
+        }
+
+        return shader;
+    }
+
+    createTexture() {
+        const texture = this.gl.createTexture();
+        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+        return texture;
+    }
+
+    updateTexture(texture, source) {
+        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+        this.gl.pixelStorei(this.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, source);
+    }
+
+    applyStyleUniforms(styleUniforms) {
+        this.gl.uniform3f(this.uniforms.tintColorA, styleUniforms.tintColorA[0], styleUniforms.tintColorA[1], styleUniforms.tintColorA[2]);
+        this.gl.uniform3f(this.uniforms.tintColorB, styleUniforms.tintColorB[0], styleUniforms.tintColorB[1], styleUniforms.tintColorB[2]);
+        this.gl.uniform1f(this.uniforms.tintAlphaA, styleUniforms.tintAlphaA);
+        this.gl.uniform1f(this.uniforms.tintAlphaB, styleUniforms.tintAlphaB);
+        this.gl.uniform3f(this.uniforms.rimColor, styleUniforms.rimColor[0], styleUniforms.rimColor[1], styleUniforms.rimColor[2]);
+        this.gl.uniform1f(this.uniforms.rimAlpha, styleUniforms.rimAlpha);
+        this.gl.uniform3f(this.uniforms.shadowColor, styleUniforms.shadowColor[0], styleUniforms.shadowColor[1], styleUniforms.shadowColor[2]);
+        this.gl.uniform1f(this.uniforms.shadowAlpha, styleUniforms.shadowAlpha);
+        this.gl.uniform1f(this.uniforms.fillAlpha, styleUniforms.fillAlpha);
+        this.gl.uniform1f(this.uniforms.specularBoost, styleUniforms.specularBoost);
+    }
+
+    ensureSize(width, height) {
+        if (this.canvas.width !== width || this.canvas.height !== height) {
+            this.canvas.width = width;
+            this.canvas.height = height;
+        }
+
+        this.gl.viewport(0, 0, width, height);
+    }
+
+    render(instance, sourceCanvas) {
+        const width = instance.renderCanvas.width;
+        const height = instance.renderCanvas.height;
+
+        if (!width || !height || !instance.renderContext || !instance.displacementCanvas || !instance.specularCanvas) {
+            return;
+        }
+
+        this.ensureSize(width, height);
+        this.gl.useProgram(this.program);
+
+        this.updateTexture(this.sourceTexture, sourceCanvas);
+        this.updateTexture(this.displacementTexture, instance.displacementCanvas);
+        this.updateTexture(this.specularTexture, instance.specularCanvas);
+
+        this.gl.uniform2f(this.uniforms.resolution, width, height);
+        this.gl.uniform1f(this.uniforms.strength, instance._maxDisplacement || 1);
+        this.gl.uniform1f(this.uniforms.blur, instance.options.canvasBlur);
+        this.gl.uniform1f(this.uniforms.saturation, instance.options.saturate);
+        this.gl.uniform1f(this.uniforms.brightness, instance.options.brightness);
+        this.gl.uniform1f(this.uniforms.contrast, instance.options.contrast);
+        this.applyStyleUniforms(instance.styleUniforms);
+
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.sourceTexture);
+        this.gl.uniform1i(this.uniforms.source, 0);
+
+        this.gl.activeTexture(this.gl.TEXTURE1);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.displacementTexture);
+        this.gl.uniform1i(this.uniforms.displacement, 1);
+
+        this.gl.activeTexture(this.gl.TEXTURE2);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.specularTexture);
+        this.gl.uniform1i(this.uniforms.specular, 2);
+
+        this.gl.clearColor(0, 0, 0, 0);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+
+        instance.renderContext.clearRect(0, 0, width, height);
+        instance.renderContext.drawImage(this.canvas, 0, 0, width, height);
+    }
+}
+
 class LiquidGlassFilter {
     static instances = new Set();
     static imageCache = new Map();
     static syncRaf = null;
     static globalListenersAttached = false;
+    static sharedRenderer = null;
+
+    static getSharedRenderer() {
+        if (!this.sharedRenderer) {
+            this.sharedRenderer = new LiquidGlassRenderer();
+        }
+
+        return this.sharedRenderer;
+    }
 
     static attachGlobalListeners() {
         if (this.globalListenersAttached) {
@@ -349,17 +624,6 @@ class LiquidGlassFilter {
         this.backdropLayer = document.createElement("span");
         this.backdropLayer.className = "liquid-backdrop-layer";
         this.backdropLayer.setAttribute("aria-hidden", "true");
-
-        this.tintLayer = document.createElement("span");
-        this.tintLayer.className = "liquid-tint-layer";
-        this.tintLayer.setAttribute("aria-hidden", "true");
-
-        this.specularLayer = document.createElement("span");
-        this.specularLayer.className = "liquid-specular-layer";
-        this.specularLayer.setAttribute("aria-hidden", "true");
-
-        this.element.insertBefore(this.specularLayer, this.element.firstChild);
-        this.element.insertBefore(this.tintLayer, this.element.firstChild);
         this.element.insertBefore(this.backdropLayer, this.element.firstChild);
     }
 
@@ -368,177 +632,21 @@ class LiquidGlassFilter {
         this.renderCanvas.className = "liquid-render-surface";
         this.renderCanvas.setAttribute("aria-hidden", "true");
         this.backdropLayer.appendChild(this.renderCanvas);
+        this.renderContext = this.renderCanvas.getContext("2d");
+        if (!this.renderContext) {
+            throw new Error("2D canvas context is unavailable.");
+        }
+        this.renderContext.imageSmoothingEnabled = true;
+        this.renderContext.imageSmoothingQuality = "high";
 
         this.captureCanvas = document.createElement("canvas");
         this.captureContext = this.captureCanvas.getContext("2d");
+        if (!this.captureContext) {
+            throw new Error("2D canvas context is unavailable.");
+        }
         this.captureContext.imageSmoothingEnabled = true;
         this.captureContext.imageSmoothingQuality = "high";
-
-        this.gl = this.renderCanvas.getContext("webgl", {
-            alpha: true,
-            antialias: true,
-            premultipliedAlpha: true
-        });
-
-        if (!this.gl) {
-            throw new Error("WebGL is unavailable.");
-        }
-
-        const vertexShaderSource = `
-            attribute vec2 a_position;
-            attribute vec2 a_texCoord;
-            varying vec2 v_texCoord;
-
-            void main() {
-                gl_Position = vec4(a_position, 0.0, 1.0);
-                v_texCoord = a_texCoord;
-            }
-        `;
-
-        const fragmentShaderSource = `
-            precision mediump float;
-
-            varying vec2 v_texCoord;
-            uniform sampler2D u_source;
-            uniform sampler2D u_displacement;
-            uniform sampler2D u_specular;
-            uniform vec2 u_resolution;
-            uniform float u_strength;
-            uniform float u_blur;
-            uniform float u_saturation;
-            uniform float u_brightness;
-            uniform float u_contrast;
-
-            vec3 tone(vec3 color) {
-                float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
-                vec3 saturated = mix(vec3(luminance), color, u_saturation);
-                vec3 contrasted = (saturated - 0.5) * u_contrast + 0.5;
-                return contrasted * u_brightness;
-            }
-
-            void main() {
-                vec2 displacement = (texture2D(u_displacement, v_texCoord).rg - vec2(0.5)) * 2.0;
-                float edge = clamp(length(displacement), 0.0, 1.0);
-                vec2 offset = displacement * (u_strength / u_resolution);
-                vec2 blurStep = vec2(u_blur) / u_resolution;
-
-                vec4 center = texture2D(u_source, clamp(v_texCoord, 0.001, 0.999));
-                vec4 sample0 = texture2D(u_source, clamp(v_texCoord + offset, 0.001, 0.999));
-                vec4 sample1 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, 0.0), 0.001, 0.999));
-                vec4 sample2 = texture2D(u_source, clamp(v_texCoord + offset - vec2(blurStep.x, 0.0), 0.001, 0.999));
-                vec4 sample3 = texture2D(u_source, clamp(v_texCoord + offset + vec2(0.0, blurStep.y), 0.001, 0.999));
-                vec4 sample4 = texture2D(u_source, clamp(v_texCoord + offset - vec2(0.0, blurStep.y), 0.001, 0.999));
-                vec4 sample5 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, blurStep.y), 0.001, 0.999));
-                vec4 sample6 = texture2D(u_source, clamp(v_texCoord + offset + vec2(-blurStep.x, blurStep.y), 0.001, 0.999));
-                vec4 sample7 = texture2D(u_source, clamp(v_texCoord + offset + vec2(blurStep.x, -blurStep.y), 0.001, 0.999));
-                vec4 sample8 = texture2D(u_source, clamp(v_texCoord + offset + vec2(-blurStep.x, -blurStep.y), 0.001, 0.999));
-
-                vec4 refracted = sample0 * 0.28
-                    + sample1 * 0.11 + sample2 * 0.11
-                    + sample3 * 0.11 + sample4 * 0.11
-                    + sample5 * 0.07 + sample6 * 0.07
-                    + sample7 * 0.07 + sample8 * 0.07;
-                vec4 base = mix(center, refracted, smoothstep(0.04, 0.32, edge));
-                vec3 shaded = tone(base.rgb);
-                vec4 spec = texture2D(u_specular, v_texCoord);
-                vec3 combined = min(shaded + spec.rgb * spec.a * 0.85, 1.0);
-
-                gl_FragColor = vec4(combined, base.a);
-            }
-        `;
-
-        this.program = this.createProgram(vertexShaderSource, fragmentShaderSource);
-        this.gl.useProgram(this.program);
-
-        const positions = new Float32Array([
-            -1, -1,
-             1, -1,
-            -1,  1,
-             1,  1
-        ]);
-
-        const texCoords = new Float32Array([
-            0, 1,
-            1, 1,
-            0, 0,
-            1, 0
-        ]);
-
-        this.positionBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
-
-        const positionLocation = this.gl.getAttribLocation(this.program, "a_position");
-        this.gl.enableVertexAttribArray(positionLocation);
-        this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
-
-        this.texCoordBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texCoordBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, texCoords, this.gl.STATIC_DRAW);
-
-        const texCoordLocation = this.gl.getAttribLocation(this.program, "a_texCoord");
-        this.gl.enableVertexAttribArray(texCoordLocation);
-        this.gl.vertexAttribPointer(texCoordLocation, 2, this.gl.FLOAT, false, 0, 0);
-
-        this.sourceTexture = this.createTexture();
-        this.displacementTexture = this.createTexture();
-        this.specularTexture = this.createTexture();
-
-        this.uniforms = {
-            source: this.gl.getUniformLocation(this.program, "u_source"),
-            displacement: this.gl.getUniformLocation(this.program, "u_displacement"),
-            specular: this.gl.getUniformLocation(this.program, "u_specular"),
-            resolution: this.gl.getUniformLocation(this.program, "u_resolution"),
-            strength: this.gl.getUniformLocation(this.program, "u_strength"),
-            blur: this.gl.getUniformLocation(this.program, "u_blur"),
-            saturation: this.gl.getUniformLocation(this.program, "u_saturation"),
-            brightness: this.gl.getUniformLocation(this.program, "u_brightness"),
-            contrast: this.gl.getUniformLocation(this.program, "u_contrast")
-        };
-    }
-
-    createProgram(vertexShaderSource, fragmentShaderSource) {
-        const vertexShader = this.compileShader(this.gl.VERTEX_SHADER, vertexShaderSource);
-        const fragmentShader = this.compileShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
-        const program = this.gl.createProgram();
-
-        this.gl.attachShader(program, vertexShader);
-        this.gl.attachShader(program, fragmentShader);
-        this.gl.linkProgram(program);
-
-        if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
-            throw new Error(this.gl.getProgramInfoLog(program) || "Failed to link WebGL program.");
-        }
-
-        return program;
-    }
-
-    compileShader(type, source) {
-        const shader = this.gl.createShader(type);
-        this.gl.shaderSource(shader, source);
-        this.gl.compileShader(shader);
-
-        if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-            throw new Error(this.gl.getShaderInfoLog(shader) || "Failed to compile WebGL shader.");
-        }
-
-        return shader;
-    }
-
-    createTexture() {
-        const texture = this.gl.createTexture();
-        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
-        return texture;
-    }
-
-    updateTexture(texture, source) {
-        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-        this.gl.pixelStorei(this.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, source);
+        this.renderer = LiquidGlassFilter.getSharedRenderer();
     }
 
     setupObservers() {
@@ -597,6 +705,24 @@ class LiquidGlassFilter {
         };
     }
 
+    syncStyleUniforms() {
+        const styles = window.getComputedStyle(this.element);
+        this.styleUniforms = {
+            tintColorA: parseRGBTriplet(styles.getPropertyValue("--liquid-tint-rgb-a"), [255, 255, 255]).map((value) => value / 255),
+            tintColorB: parseRGBTriplet(styles.getPropertyValue("--liquid-tint-rgb-b"), [255, 255, 255]).map((value) => value / 255),
+            tintAlphaA: safeNumber(styles.getPropertyValue("--liquid-tint-alpha-a"), 0.24),
+            tintAlphaB: safeNumber(styles.getPropertyValue("--liquid-tint-alpha-b"), 0.08),
+            rimColor: parseRGBTriplet(styles.getPropertyValue("--liquid-rim-rgb"), [255, 255, 255]).map((value) => value / 255),
+            rimAlpha: safeNumber(styles.getPropertyValue("--liquid-rim-alpha"), 0.46),
+            shadowColor: parseRGBTriplet(styles.getPropertyValue("--liquid-shadow-rgb"), [7, 21, 32]).map((value) => value / 255),
+            shadowAlpha: safeNumber(styles.getPropertyValue("--liquid-shadow-alpha"), 0.18),
+            fillAlpha: safeNumber(styles.getPropertyValue("--liquid-fill-alpha"), 0.96),
+            specularBoost: safeNumber(styles.getPropertyValue("--liquid-specular-boost"), 0.85)
+        };
+
+        return this.styleUniforms;
+    }
+
     buildWebGLAssets() {
         this.refreshSourceElement();
 
@@ -615,20 +741,9 @@ class LiquidGlassFilter {
         }
 
         const precomputed1D = this.calculateDisplacementMap1D();
-        const displacementCanvas = this.calculateDisplacementCanvas(width, height, precomputed1D);
-        const specularCanvas = this.calculateSpecularCanvas(width, height);
-
-        this.updateTexture(this.displacementTexture, displacementCanvas);
-        this.updateTexture(this.specularTexture, specularCanvas);
-
-        this.gl.viewport(0, 0, width, height);
-        this.gl.useProgram(this.program);
-        this.gl.uniform2f(this.uniforms.resolution, width, height);
-        this.gl.uniform1f(this.uniforms.strength, this._maxDisplacement);
-        this.gl.uniform1f(this.uniforms.blur, this.options.canvasBlur);
-        this.gl.uniform1f(this.uniforms.saturation, this.options.saturate);
-        this.gl.uniform1f(this.uniforms.brightness, this.options.brightness);
-        this.gl.uniform1f(this.uniforms.contrast, this.options.contrast);
+        this.displacementCanvas = this.calculateDisplacementCanvas(width, height, precomputed1D);
+        this.specularCanvas = this.calculateSpecularCanvas(width, height);
+        this.syncStyleUniforms();
     }
 
     getSourceDescriptor() {
@@ -653,7 +768,10 @@ class LiquidGlassFilter {
         }
 
         const styles = window.getComputedStyle(this.sourceElement);
-        if (styles.backgroundImage && styles.backgroundImage !== "none") {
+        const hasBackgroundImage = styles.backgroundImage && styles.backgroundImage !== "none";
+        const hasBackgroundColor = !isTransparentColor(styles.backgroundColor);
+
+        if (hasBackgroundImage || hasBackgroundColor) {
             return {
                 type: "background",
                 element: this.sourceElement,
@@ -797,7 +915,7 @@ class LiquidGlassFilter {
     }
 
     renderWebGL() {
-        if (this.mode !== "webgl" || !this.gl || this.isVisible === false) {
+        if (this.mode !== "webgl" || !this.renderer || this.isVisible === false) {
             return;
         }
 
@@ -806,25 +924,8 @@ class LiquidGlassFilter {
             return;
         }
 
-        this.updateTexture(this.sourceTexture, sourceCanvas);
-
-        this.gl.useProgram(this.program);
-
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.sourceTexture);
-        this.gl.uniform1i(this.uniforms.source, 0);
-
-        this.gl.activeTexture(this.gl.TEXTURE1);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.displacementTexture);
-        this.gl.uniform1i(this.uniforms.displacement, 1);
-
-        this.gl.activeTexture(this.gl.TEXTURE2);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.specularTexture);
-        this.gl.uniform1i(this.uniforms.specular, 2);
-
-        this.gl.clearColor(0, 0, 0, 0);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+        this.syncStyleUniforms();
+        this.renderer.render(this, sourceCanvas);
     }
 
     calculateDisplacementMap1D(samples = 128) {
@@ -1015,7 +1116,7 @@ class LiquidGlassFilter {
             window.cancelAnimationFrame(this.renderRaf);
         }
 
-        [this.backdropLayer, this.tintLayer, this.specularLayer].forEach((layer) => {
+        [this.backdropLayer].forEach((layer) => {
             if (layer && layer.parentNode === this.element) {
                 layer.remove();
             }
@@ -1177,6 +1278,15 @@ const LIQUID_PROFILE_PRESETS = {
     }
 };
 
+function parseRGBTriplet(value, fallback) {
+    const normalized = (value || "").trim().replace(/,/g, " ");
+    const parts = normalized.split(/\s+/).filter(Boolean).map(Number);
+    if (parts.length >= 3 && parts.every((part) => Number.isFinite(part))) {
+        return parts.slice(0, 3);
+    }
+    return fallback;
+}
+
 function queryWithin(root, selector) {
     if (!root || !selector) {
         return [];
@@ -1197,6 +1307,33 @@ function queryWithin(root, selector) {
 function safeNumber(value, fallback) {
     const parsed = parseFloat(value);
     return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function isTransparentColor(value) {
+    const normalized = (value || "").trim().toLowerCase();
+
+    if (!normalized || normalized === "transparent" || normalized === "rgba(0, 0, 0, 0)" || normalized === "rgb(0 0 0 / 0)") {
+        return true;
+    }
+
+    const legacyAlphaMatch = normalized.match(/^rgba\((.+)\)$/);
+    if (legacyAlphaMatch) {
+        const parts = legacyAlphaMatch[1].split(",").map((part) => part.trim());
+        if (parts.length === 4 && parseFloat(parts[3]) === 0) {
+            return true;
+        }
+    }
+
+    const modernAlphaMatch = normalized.match(/\/\s*([0-9.]+)%?\s*\)$/);
+    if (modernAlphaMatch) {
+        const rawAlpha = modernAlphaMatch[1];
+        const alpha = normalized.includes("%)") ? parseFloat(rawAlpha) / 100 : parseFloat(rawAlpha);
+        if (alpha === 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 const FinoraLiquidGlass = {

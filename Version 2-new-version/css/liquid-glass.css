@@ -8,6 +8,18 @@
   --liquid-shadow-strong: 0 22px 56px rgba(7, 21, 32, 0.18);
   --liquid-border-light: rgba(255, 255, 255, 0.48);
   --liquid-border-dark: rgba(144, 180, 178, 0.34);
+  --liquid-tint-rgb-a: 255 255 255;
+  --liquid-tint-rgb-b: 255 255 255;
+  --liquid-tint-alpha-a: 0.24;
+  --liquid-tint-alpha-b: 0.08;
+  --liquid-rim-rgb: 255 255 255;
+  --liquid-rim-alpha: 0.46;
+  --liquid-shadow-rgb: 7 21 32;
+  --liquid-shadow-alpha: 0.18;
+  --liquid-fill-alpha: 0.96;
+  --liquid-specular-boost: 0.85;
+  --liquid-border-alpha: 0.48;
+  --liquid-panel-shadow: var(--liquid-shadow-soft);
 }
 
 .liquid-scene {
@@ -45,23 +57,23 @@
 }
 
 .liquid-panel {
-  --liquid-tint-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.08) 100%);
-  --liquid-specular-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.18) 28%, rgba(255, 255, 255, 0) 58%),
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0) 52%);
   position: relative;
   isolation: isolate;
   z-index: 0;
   overflow: hidden;
-  background: var(--liquid-tint-background) !important;
+  background:
+    linear-gradient(
+      145deg,
+      rgb(var(--liquid-tint-rgb-a) / var(--liquid-tint-alpha-a)) 0%,
+      rgb(var(--liquid-tint-rgb-b) / var(--liquid-tint-alpha-b)) 100%
+    ) !important;
   backdrop-filter: blur(18px) saturate(145%) brightness(1.03);
   -webkit-backdrop-filter: blur(18px) saturate(145%) brightness(1.03);
-  border: 1px solid var(--liquid-border-light) !important;
+  border: 1px solid rgb(var(--liquid-rim-rgb) / var(--liquid-border-alpha)) !important;
   box-shadow:
-    var(--liquid-shadow-soft),
-    inset 0 1px 0 rgba(255, 255, 255, 0.74),
-    inset 0 0 28px rgba(255, 255, 255, 0.05) !important;
+    var(--liquid-panel-shadow),
+    inset 0 1px 0 rgb(var(--liquid-rim-rgb) / calc(var(--liquid-rim-alpha) + 0.18)),
+    inset 0 0 28px rgb(var(--liquid-rim-rgb) / 0.05) !important;
   transition:
     transform 0.35s var(--ease-out-expo),
     box-shadow 0.35s var(--ease-out-expo),
@@ -69,79 +81,109 @@
     background 0.35s var(--ease-smooth);
 }
 
-.liquid-panel.liquid-enhanced {
+.liquid-panel.liquid-enhanced,
+.liquid-panel.liquid-enhanced:hover,
+.liquid-panel.liquid-enhanced:focus-visible {
   background: transparent !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  border-color: transparent !important;
+  box-shadow: var(--liquid-panel-shadow) !important;
 }
 
 .liquid-button {
-  --liquid-tint-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.11) 100%);
-  --liquid-specular-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.58) 0%, rgba(255, 255, 255, 0.2) 30%, rgba(255, 255, 255, 0) 62%),
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 54%);
+  --liquid-tint-alpha-a: 0.32;
+  --liquid-tint-alpha-b: 0.11;
+  --liquid-rim-alpha: 0.58;
+  --liquid-specular-boost: 1;
+  --liquid-panel-shadow: 0 10px 24px rgba(7, 21, 32, 0.14);
   box-shadow:
     0 10px 24px rgba(7, 21, 32, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
 }
 
 .liquid-button:hover {
+  --liquid-tint-alpha-a: 0.38;
+  --liquid-tint-alpha-b: 0.14;
+  --liquid-rim-alpha: 0.64;
   box-shadow:
     0 16px 32px rgba(7, 21, 32, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
 }
 
 [data-glass-profile="chrome"] {
-  --liquid-tint-background:
-    linear-gradient(135deg, rgba(4, 60, 67, 0.56) 0%, rgba(38, 96, 99, 0.3) 100%);
-  --liquid-specular-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.12) 26%, rgba(255, 255, 255, 0) 58%),
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 48%);
-  border-color: rgba(255, 255, 255, 0.28) !important;
+  --liquid-tint-rgb-a: 4 60 67;
+  --liquid-tint-rgb-b: 38 96 99;
+  --liquid-tint-alpha-a: 0.56;
+  --liquid-tint-alpha-b: 0.3;
+  --liquid-rim-alpha: 0.3;
+  --liquid-shadow-rgb: 4 36 40;
+  --liquid-shadow-alpha: 0.24;
+  --liquid-fill-alpha: 0.94;
+  --liquid-specular-boost: 0.72;
+  --liquid-border-alpha: 0.28;
+  --liquid-panel-shadow: var(--liquid-shadow-soft);
 }
 
 [data-glass-profile="menu"] {
-  --liquid-tint-background:
-    linear-gradient(135deg, rgba(5, 54, 60, 0.74) 0%, rgba(12, 78, 84, 0.46) 100%);
-  --liquid-specular-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.09) 24%, rgba(255, 255, 255, 0) 58%),
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 46%);
-  border-color: rgba(144, 180, 178, 0.28) !important;
+  --liquid-tint-rgb-a: 5 54 60;
+  --liquid-tint-rgb-b: 12 78 84;
+  --liquid-tint-alpha-a: 0.74;
+  --liquid-tint-alpha-b: 0.46;
+  --liquid-rim-rgb: 214 235 234;
+  --liquid-rim-alpha: 0.28;
+  --liquid-shadow-rgb: 3 22 25;
+  --liquid-shadow-alpha: 0.26;
+  --liquid-fill-alpha: 0.96;
+  --liquid-specular-boost: 0.68;
+  --liquid-border-alpha: 0.28;
+  --liquid-panel-shadow: var(--liquid-shadow-strong);
 }
 
 [data-glass-profile="card"] {
-  --liquid-tint-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.1) 100%);
+  --liquid-tint-alpha-a: 0.28;
+  --liquid-tint-alpha-b: 0.1;
+  --liquid-rim-alpha: 0.48;
+  --liquid-fill-alpha: 0.96;
+  --liquid-specular-boost: 0.84;
 }
 
 [data-glass-profile="button"] {
-  --liquid-tint-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.36) 0%, rgba(255, 255, 255, 0.14) 100%);
+  --liquid-tint-alpha-a: 0.36;
+  --liquid-tint-alpha-b: 0.14;
+  --liquid-rim-alpha: 0.58;
+  --liquid-fill-alpha: 0.98;
+  --liquid-specular-boost: 1;
 }
 
 [data-glass-profile="chip"] {
-  --liquid-tint-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.12) 100%);
+  --liquid-tint-alpha-a: 0.34;
+  --liquid-tint-alpha-b: 0.12;
+  --liquid-rim-alpha: 0.56;
+  --liquid-fill-alpha: 0.98;
+  --liquid-specular-boost: 0.96;
+  --liquid-panel-shadow: 0 8px 20px rgba(7, 21, 32, 0.12);
   box-shadow:
     0 8px 20px rgba(7, 21, 32, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
 }
 
 [data-glass-profile="metric"] {
-  --liquid-tint-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.06) 100%);
-  --liquid-specular-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.12) 26%, rgba(255, 255, 255, 0) 58%),
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0) 48%);
+  --liquid-tint-alpha-a: 0.2;
+  --liquid-tint-alpha-b: 0.06;
+  --liquid-rim-alpha: 0.34;
+  --liquid-shadow-alpha: 0.2;
+  --liquid-fill-alpha: 0.94;
+  --liquid-specular-boost: 0.76;
 }
 
 [data-glass-profile="legal"] {
-  --liquid-tint-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.18) 100%);
-  --liquid-specular-background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.16) 30%, rgba(255, 255, 255, 0) 62%),
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 54%);
+  --liquid-tint-alpha-a: 0.42;
+  --liquid-tint-alpha-b: 0.18;
+  --liquid-rim-alpha: 0.42;
+  --liquid-shadow-alpha: 0.14;
+  --liquid-fill-alpha: 0.98;
+  --liquid-specular-boost: 0.78;
 }
 
 [data-glass-profile="legal"] p,
@@ -151,18 +193,13 @@
   text-shadow: none;
 }
 
-.liquid-backdrop-layer,
-.liquid-tint-layer,
-.liquid-specular-layer {
+.liquid-backdrop-layer {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-}
-
-.liquid-backdrop-layer {
-  z-index: -3;
   overflow: hidden;
+  z-index: -1;
 }
 
 .liquid-render-surface {
@@ -172,18 +209,6 @@
   height: 100%;
   display: block;
   border-radius: inherit;
-}
-
-.liquid-tint-layer {
-  z-index: -2;
-  background: var(--liquid-tint-background);
-}
-
-.liquid-specular-layer {
-  z-index: -1;
-  background: var(--liquid-specular-background);
-  mix-blend-mode: screen;
-  opacity: 0.64;
 }
 
 html.webgl-liquid-glass .liquid-panel {
