@@ -17,9 +17,12 @@ const MathUtils = {
 
 class LiquidGlassFilter {
     static instances = new Set();
+    static activeInstances = new Set();
     static imageCache = new Map();
     static syncRaf = null;
+    static activationRaf = null;
     static globalListenersAttached = false;
+    static visibilityObserver = null;
 
     static attachGlobalListeners() {
         if (this.globalListenersAttached) {
@@ -32,6 +35,64 @@ class LiquidGlassFilter {
         this.globalListenersAttached = true;
     }
 
+    static getMaxActiveContexts() {
+        const coarsePointer = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+        const narrowViewport = window.matchMedia("(max-width: 980px)").matches;
+        return coarsePointer || narrowViewport ? 6 : 10;
+    }
+
+    static ensureVisibilityObserver() {
+        if (this.visibilityObserver || !("IntersectionObserver" in window)) {
+            return;
+        }
+
+        this.visibilityObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                const instance = entry.target && entry.target._liquidGlassInstance;
+                if (!instance) {
+                    return;
+                }
+
+                instance.isIntersecting = entry.isIntersecting;
+                instance.intersectionRatio = entry.intersectionRatio || 0;
+            });
+
+            LiquidGlassFilter.scheduleActivationReview();
+        }, {
+            root: null,
+            rootMargin: "200px 0px 200px 0px",
+            threshold: [0, 0.01, 0.1, 0.25, 0.5, 0.75, 1]
+        });
+    }
+
+    static scheduleActivationReview() {
+        if (this.activationRaf) {
+            return;
+        }
+
+        this.activationRaf = window.requestAnimationFrame(() => {
+            this.activationRaf = null;
+            LiquidGlassFilter.reevaluateEnhancements();
+        });
+    }
+
+    static reevaluateEnhancements() {
+        const budget = LiquidGlassFilter.getMaxActiveContexts();
+        const ranked = Array.from(LiquidGlassFilter.instances)
+            .filter((instance) => instance.canUseWebGL())
+            .sort((a, b) => b.getActivationScore() - a.getActivationScore());
+        const allowed = new Set(ranked.slice(0, budget));
+
+        LiquidGlassFilter.instances.forEach((instance) => {
+            if (allowed.has(instance)) {
+                instance.ensureEnhancement();
+                return;
+            }
+
+            instance.suspendEnhancement();
+        });
+    }
+
     static scheduleAllSync() {
         if (this.syncRaf) {
             return;
@@ -39,6 +100,7 @@ class LiquidGlassFilter {
 
         this.syncRaf = window.requestAnimationFrame(() => {
             this.syncRaf = null;
+            LiquidGlassFilter.reevaluateEnhancements();
             LiquidGlassFilter.instances.forEach((instance) => instance.handleViewportChange());
         });
     }
@@ -239,24 +301,37 @@ class LiquidGlassFilter {
         this.mutationObserver = null;
         this.sourceMutationObserver = null;
         this.sourceElement = null;
+        this.renderCanvas = null;
+        this.captureCanvas = null;
+        this.captureContext = null;
+        this.gl = null;
+        this.program = null;
+        this.positionBuffer = null;
+        this.texCoordBuffer = null;
+        this.sourceTexture = null;
+        this.displacementTexture = null;
+        this.specularTexture = null;
+        this.uniforms = null;
+        this.isEnhancementActive = false;
+        this.isIntersecting = false;
+        this.intersectionRatio = 0;
+        this.activationBlockedUntil = 0;
+        this.contextLostHandler = null;
+        this.contextRestoredHandler = null;
 
         try {
             this.refreshSourceElement();
-            if (!this.sourceElement) {
-                return;
-            }
-
             this.setupLayers();
-            this.setupWebGL();
 
             this.element._liquidGlassInstance = this;
             LiquidGlassFilter.instances.add(this);
             LiquidGlassFilter.attachGlobalListeners();
+            LiquidGlassFilter.ensureVisibilityObserver();
 
-            this.buildWebGLAssets();
-            this.renderWebGL();
             this.setupObservers();
             this.setupTransitionSync();
+            this.observeVisibility();
+            this.handleViewportChange();
         } catch (error) {
             console.error("Liquid glass initialization failed.", error);
             this.disableEnhancement();
@@ -360,9 +435,81 @@ class LiquidGlassFilter {
         }
     }
 
-    setupLayers() {
-        this.element.classList.add("glass-enhanced");
+    observeVisibility() {
+        if (LiquidGlassFilter.visibilityObserver) {
+            LiquidGlassFilter.visibilityObserver.observe(this.element);
+            return;
+        }
 
+        this.isIntersecting = true;
+        this.intersectionRatio = 1;
+    }
+
+    canUseWebGL() {
+        if (!this.element || !this.element.isConnected || this.element.dataset.glassFailed === "true") {
+            return false;
+        }
+
+        if (this.activationBlockedUntil > performance.now()) {
+            return false;
+        }
+
+        const rect = this.element.getBoundingClientRect();
+        if (rect.width < 10 || rect.height < 10) {
+            return false;
+        }
+
+        const styles = window.getComputedStyle(this.element);
+        if (styles.display === "none" || styles.visibility === "hidden") {
+            return false;
+        }
+
+        const viewportMargin = 240;
+        const isNearViewport = rect.bottom > -viewportMargin
+            && rect.top < window.innerHeight + viewportMargin
+            && rect.right > -viewportMargin
+            && rect.left < window.innerWidth + viewportMargin;
+
+        if (!isNearViewport) {
+            return false;
+        }
+
+        return !!this.sourceElement;
+    }
+
+    getActivationScore() {
+        const rect = this.element.getBoundingClientRect();
+        const visibleWidth = Math.max(0, Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0));
+        const visibleHeight = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+        const visibleArea = visibleWidth * visibleHeight;
+        const totalArea = Math.max(rect.width * rect.height, 1);
+        const visibilityRatio = visibleArea / totalArea;
+        const elementCenterY = rect.top + rect.height / 2;
+        const viewportCenterY = window.innerHeight / 2;
+        const distancePenalty = Math.abs(elementCenterY - viewportCenterY) / Math.max(window.innerHeight, 1);
+
+        let score = (this.isIntersecting ? 1200 : 320)
+            + (this.intersectionRatio * 240)
+            + (visibilityRatio * 320)
+            + Math.min(totalArea, 240000) / 2400
+            - (distancePenalty * 140);
+
+        if (this.element.matches(".site-header, .mobile-menu, .header-lang-dropdown, .nav-menu .sub-menu")) {
+            score += 180;
+        }
+
+        if (this.element.matches(".footer-main")) {
+            score += 80;
+        }
+
+        if (this.element.matches(".glass-button, .fs-dot, .testimonials-nav-dot")) {
+            score -= 60;
+        }
+
+        return score;
+    }
+
+    setupLayers() {
         this.backdropLayer = document.createElement("div");
         this.backdropLayer.className = "glass-backdrop-layer";
         this.backdropLayer.setAttribute("aria-hidden", "true");
@@ -388,6 +535,10 @@ class LiquidGlassFilter {
     }
 
     setupWebGL() {
+        if (this.gl && this.renderCanvas) {
+            return;
+        }
+
         this.renderCanvas = document.createElement("canvas");
         this.renderCanvas.className = "glass-render-surface";
         this.renderCanvas.setAttribute("aria-hidden", "true");
@@ -407,6 +558,21 @@ class LiquidGlassFilter {
         if (!this.gl) {
             throw new Error("WebGL is unavailable.");
         }
+
+        this.contextLostHandler = (event) => {
+            event.preventDefault();
+            this.activationBlockedUntil = performance.now() + 1500;
+            this.suspendEnhancement();
+            LiquidGlassFilter.scheduleActivationReview();
+        };
+
+        this.contextRestoredHandler = () => {
+            this.activationBlockedUntil = 0;
+            LiquidGlassFilter.scheduleActivationReview();
+        };
+
+        this.renderCanvas.addEventListener("webglcontextlost", this.contextLostHandler, false);
+        this.renderCanvas.addEventListener("webglcontextrestored", this.contextRestoredHandler, false);
 
         const vertexShaderSource = `
             attribute vec2 a_position;
@@ -521,6 +687,117 @@ class LiquidGlassFilter {
         };
     }
 
+    ensureEnhancement() {
+        if (this.isEnhancementActive) {
+            this.scheduleBuild();
+            this.scheduleRender();
+            return true;
+        }
+
+        if (!this.canUseWebGL()) {
+            return false;
+        }
+
+        try {
+            this.setupWebGL();
+            this.isEnhancementActive = true;
+            this.element.classList.add("glass-enhanced");
+            LiquidGlassFilter.activeInstances.add(this);
+            this.buildWebGLAssets();
+            this.renderWebGL();
+            return true;
+        } catch (error) {
+            this.activationBlockedUntil = performance.now() + 1500;
+            console.warn("Liquid glass WebGL activation deferred.", error);
+            this.suspendEnhancement();
+            return false;
+        }
+    }
+
+    teardownWebGL() {
+        if (this.renderCanvas) {
+            if (this.contextLostHandler) {
+                this.renderCanvas.removeEventListener("webglcontextlost", this.contextLostHandler, false);
+            }
+
+            if (this.contextRestoredHandler) {
+                this.renderCanvas.removeEventListener("webglcontextrestored", this.contextRestoredHandler, false);
+            }
+
+            if (this.renderCanvas.isConnected) {
+                this.renderCanvas.remove();
+            }
+        }
+
+        if (this.gl) {
+            try {
+                if (this.sourceTexture) {
+                    this.gl.deleteTexture(this.sourceTexture);
+                }
+
+                if (this.displacementTexture) {
+                    this.gl.deleteTexture(this.displacementTexture);
+                }
+
+                if (this.specularTexture) {
+                    this.gl.deleteTexture(this.specularTexture);
+                }
+
+                if (this.positionBuffer) {
+                    this.gl.deleteBuffer(this.positionBuffer);
+                }
+
+                if (this.texCoordBuffer) {
+                    this.gl.deleteBuffer(this.texCoordBuffer);
+                }
+
+                if (this.program) {
+                    this.gl.deleteProgram(this.program);
+                }
+            } catch (error) {
+                console.warn("Liquid glass WebGL teardown failed.", error);
+            }
+        }
+
+        this.renderCanvas = null;
+        this.gl = null;
+        this.program = null;
+        this.positionBuffer = null;
+        this.texCoordBuffer = null;
+        this.sourceTexture = null;
+        this.displacementTexture = null;
+        this.specularTexture = null;
+        this.uniforms = null;
+        this.contextLostHandler = null;
+        this.contextRestoredHandler = null;
+    }
+
+    suspendEnhancement() {
+        if (!this.isEnhancementActive) {
+            return;
+        }
+
+        if (this.buildRaf) {
+            window.cancelAnimationFrame(this.buildRaf);
+            this.buildRaf = null;
+        }
+
+        if (this.renderRaf) {
+            window.cancelAnimationFrame(this.renderRaf);
+            this.renderRaf = null;
+        }
+
+        if (this.temporarySyncRaf) {
+            window.cancelAnimationFrame(this.temporarySyncRaf);
+            this.temporarySyncRaf = null;
+        }
+
+        this.isEnhancementActive = false;
+        this.element.classList.remove("glass-enhanced");
+        LiquidGlassFilter.activeInstances.delete(this);
+        this.teardownWebGL();
+    }
+
     createProgram(vertexShaderSource, fragmentShaderSource) {
         const vertexShader = this.compileShader(this.gl.VERTEX_SHADER, vertexShaderSource);
         const fragmentShader = this.compileShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
@@ -560,6 +837,10 @@ class LiquidGlassFilter {
     }
 
     updateTexture(texture, source) {
+        if (!this.gl || !texture) {
+            return;
+        }
+
         this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
         this.gl.pixelStorei(this.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
         this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, source);
@@ -570,8 +851,10 @@ class LiquidGlassFilter {
             entries.forEach((entry) => {
                 if (entry.target === this.element) {
                     this.refreshSourceElement();
+                    LiquidGlassFilter.scheduleActivationReview();
                     this.scheduleBuild();
                 } else {
+                    LiquidGlassFilter.scheduleActivationReview();
                     this.scheduleRender();
                 }
             });
@@ -584,6 +867,7 @@ class LiquidGlassFilter {
 
         this.mutationObserver = new MutationObserver(() => {
             this.refreshSourceElement();
+            LiquidGlassFilter.scheduleActivationReview();
             this.scheduleRender();
         });
 
@@ -602,7 +886,10 @@ class LiquidGlassFilter {
     }
 
     setupTransitionSync() {
-        const startSync = () => this.startTemporarySync(this.options.transitionSyncDuration);
+        const startSync = () => {
+            LiquidGlassFilter.scheduleActivationReview();
+            this.startTemporarySync(this.options.transitionSyncDuration);
+        };
 
         this.element.addEventListener("transitionrun", startSync);
         this.element.addEventListener("transitionstart", startSync);
@@ -623,10 +910,16 @@ class LiquidGlassFilter {
 
     handleViewportChange() {
         this.refreshSourceElement();
+        LiquidGlassFilter.scheduleActivationReview();
         this.scheduleRender();
     }
 
     startTemporarySync(duration = 700) {
+        if (!this.isEnhancementActive) {
+            LiquidGlassFilter.scheduleActivationReview();
+            return;
+        }
+
         if (this.temporarySyncRaf) {
             window.cancelAnimationFrame(this.temporarySyncRaf);
             this.temporarySyncRaf = null;
@@ -648,6 +941,11 @@ class LiquidGlassFilter {
     }
 
     scheduleBuild() {
+        if (!this.isEnhancementActive) {
+            LiquidGlassFilter.scheduleActivationReview();
+            return;
+        }
+
         if (this.buildRaf) {
             return;
         }
@@ -660,6 +958,11 @@ class LiquidGlassFilter {
     }
 
     scheduleRender() {
+        if (!this.isEnhancementActive) {
+            LiquidGlassFilter.scheduleActivationReview();
+            return;
+        }
+
         if (this.renderRaf) {
             return;
         }
@@ -679,6 +982,10 @@ class LiquidGlassFilter {
     }
 
     buildWebGLAssets() {
+        if (!this.isEnhancementActive || !this.gl || !this.renderCanvas) {
+            return;
+        }
+
         this.refreshSourceElement();
 
         const { width, height } = this.measureElement();
@@ -874,7 +1181,14 @@ class LiquidGlassFilter {
     }
 
     renderWebGL() {
-        if (this.mode !== "webgl" || !this.gl) {
+        if (this.mode !== "webgl" || !this.isEnhancementActive || !this.gl) {
+            return;
+        }
+
+        if (typeof this.gl.isContextLost === "function" && this.gl.isContextLost()) {
+            this.activationBlockedUntil = performance.now() + 1500;
+            this.suspendEnhancement();
+            LiquidGlassFilter.scheduleActivationReview();
             return;
         }
 
@@ -1071,6 +1385,11 @@ class LiquidGlassFilter {
 
     disableEnhancement() {
         LiquidGlassFilter.instances.delete(this);
+        LiquidGlassFilter.activeInstances.delete(this);
+
+        if (LiquidGlassFilter.visibilityObserver && this.element) {
+            LiquidGlassFilter.visibilityObserver.unobserve(this.element);
+        }
 
         if (this.resizeObserver) {
             this.resizeObserver.disconnect();
@@ -1095,6 +1414,8 @@ class LiquidGlassFilter {
         if (this.temporarySyncRaf) {
             window.cancelAnimationFrame(this.temporarySyncRaf);
         }
+
+        this.suspendEnhancement();
 
         if (this.contentLayer && this.contentLayer.isConnected) {
             const fragment = document.createDocumentFragment();
