@@ -4,6 +4,31 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    const locale = window.location.pathname.replace(/\\/g, '/').includes('/en/')
+        || document.documentElement.lang.toLowerCase().startsWith('en')
+        ? 'en'
+        : 'de';
+    const copy = {
+        de: {
+            menuOpen: 'Menü öffnen',
+            menuClose: 'Menü schließen',
+            more: 'Mehr',
+            less: 'Weniger',
+            card: 'Karte',
+            timelineMore: 'Mehr lesen',
+            contactSuccess: 'Vielen Dank für deine Nachricht! Wir melden uns in Kürze bei dir.',
+        },
+        en: {
+            menuOpen: 'Open menu',
+            menuClose: 'Close menu',
+            more: 'More',
+            less: 'Less',
+            card: 'Card',
+            timelineMore: 'Read more',
+            contactSuccess: "Thanks for your message! We'll get back to you shortly.",
+        },
+    };
+    const t = copy[locale];
 
     // =========================================================
     // 0. HERO SLIDER (Startseite - Leistungen-Style, 5s Auto, Pfeile)
@@ -123,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             menuToggle.classList.remove('is-active');
             document.body.classList.remove('has-mobile-menu-open');
             menuToggle.setAttribute('aria-expanded', 'false');
-            menuToggle.setAttribute('aria-label', 'Menü öffnen');
+            menuToggle.setAttribute('aria-label', t.menuOpen);
             mobileMenu.setAttribute('aria-hidden', 'true');
         }
 
@@ -132,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
             menuToggle.classList.add('is-active');
             document.body.classList.add('has-mobile-menu-open');
             menuToggle.setAttribute('aria-expanded', 'true');
-            menuToggle.setAttribute('aria-label', 'Menü schließen');
+            menuToggle.setAttribute('aria-label', t.menuClose);
             mobileMenu.setAttribute('aria-hidden', 'false');
         }
 
@@ -145,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         menuToggle.setAttribute('aria-expanded', 'false');
+        menuToggle.setAttribute('aria-label', t.menuOpen);
         mobileMenu.setAttribute('aria-hidden', 'true');
 
         menuToggle.addEventListener('click', (event) => {
@@ -436,14 +462,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         var buttons = section.querySelectorAll('.lw-more-btn');
         for (i = 0; i < buttons.length; i++) {
-            buttons[i].innerHTML = 'Mehr <span class="lw-arrow">&darr;</span>';
+            buttons[i].innerHTML = t.more + ' <span class="lw-arrow">&darr;</span>';
         }
 
         // 2. Nur diese eine Karte aufklappen - Karte wächst mit, Footer bleibt unter dem Text
         if (!wasExpanded) {
             card.setAttribute('data-expanded', 'true');
             setTestimonialTextStyle(textEl, true);
-            btn.innerHTML = 'Weniger <span class="lw-arrow">&uarr;</span>';
+            btn.innerHTML = t.less + ' <span class="lw-arrow">&uarr;</span>';
         }
     }, true);
 
@@ -471,7 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
             var dot = document.createElement('button');
             dot.type = 'button';
             dot.className = 'testimonials-nav-dot';
-            dot.setAttribute('aria-label', 'Karte ' + (idx + 1));
+            dot.setAttribute('aria-label', t.card + ' ' + (idx + 1));
             dot.addEventListener('click', function () { scrollToCard(idx); });
             nav.appendChild(dot);
             dots.push(dot);
@@ -598,7 +624,7 @@ document.addEventListener('DOMContentLoaded', () => {
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'timeline-card__toggle';
-        btn.innerHTML = '<span class="timeline-card__toggle-label">Mehr lesen</span> <span class="timeline-card__toggle-arrow">\u25BC</span>';
+        btn.innerHTML = '<span class="timeline-card__toggle-label">' + t.timelineMore + '</span> <span class="timeline-card__toggle-arrow">\u25BC</span>';
         btn.setAttribute('aria-expanded', 'false');
         card.appendChild(btn);
 
@@ -610,12 +636,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     wrapper.style.maxHeight = '0';
                 });
                 card.classList.remove('is-expanded');
-                btn.querySelector('.timeline-card__toggle-label').textContent = 'Mehr lesen';
+                btn.querySelector('.timeline-card__toggle-label').textContent = t.timelineMore;
                 btn.setAttribute('aria-expanded', 'false');
             } else {
                 wrapper.style.maxHeight = wrapper.scrollHeight + 'px';
                 card.classList.add('is-expanded');
-                btn.querySelector('.timeline-card__toggle-label').textContent = 'Weniger';
+                btn.querySelector('.timeline-card__toggle-label').textContent = t.less;
                 btn.setAttribute('aria-expanded', 'true');
                 wrapper.addEventListener('transitionend', function handler() {
                     if (card.classList.contains('is-expanded')) {
@@ -839,7 +865,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (valid) {
-                alert('Vielen Dank für deine Nachricht! Wir melden uns in Kürze bei dir.');
+                alert(t.contactSuccess);
                 contactForm.reset();
             }
         });

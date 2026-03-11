@@ -310,6 +310,14 @@
   color: var(--color-white);
 }
 
+.mobile-menu a.mobile-menu-locale {
+  margin-top: 8px;
+  border-top: 1px solid rgba(144, 180, 178, 0.3);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 /* --- 6. HERO SECTION --- */
 
 .hero-sub {
