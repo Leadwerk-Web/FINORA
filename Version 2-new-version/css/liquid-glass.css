@@ -1,0 +1,301 @@
+/* ============================================================
+   FINORA - LIQUID GLASS
+   Shared fallback + WebGL enhancement layer
+   ============================================================ */
+
+:root {
+  --liquid-shadow-soft: 0 14px 40px rgba(7, 21, 32, 0.12);
+  --liquid-shadow-strong: 0 22px 56px rgba(7, 21, 32, 0.18);
+  --liquid-border-light: rgba(255, 255, 255, 0.48);
+  --liquid-border-dark: rgba(144, 180, 178, 0.34);
+}
+
+.liquid-scene {
+  position: relative;
+  isolation: isolate;
+  z-index: 0;
+}
+
+.liquid-scene.liquid-scene--textured {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.liquid-scene.liquid-scene--light.liquid-scene--textured {
+  background-image: url("../assets/images/liquid-scene-light.svg");
+}
+
+.liquid-scene.liquid-scene--dark.liquid-scene--textured {
+  background-image: url("../assets/images/liquid-scene-dark.svg");
+}
+
+.liquid-scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.72;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 30%),
+    radial-gradient(circle at 86% 12%, rgba(144, 180, 178, 0.16) 0%, rgba(144, 180, 178, 0) 34%),
+    radial-gradient(circle at 68% 80%, rgba(4, 60, 67, 0.08) 0%, rgba(4, 60, 67, 0) 34%);
+  mix-blend-mode: screen;
+  z-index: -1;
+}
+
+.liquid-panel {
+  --liquid-tint-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.08) 100%);
+  --liquid-specular-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.18) 28%, rgba(255, 255, 255, 0) 58%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0) 52%);
+  position: relative;
+  isolation: isolate;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--liquid-tint-background) !important;
+  backdrop-filter: blur(18px) saturate(145%) brightness(1.03);
+  -webkit-backdrop-filter: blur(18px) saturate(145%) brightness(1.03);
+  border: 1px solid var(--liquid-border-light) !important;
+  box-shadow:
+    var(--liquid-shadow-soft),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    inset 0 0 28px rgba(255, 255, 255, 0.05) !important;
+  transition:
+    transform 0.35s var(--ease-out-expo),
+    box-shadow 0.35s var(--ease-out-expo),
+    border-color 0.35s var(--ease-smooth),
+    background 0.35s var(--ease-smooth);
+}
+
+.liquid-panel.liquid-enhanced {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.liquid-button {
+  --liquid-tint-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.11) 100%);
+  --liquid-specular-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.58) 0%, rgba(255, 255, 255, 0.2) 30%, rgba(255, 255, 255, 0) 62%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 54%);
+  box-shadow:
+    0 10px 24px rgba(7, 21, 32, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+}
+
+.liquid-button:hover {
+  box-shadow:
+    0 16px 32px rgba(7, 21, 32, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
+}
+
+[data-glass-profile="chrome"] {
+  --liquid-tint-background:
+    linear-gradient(135deg, rgba(4, 60, 67, 0.56) 0%, rgba(38, 96, 99, 0.3) 100%);
+  --liquid-specular-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.12) 26%, rgba(255, 255, 255, 0) 58%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 48%);
+  border-color: rgba(255, 255, 255, 0.28) !important;
+}
+
+[data-glass-profile="menu"] {
+  --liquid-tint-background:
+    linear-gradient(135deg, rgba(5, 54, 60, 0.74) 0%, rgba(12, 78, 84, 0.46) 100%);
+  --liquid-specular-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.09) 24%, rgba(255, 255, 255, 0) 58%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 46%);
+  border-color: rgba(144, 180, 178, 0.28) !important;
+}
+
+[data-glass-profile="card"] {
+  --liquid-tint-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.1) 100%);
+}
+
+[data-glass-profile="button"] {
+  --liquid-tint-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.36) 0%, rgba(255, 255, 255, 0.14) 100%);
+}
+
+[data-glass-profile="chip"] {
+  --liquid-tint-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.12) 100%);
+  box-shadow:
+    0 8px 20px rgba(7, 21, 32, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+}
+
+[data-glass-profile="metric"] {
+  --liquid-tint-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.06) 100%);
+  --liquid-specular-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.12) 26%, rgba(255, 255, 255, 0) 58%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0) 48%);
+}
+
+[data-glass-profile="legal"] {
+  --liquid-tint-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.18) 100%);
+  --liquid-specular-background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.16) 30%, rgba(255, 255, 255, 0) 62%),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 54%);
+}
+
+[data-glass-profile="legal"] p,
+[data-glass-profile="legal"] li,
+[data-glass-profile="legal"] h2,
+[data-glass-profile="legal"] h3 {
+  text-shadow: none;
+}
+
+.liquid-backdrop-layer,
+.liquid-tint-layer,
+.liquid-specular-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.liquid-backdrop-layer {
+  z-index: -3;
+  overflow: hidden;
+}
+
+.liquid-render-surface {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+}
+
+.liquid-tint-layer {
+  z-index: -2;
+  background: var(--liquid-tint-background);
+}
+
+.liquid-specular-layer {
+  z-index: -1;
+  background: var(--liquid-specular-background);
+  mix-blend-mode: screen;
+  opacity: 0.64;
+}
+
+html.webgl-liquid-glass .liquid-panel {
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.06);
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.06);
+}
+
+html.webgl-liquid-glass .liquid-button {
+  backdrop-filter: blur(18px) saturate(180%) brightness(1.08);
+  -webkit-backdrop-filter: blur(18px) saturate(180%) brightness(1.08);
+}
+
+.site-header.liquid-panel {
+  background-color: transparent !important;
+  overflow: visible;
+}
+
+.header-lang-btn.liquid-button,
+.mobile-menu-toggle.liquid-button,
+.hero-slider-arrow.liquid-button,
+.hero-badge.liquid-button,
+.testimonials-nav-dot.liquid-button,
+.fs-nav-btn.liquid-button,
+.fs-item.liquid-button,
+.tab-nav button.liquid-button,
+.btn.btn-audience.liquid-button,
+.footer-contact .contact-item.liquid-panel {
+  border-color: rgba(255, 255, 255, 0.42) !important;
+}
+
+.footer-main.liquid-panel {
+  border-radius: 32px;
+  margin-top: 28px;
+  margin-bottom: 28px;
+}
+
+.footer-contact .contact-item.liquid-panel {
+  border-radius: 18px;
+  padding: 12px 14px;
+}
+
+.hero-badge.liquid-button {
+  padding-inline: 14px;
+}
+
+.btn.liquid-button,
+.header-lang-btn.liquid-button,
+.mobile-menu-toggle.liquid-button,
+.hero-slider-arrow.liquid-button,
+.fs-nav-btn.liquid-button,
+.tab-nav button.liquid-button,
+.fs-item.liquid-button,
+.btn.btn-audience.liquid-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.testimonials-nav-dot.liquid-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-form-card.liquid-panel,
+.kontakt-info-card.liquid-panel,
+.tab-panel.liquid-panel,
+.testimonial-card.liquid-panel,
+.accordion-item.liquid-panel,
+.timeline-item__card.liquid-panel,
+.pillar-card.liquid-panel,
+.audience-card.liquid-panel,
+.calc-v2__card.liquid-panel,
+.calc-v2__kpi-strip.liquid-panel,
+.hero-services .service-item.liquid-panel,
+.fs-card.liquid-panel,
+.legal-body.liquid-panel,
+.approach-tile__front.liquid-panel,
+.approach-tile__back.liquid-panel,
+.flip-card-front.liquid-panel,
+.flip-card-back.liquid-panel,
+.flip-box-front.liquid-panel,
+.flip-box-back.liquid-panel {
+  border-color: rgba(255, 255, 255, 0.36) !important;
+}
+
+.legal-body.liquid-panel {
+  padding: clamp(28px, 4vw, 40px);
+  border-radius: 32px;
+}
+
+.mobile-menu.liquid-panel {
+  border-top-width: 1px;
+}
+
+.nav-menu .sub-menu.liquid-panel,
+.header-lang-dropdown.liquid-panel,
+.mobile-menu.liquid-panel {
+  box-shadow:
+    var(--liquid-shadow-strong),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+@media (max-width: 767px) {
+  .footer-main.liquid-panel {
+    border-radius: 24px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .legal-body.liquid-panel {
+    padding: 24px 18px;
+    border-radius: 24px;
+  }
+}
