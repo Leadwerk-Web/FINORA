@@ -1542,16 +1542,20 @@
 .testimonials-track-inner {
   display: flex;
   align-items: flex-start;
+  justify-content: center;
   gap: 24px;
   width: max-content;
+  min-width: 100%;
   padding: 0;
 }
 
 .testimonials-grid {
   display: flex;
   align-items: flex-start;
+  justify-content: center;
   gap: 24px;
   flex-shrink: 0;
+  margin: 0 auto;
 }
 
 /* Dots-Navigation unterhalb des Karussells */
@@ -1647,6 +1651,13 @@
 }
 
 /* Zitat-Umbau: +Zahl% oben, „Mehr Ersparnis“, Zitat mit Mint-Linie links */
+@media (min-width: 1200px) {
+  .testimonials-track .testimonial-card {
+    width: clamp(340px, calc((100vw - 240px) / 3), 400px);
+    min-width: clamp(340px, calc((100vw - 240px) / 3), 400px);
+  }
+}
+
 .testimonial-percent {
   font-family: var(--font-heading);
   font-size: 56px;
