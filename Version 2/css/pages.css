@@ -1930,6 +1930,7 @@ html:has(body.page-immobilien) {
 
 .page-ueber .section-faq .faq-right {
     padding: 5% 4%;
+    min-height: 90vh;
 }
 
 .page-ueber .section-faq .faq-right h2 {
@@ -6775,6 +6776,7 @@ html:has(body.page-immobilien) {
 
 .page-philosophie .section-faq .faq-right {
     padding: 5% 4%;
+    min-height: 90vh;
 }
 
 .page-philosophie .section-faq .faq-right h2 {
