@@ -1131,6 +1131,7 @@
     margin-left: 130px;
     margin-bottom: 0;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    min-height: 37vh ;
   }
 }
 
