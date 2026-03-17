@@ -2621,7 +2621,7 @@ html:has(body.page-immobilien) {
 /* --- Hero: Hintergrundbild + Verlauf wie Altersvorsorge, Inline-Bild ausgeblendet --- */
 .page-investment .hero.hero--investment {
     background-position: center 25%;
-    background-image: linear-gradient(to left, rgba(4, 60, 67, 0.42) 0%, rgba(4, 60, 67, 0.62) 50%, rgba(4, 60, 67, 0.82) 100%), url('../assets/images/_X8A6656_prev.jpg') !important;
+    background-image: linear-gradient(to left, rgba(4, 60, 67, 0.42) 0%, rgba(4, 60, 67, 0.62) 50%, rgba(4, 60, 67, 0.82) 100%), url('../assets/images/X8A6656_prev.jpg') !important;
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: scroll;
