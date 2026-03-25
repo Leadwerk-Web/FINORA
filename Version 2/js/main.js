@@ -696,6 +696,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const initial = items.find(b => b.classList.contains('is-active')) || items[0];
         if (initial) activate(initial);
 
+        /** Section-Höhe = Maximum aller Karten-Inhalte (Desktop), kein Springen beim Wechsel */
+        function lockFinoraSwitchMinHeight() {
+            if (!window.matchMedia('(min-width: 981px)').matches) {
+                root.style.minHeight = '';
+                return;
+            }
+            if (!cardT || !cardB || !items.length) return;
+            const cardEl = root.querySelector('.fs-card');
+            if (cardEl) cardEl.classList.remove('fs-card--changing');
+
+            let maxH = 0;
+            items.forEach(btn => {
+                cardT.textContent = btn.dataset.title || '';
+                cardB.textContent = btn.dataset.body || '';
+                if (img && btn.dataset.img) img.src = btn.dataset.img;
+                void root.offsetHeight;
+                const h = root.offsetHeight;
+                if (h > maxH) maxH = h;
+            });
+
+            const act = items.find(b => b.classList.contains('is-active')) || items[0];
+            if (act) {
+                cardT.textContent = act.dataset.title || '';
+                cardB.textContent = act.dataset.body || '';
+                if (img && act.dataset.img) img.src = act.dataset.img;
+            }
+            root.style.minHeight = maxH + 'px';
+        }
+
+        window.addEventListener('load', () => {
+            requestAnimationFrame(() => lockFinoraSwitchMinHeight());
+        });
+        let fsResizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(fsResizeTimer);
+            fsResizeTimer = setTimeout(lockFinoraSwitchMinHeight, 200);
+        });
+
         // Desktop: Inhalt bei Hover wechseln
         items.forEach(btn => {
             btn.addEventListener('mouseenter', () => activate(btn));
