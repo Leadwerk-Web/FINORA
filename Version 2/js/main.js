@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. TESTIMONIAL EXPAND/COLLAPSE (nur die geklickte Kachel öffnen)
     // Inline-Styles setzen, damit garantiert nur eine Karte den vollen Text zeigt.
     // =========================================================
-    /* Zugeklappt: 7 Zeilen (11.9em), Verblassen per CSS; Aufklappen: Kachel öffnet nach unten, Resttext sichtbar */
+    /* Zugeklappt: 7 Zeilen (11.9em); Aufklappen: Kachel öffnet nach unten, voller Text */
     function setTestimonialTextStyle(el, expanded) {
         var s = el.style;
         if (expanded) {
@@ -392,15 +392,11 @@ document.addEventListener('DOMContentLoaded', () => {
             s.maxHeight = (el.scrollHeight + 24) + 'px';
             s.webkitLineClamp = '';
             s.display = 'block';
-            s.setProperty('mask-image', 'none');
-            s.setProperty('-webkit-mask-image', 'none');
         } else {
             s.overflow = 'hidden';
             s.maxHeight = '11.9em';
             s.webkitLineClamp = '';
             s.display = 'block';
-            s.removeProperty('mask-image');
-            s.removeProperty('-webkit-mask-image');
         }
     }
 
@@ -452,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, true);
 
     // =========================================================
-    // 4B. TESTIMONIALS CAROUSEL (Dots, Drag, Swipe)
+    // 4B. TESTIMONIALS CAROUSEL (Drag, Swipe, Autoplay — ohne Punkt-Navigation)
     // =========================================================
     document.querySelectorAll('.testimonials').forEach(function (section) {
         var track = section.querySelector('.testimonials-track');
@@ -468,19 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
         var cards = Array.from(firstGrid.querySelectorAll('.testimonial-card'));
         if (!cards.length) return;
 
-        var nav = document.createElement('div');
-        nav.className = 'testimonials-nav';
         var dots = [];
-        cards.forEach(function (_, idx) {
-            var dot = document.createElement('button');
-            dot.type = 'button';
-            dot.className = 'testimonials-nav-dot';
-            dot.setAttribute('aria-label', t.card + ' ' + (idx + 1));
-            dot.addEventListener('click', function () { scrollToCard(idx); });
-            nav.appendChild(dot);
-            dots.push(dot);
-        });
-        track.parentNode.insertBefore(nav, track.nextSibling);
 
         function getActiveIndex() {
             var trackRect = track.getBoundingClientRect();

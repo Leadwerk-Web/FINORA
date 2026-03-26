@@ -380,10 +380,10 @@
 /* Alle Hero-Sections: immer 100vh auf allen Endgeräten. Hintergrund ganz oben, Inhalt + Service-Cards im Flow. */
 .hero {
   position: relative;
-  min-height: 90vh;
-  min-height: 90dvh;
-  height: 90vh;
-  height: 90dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   padding: calc(var(--header-bar-height, 108px) + 28px) clamp(20px, 5vw, 70px) 60px;
   background: var(--color-primary-dark);
   display: flex;
@@ -400,10 +400,10 @@
 .hero.hero--immobilien,
 .hero.hero--erbanlage {
   padding: calc(var(--header-bar-height, 108px) + 28px) clamp(20px, 5vw, 70px) 60px;
-  min-height: 90vh;
-  min-height: 90dvh;
-  height: 90vh;
-  height: 90dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background-size: cover, cover;
   background-position: center, center;
@@ -416,7 +416,7 @@
 }
 
 .hero.hero--altersvorsorge {
-  background-image: url(../assets/images/X8A7339.jpg);
+  background-image: url(../assets/images/X8A7439.jpg);
 }
 
 .hero.hero--investment {
@@ -428,7 +428,7 @@
 }
 
 .hero.hero--erbanlage {
-  background-image: url(../assets/images/X8A7439.jpg);
+  background-image: url(../assets/images/X8A7339.jpg);
 }
 
 /* Hero-Varianten Über Finora / Kontakt / Philosophie: 100vh, Abstände wie Investment (70px links/rechts) */
@@ -436,10 +436,10 @@
 .hero.hero--kontakt,
 .hero.hero--philosophie {
   padding: calc(var(--header-bar-height, 108px) + 28px) clamp(20px, 5vw, 70px) 60px;
-  min-height: 90vh;
-  min-height: 90dvh;
-  height: 90vh;
-  height: 90dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -492,9 +492,9 @@
   width: 100%;
 }
 
-/* Above-the-fold: einheitliche Schriftgrößen wie Finora-Philosophie (alle Seiten mit Hero) */
+/* Above-the-fold: Hero-Titel einheitlich 72px (Desktop); kleiner in Media Queries */
 .hero .hero-text h1 {
-  font-size: clamp(32px, 5.2vw, 72px);
+  font-size: 72px;
   line-height: 1.03em;
   margin: 0 0 20px;
   padding-bottom: 10px;
@@ -639,7 +639,7 @@
 .hero-text h1 {
   font-family: var(--font-heading);
   font-weight: 200;
-  font-size: clamp(36px, 5.2vw, 78px);
+  font-size: 72px;
   color: var(--color-white);
   line-height: 1.05em;
   text-align: center;
@@ -1640,7 +1640,7 @@
   font-weight: 700;
 }
 
-/* Testimonials: Snap-Karussell mit Dots-Navigation */
+/* Testimonials: Snap-Karussell (ohne Punkt-Navigation) */
 .testimonials-track {
   position: relative;
   width: 100%;
@@ -1650,7 +1650,7 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   margin: 0 auto;
-  padding: 12px 60px 20px;
+  padding: 20px 60px 40px;
   cursor: grab;
   user-select: none;
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
@@ -1777,32 +1777,12 @@
   border-color: rgba(144, 180, 178, 0.4);
 }
 
-/* Zitat-Umbau: +Zahl% oben, „Mehr Ersparnis“, Zitat mit Mint-Linie links */
+/* Testimonial-Karten: Zitat mit Mint-Linie links */
 @media (min-width: 1200px) {
   .testimonials-track .testimonial-card {
     width: clamp(340px, calc((100vw - 240px) / 3), 400px);
     min-width: clamp(340px, calc((100vw - 240px) / 3), 400px);
   }
-}
-
-.testimonial-percent {
-  font-family: var(--font-heading);
-  font-size: 56px;
-  font-weight: 700;
-  line-height: 1.1;
-  color: #043c43;
-  margin: 0 0 4px;
-}
-
-.testimonial-ersparnis {
-  font-family: var(--font-body);
-  font-size: 18px;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: #333;
-  margin: 0 0 6px;
-  padding-bottom: 40px;
 }
 
 /* Mint-Linie über komplette Höhe des Zitats, 24px Abstand zum Text; Platz für 7 Zeilen */
@@ -1817,11 +1797,6 @@
 
 .testimonial-quote-wrap .testimonial-text {
   margin-bottom: 0;
-}
-
-/* Leadwerk-Style: Label oben (ausgeblendet wenn .testimonial-percent vorhanden) */
-.testimonial-card:has(.testimonial-percent) .testimonial-label {
-  display: none;
 }
 
 .testimonial-label {
@@ -1857,23 +1832,16 @@
   margin-bottom: 20px;
 }
 
-/* Zugeklappt: genau 7 Zeilen, Text verblasst nach unten langsam; Aufklappen per JS mit Übergang */
+/* Zugeklappt: max. 7 Zeilen, harter Abschluss (kein Verlauf über dem Text); Aufklappen per JS */
 .testimonial-card .testimonial-text {
   display: block;
   overflow: hidden;
   max-height: 11.9em;
   /* 7 Zeilen bei line-height 1.7 */
-  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%);
-  mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%);
   transition: max-height 0.45s var(--ease-smooth);
 }
 
-/* Ausgeklappt: voller Text, kein Verlauf; Zitat-Bereich wächst mit Inhalt, Karte schiebt Footer nach unten */
-.testimonial-card[data-expanded="true"] .testimonial-text {
-  -webkit-mask-image: none;
-  mask-image: none;
-}
-
+/* Ausgeklappt: voller Text per JS (max-height); Zitat-Bereich wächst mit Inhalt */
 .testimonial-card[data-expanded="true"] .testimonial-quote-wrap {
   flex: 0 1 auto;
   min-height: 0;
@@ -2622,7 +2590,7 @@
   }
 
   .hero-text h1 {
-    font-size: 84px;
+    font-size: 72px;
     max-width: 80%;
   }
 
@@ -2823,7 +2791,7 @@
   }
 
   .testimonials-track {
-    padding: 12px 20px 20px;
+    padding: 20px 20px 40px;
   }
 
   /* FAQ */
@@ -2883,7 +2851,7 @@
   }
 
   .hero-text h1 {
-    font-size: clamp(26px, 8vw, 42px);
+    font-size: clamp(26px, 8vw, 72px);
     max-width: 100%;
   }
 
@@ -3144,15 +3112,6 @@
     max-width: 200px;
   }
 
-  .testimonial-percent {
-    font-size: 40px;
-  }
-
-  .testimonial-ersparnis {
-    font-size: 18px;
-    padding-bottom: 24px;
-  }
-
   .testimonial-card {
     padding: 24px 20px;
   }
@@ -3177,7 +3136,7 @@
   }
 
   .hero-text h1 {
-    font-size: 28px;
+    font-size: clamp(22px, 8vw, 72px);
   }
 
   .hero-services .service-icon {
@@ -3238,8 +3197,10 @@
 /* 100vh, Hintergrund ab oben, symmetrische Abstände - Text/CTA gleichmäßig oben/unten */
 .page-hero {
   position: relative;
-  min-height: 90vh;
-  height: 90vh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   padding: 80px var(--container-padding) 60px;
   display: flex;
   flex-direction: column;
@@ -3287,7 +3248,7 @@
 .page-hero h1 {
   font-family: var(--font-heading);
   font-weight: 200;
-  font-size: clamp(22px, 4.2vw, 58px);
+  font-size: 72px;
   color: var(--color-white);
   line-height: 1.15em;
   margin-bottom: clamp(12px, 2vh, 20px);
@@ -4212,7 +4173,7 @@
   }
 
   .page-hero h1 {
-    font-size: 50px;
+    font-size: 72px;
   }
 
   .two-col {
@@ -4307,7 +4268,7 @@
   }
 
   .page-hero h1 {
-    font-size: clamp(26px, 7vw, 36px);
+    font-size: clamp(26px, 7vw, 72px);
   }
 
   .page-hero .hero-sub {
@@ -4459,30 +4420,40 @@
   flex: 2 1 0;
 }
 
+/* Farbe/Schatten wie Core-Satellite-Kacheln (.page-investment .approach-tile__inner) */
 .flip-box-inner {
   position: relative;
   width: 100%;
   height: 280px;
   min-height: 280px;
-  padding: 80px 24px;
+  padding: 80px 24px 28px;
   display: flex;
   flex-direction: column;
   text-align: center;
-  background: rgba(4, 60, 67, 0.48);
+  background: rgba(4, 60, 67, 0.35);
   backdrop-filter: blur(28px) saturate(1.15);
   -webkit-backdrop-filter: blur(28px) saturate(1.15);
-  border: 1px solid rgba(144, 180, 178, 0.35);
+  border: none;
   color: #ffffff;
   border-radius: 10px;
-  box-shadow: var(--img-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  transition: box-shadow 0.7s var(--ease-smooth), height 0.7s var(--ease-smooth), min-height 0.7s var(--ease-smooth);
+  box-shadow:
+    0 0 0 1px rgba(144, 180, 178, 0.22),
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition:
+    box-shadow 0.7s var(--ease-smooth),
+    height 0.7s var(--ease-smooth),
+    min-height 0.7s var(--ease-smooth);
   overflow: hidden;
 }
 
 .flip-box:hover .flip-box-inner {
-  box-shadow: var(--img-shadow-hover);
   height: 380px;
   min-height: 380px;
+  box-shadow:
+    0 0 0 1px rgba(144, 180, 178, 0.22),
+    0 20px 56px rgba(4, 60, 67, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .flip-box-front {
@@ -4527,8 +4498,11 @@
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  transform: translateY(24px);
-  transition: max-height 0.45s var(--ease-smooth), opacity 0.4s var(--ease-smooth), transform 0.55s var(--ease-smooth);
+  transform: translateY(14px);
+  transition:
+    max-height 0.58s cubic-bezier(0.33, 1, 0.68, 1),
+    opacity 0.55s cubic-bezier(0.22, 1, 0.4, 1),
+    transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
   background: transparent;
   color: rgba(255, 255, 255, 0.95);
 }
@@ -4537,7 +4511,11 @@
   max-height: 180px;
   opacity: 1;
   transform: translateY(0);
-  transition: max-height 0.45s var(--ease-smooth) 0.7s, opacity 0.4s var(--ease-smooth) 0.7s, transform 0.55s var(--ease-smooth) 0.7s;
+  /* Nach Höhen-Wachstum der Kachel (0,7s), damit Text und Höhe zusammen wirken */
+  transition:
+    max-height 0.58s cubic-bezier(0.33, 1, 0.68, 1) 0.7s,
+    opacity 0.55s cubic-bezier(0.22, 1, 0.4, 1) 0.7s,
+    transform 0.6s cubic-bezier(0.33, 1, 0.68, 1) 0.7s;
 }
 
 .flip-box-back p {

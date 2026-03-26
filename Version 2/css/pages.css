@@ -9,11 +9,13 @@
     background-color: #ffffff;
 }
 
-/* Hero: 90vh Desktop - Slider (Leistungen-Style) oder Fallback */
+/* Hero: 100vh Desktop - Slider (Leistungen-Style) oder Fallback */
 .page-home .hero {
     background-color: #043c43;
-    min-height: 90vh;
-    height: 90vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     padding: 80px 70px 60px;
     overflow: hidden;
     display: flex;
@@ -22,13 +24,15 @@
     box-sizing: border-box;
 }
 
-/* ========== Startseite: Hero-Slider - Hintergrund 100vw × 90vh (Desktop) ========== */
+/* ========== Startseite: Hero-Slider - Hintergrund 100vw × 100vh (Desktop) ========== */
 .page-home .hero.hero--slider {
     position: relative;
     background: none;
     padding: 0;
-    min-height: 90vh;
-    height: 90vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     width: 100%;
     overflow: hidden;
 }
@@ -99,15 +103,20 @@
 .page-home .hero--slider .hero-slide-title {
     font-family: var(--font-heading);
     font-weight: 200;
-    font-size: clamp(32px, 5.2vw, 72px);
+    font-size: 72px;
     line-height: 1.03em;
     color: var(--color-white);
     margin: 0 0 20px;
     padding-bottom: 10px;
 }
 
+/* Wie .hero-text h1 strong auf den Leistungsseiten (Weiß → Akzent) */
 .page-home .hero--slider .hero-slide-title strong {
     font-weight: 700;
+    background: linear-gradient(135deg, #ffffff 30%, var(--color-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .page-home .hero--slider .hero-slide-subtitle {
@@ -172,7 +181,7 @@
 /* Service-Karten: volle Hero-Breite, feste Kartengröße, großer Abstand dazwischen */
 .page-home .hero--slider .hero-services {
     position: absolute;
-    bottom: 24px;
+    bottom: 40px;
     left: 0;
     right: 0;
     width: 100%;
@@ -264,7 +273,7 @@
 .page-home .hero-text h1 {
     font-family: var(--font-heading);
     font-weight: 200;
-    font-size: clamp(32px, 5.2vw, 72px);
+    font-size: 72px;
     line-height: 1.03em;
     max-width: 100%;
     margin: 0 0 20px;
@@ -275,6 +284,10 @@
 
 .page-home .hero-text h1 strong {
     font-weight: 700;
+    background: linear-gradient(135deg, #ffffff 30%, var(--color-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .page-home .hero-subtitle {
@@ -334,7 +347,7 @@
 
     .page-home .hero-text h1 {
         max-width: 100%;
-        font-size: clamp(32px, 7.5vw, 56px);
+        font-size: clamp(32px, 7.5vw, 72px);
         margin-top: 0;
         margin-bottom: 20px;
     }
@@ -390,7 +403,7 @@
 
 @media (max-width: 480px) {
     .page-home .hero-text h1 {
-        font-size: clamp(20px, 6.5vw, 30px);
+        font-size: clamp(20px, 6.5vw, 72px);
     }
 
     .page-home .hero--slider .hero-services {
@@ -421,7 +434,7 @@
     }
 
     .page-home .hero--slider .hero-slide-title {
-        font-size: clamp(28px, 8vw, 40px);
+        font-size: clamp(28px, 8vw, 72px);
     }
 
     .page-home .hero--slider .hero-slide-subtitle {
@@ -480,7 +493,7 @@
 .page-immobilien .hero--immobilien .hero-text h1,
 .page-philosophie .hero--philosophie .hero-text h1 {
     text-align: center;
-    font-size: clamp(32px, 5vw, 56px);
+    font-size: 72px;
     font-weight: 700;
 }
 
@@ -582,7 +595,7 @@ html:has(body.page-immobilien) {
 .page-immobilien .hero--immobilien .hero-text h1 {
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 56px;
+    font-size: 72px;
     color: #ffffff !important;
     line-height: 1.03em;
     text-align: center;
@@ -1115,11 +1128,11 @@ html:has(body.page-immobilien) {
 
 .page-immobilien .adrian-quote {
     font-family: var(--font-heading);
-    font-weight: 300;
+    font-weight: 600;
     font-style: italic;
     font-size: clamp(17px, 1.6vw, 20px);
     line-height: 1.75;
-    color: #2d2d2d;
+    color: #043c43;
     margin: 0;
     padding: 0;
     border: none;
@@ -1727,8 +1740,10 @@ html:has(body.page-immobilien) {
     background-attachment: scroll;
     background-color: #043c43;
     padding: 80px 70px 60px;
-    min-height: 90vh;
-    height: 90vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1761,7 +1776,7 @@ html:has(body.page-immobilien) {
 .page-ueber .hero--ueber .hero-text h1 {
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 56px;
+    font-size: 72px;
     color: #ffffff !important;
     line-height: 1.03em;
     text-align: center;
@@ -2221,8 +2236,10 @@ html:has(body.page-immobilien) {
     background-repeat: no-repeat, no-repeat;
     background-color: #043c43;
     padding: 80px 70px 60px;
-    min-height: 90vh;
-    height: 90vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -2255,7 +2272,7 @@ html:has(body.page-immobilien) {
 .page-kontakt .hero--kontakt .hero-text h1 {
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 56px;
+    font-size: 72px;
     color: #ffffff !important;
     line-height: 1.03em;
     text-align: center;
@@ -2586,7 +2603,7 @@ html:has(body.page-immobilien) {
     }
 
     .page-kontakt .hero--kontakt .hero-text h1 {
-        font-size: 84px;
+        font-size: 72px;
         margin-top: 0;
         margin-bottom: 20px;
     }
@@ -2639,7 +2656,7 @@ html:has(body.page-immobilien) {
     }
 
     .page-kontakt .hero--kontakt .hero-text h1 {
-        font-size: 42px;
+        font-size: clamp(28px, 10vw, 72px);
         margin-top: 0;
         margin-bottom: 20px;
     }
@@ -2725,8 +2742,10 @@ html:has(body.page-immobilien) {
     background-attachment: scroll;
     background-color: #043c43;
     padding: 80px 70px 60px;
-    min-height: 90vh;
-    height: 90vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -2759,7 +2778,7 @@ html:has(body.page-immobilien) {
 .page-investment .hero--investment .hero-text h1 {
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 56px;
+    font-size: 72px;
     color: #ffffff !important;
     line-height: 1.03em;
     text-align: center;
@@ -3104,12 +3123,16 @@ html:has(body.page-immobilien) {
     position: absolute;
     z-index: 0;
     overflow: hidden;
-    transition: transform 0.4s var(--ease-smooth), opacity 0.35s var(--ease-out-expo), box-shadow 0.4s var(--ease-smooth), z-index 0s;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1), z-index 0s;
     cursor: var(--cursor-default);
     transform: scale(0.95);
     opacity: 0.85;
     box-sizing: border-box;
     border-radius: 10px;
+    /* Füllt Subpixel-Lücken unten (kein dunkler Streifen zwischen Shell und Inner) */
+    background: rgba(4, 60, 67, 0.35);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 /* 2×2 mit 16px Lücke: Zellen (100% - 16px)/2 × (440px - 16px)/2 */
@@ -3151,13 +3174,18 @@ html:has(body.page-immobilien) {
     transform: scale(1.32);
     opacity: 1;
     box-shadow: 0 20px 56px rgba(4, 60, 67, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    will-change: transform;
 }
 
 .page-investment .approach-tiles-grid:hover .approach-tile:not(:hover) {
     opacity: 0.35;
     filter: blur(2px);
-    transition: transform 0.4s var(--ease-smooth), opacity 0.3s ease, filter 0.3s ease, box-shadow 0.4s var(--ease-smooth);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease, box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Gehoverte Kachel: gleiche Opacity wie im Ruhezustand — keine zusätzliche Aufhellung */
+.page-investment .approach-tiles-grid:hover .approach-tile:hover {
+    opacity: 1;
+    filter: none;
 }
 
 /* Inner = eine Box, ein Hintergrund: Glas-Look direkt am Element */
@@ -3166,33 +3194,45 @@ html:has(body.page-immobilien) {
     inset: 0;
     width: 100%;
     height: 100%;
-    padding: 24px;
+    padding: 18px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     text-align: center;
     border-radius: 10px;
     color: #ffffff;
     background: rgba(4, 60, 67, 0.35);
     backdrop-filter: blur(28px) saturate(1.15);
     -webkit-backdrop-filter: blur(28px) saturate(1.15);
-    border: 1px solid rgba(144, 180, 178, 0.25);
+    /* 1px-Rand als Schatten: vermeidet harte/dunkle untere Anti-Alias-Kante mit backdrop-filter */
+    border: none;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    transition: box-shadow 0.5s var(--ease-smooth), height 0.5s var(--ease-smooth), min-height 0.5s var(--ease-smooth), top 0.5s var(--ease-smooth), transform 0.5s var(--ease-smooth);
+    box-shadow:
+        0 0 0 1px rgba(144, 180, 178, 0.22),
+        0 8px 32px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1), height 0.55s cubic-bezier(0.22, 1, 0.36, 1), min-height 0.55s cubic-bezier(0.22, 1, 0.36, 1), top 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
     transform-origin: top center;
+    transform: translateZ(0);
+    isolation: isolate;
 }
 
-/* Größerer grüner Block, bleibt aber handhabbar */
+/* Geöffnet: gleicher Glas-Ton wie zu — kein Nachdunkeln/Aufhellen nach Ende der Animation */
 .page-investment .approach-tile:hover .approach-tile__inner {
     height: auto;
     min-height: 100%;
     inset: 0 0 auto 0;
     justify-content: flex-start;
-    box-shadow: 0 20px 56px rgba(4, 60, 67, 0.35);
+    box-shadow:
+        0 0 0 1px rgba(144, 180, 178, 0.22),
+        0 20px 56px rgba(4, 60, 67, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
     overflow: visible;
-    background: rgba(4, 60, 67, 0.50);
+    background: rgba(4, 60, 67, 0.35);
+    backdrop-filter: blur(28px) saturate(1.15);
+    -webkit-backdrop-filter: blur(28px) saturate(1.15);
 }
 
 /* Inhalt gegen Kachel-Scale (1.32) kompensieren, damit Schriftgröße gleich bleibt */
@@ -3210,13 +3250,14 @@ html:has(body.page-immobilien) {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 0 0 16px;
-    gap: 12px;
+    padding: 0 0 4px;
+    gap: 4px;
     background: transparent;
 }
 
 .page-investment .approach-tile__front {
     flex-shrink: 0;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .page-investment .approach-tile__front h4 {
@@ -3228,29 +3269,53 @@ html:has(body.page-immobilien) {
     color: #ffffff;
 }
 
-/* Fließtext wie Philosophie: max-height 0 → 220px, von unten einblenden mit Verzögerung */
+/* Fließtext: Höhe zuerst, dann weiches Einblenden (Opacity + leichter Blur) */
 .page-investment .approach-tile__back {
-    padding: 8px 0 0;
+    padding: 0;
     max-height: 0;
     opacity: 0;
     overflow: hidden;
-    transform: translateY(20px);
-    transition: max-height 0.4s var(--ease-smooth), opacity 0.6s var(--ease-smooth), transform 0.6s var(--ease-smooth);
+    transform: translateY(6px);
+    filter: blur(4px);
+    transform-origin: top center;
+    transition:
+        max-height 0.65s cubic-bezier(0.33, 1, 0.68, 1),
+        opacity 0.55s cubic-bezier(0.33, 1, 0.68, 1),
+        transform 0.55s cubic-bezier(0.33, 1, 0.68, 1),
+        filter 0.45s ease-out;
 }
 
 .page-investment .approach-tile:hover .approach-tile__back {
     max-height: 300px;
     opacity: 1;
     transform: translateY(0) scale(0.758);
-    transform-origin: top center;
-    transition: max-height 0.35s var(--ease-smooth) 0.3s, opacity 0.5s var(--ease-smooth) 0.3s, transform 0.5s var(--ease-smooth) 0.3s;
+    filter: blur(0);
+    transition:
+        max-height 0.72s cubic-bezier(0.33, 1, 0.68, 1) 0.04s,
+        opacity 0.9s cubic-bezier(0.22, 1, 0.4, 1) 0.12s,
+        transform 0.8s cubic-bezier(0.33, 1, 0.68, 1) 0.1s,
+        filter 0.65s cubic-bezier(0.22, 1, 0.45, 1) 0.1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-investment .approach-tile__back {
+        filter: none;
+        transform: none;
+        transition: max-height 0.35s ease, opacity 0.25s ease;
+    }
+
+    .page-investment .approach-tile:hover .approach-tile__back {
+        filter: none;
+        transform: scale(0.758);
+        transition: max-height 0.35s ease, opacity 0.25s ease 0.05s;
+    }
 }
 
 .page-investment .approach-tile__back p {
     font-family: var(--font-body);
     font-weight: 300;
     font-size: 18px;
-    line-height: 1.8em;
+    line-height: 1.65em;
     margin: 0;
     color: #ffffff;
 }
@@ -3868,6 +3933,8 @@ html:has(body.page-immobilien) {
         position: relative;
         inset: auto;
         min-height: 180px;
+        padding: 16px 18px;
+        gap: 6px;
     }
 
     .page-investment .approach-tile:hover .approach-tile__inner {
@@ -3982,6 +4049,8 @@ html:has(body.page-immobilien) {
 
     .page-investment .approach-tile__inner {
         min-height: 140px;
+        padding: 14px 16px;
+        gap: 4px;
     }
 
     .page-investment .approach-tile:hover .approach-tile__inner {
@@ -4050,15 +4119,17 @@ html:has(body.page-immobilien) {
 
 /* --- Hero: Hintergrundbild + Verlauf wie Altersvorsorge, Parallax --- */
 .page-erbanlage .hero.hero--erbanlage {
-    background-image: linear-gradient(to left, rgba(4, 60, 67, 0.42) 0%, rgba(4, 60, 67, 0.62) 50%, rgba(4, 60, 67, 0.82) 100%), url('../assets/images/X8A7439.jpg') !important;
+    background-image: linear-gradient(to left, rgba(4, 60, 67, 0.42) 0%, rgba(4, 60, 67, 0.62) 50%, rgba(4, 60, 67, 0.82) 100%), url('../assets/images/X8A7339.jpg') !important;
     background-size: cover, cover;
     background-position: center, center;
     background-repeat: no-repeat, no-repeat;
     background-attachment: scroll;
     background-color: #043c43;
     padding: 80px 70px 60px;
-    min-height: 90vh;
-    height: 90vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -4091,7 +4162,7 @@ html:has(body.page-immobilien) {
 .page-erbanlage .hero--erbanlage .hero-text h1 {
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 56px;
+    font-size: 72px;
     color: #ffffff !important;
     line-height: 1.03em;
     text-align: center;
@@ -5094,17 +5165,19 @@ html:has(body.page-immobilien) {
     background: #ffffff;
 }
 
-/* --- Hero: 90vh Desktop, Hintergrundbild - Verlauf von rechts nach links --- */
+/* --- Hero: 100vh Desktop, Hintergrundbild - Verlauf von rechts nach links --- */
 .page-altersvorsorge .hero.hero--altersvorsorge {
-    background-image: linear-gradient(to left, rgba(4, 60, 67, 0.42) 0%, rgba(4, 60, 67, 0.62) 50%, rgba(4, 60, 67, 0.82) 100%), url('../assets/images/X8A7339.jpg') !important;
+    background-image: linear-gradient(to left, rgba(4, 60, 67, 0.42) 0%, rgba(4, 60, 67, 0.62) 50%, rgba(4, 60, 67, 0.82) 100%), url('../assets/images/X8A7439.jpg') !important;
     background-size: cover, cover;
     background-position: center, center;
     background-repeat: no-repeat, no-repeat;
     background-attachment: scroll;
     background-color: #043c43;
     padding: 80px 70px 60px;
-    min-height: 90vh;
-    height: 90vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -5137,7 +5210,7 @@ html:has(body.page-immobilien) {
 .page-altersvorsorge .hero--altersvorsorge .hero-text h1 {
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 56px;
+    font-size: 72px;
     color: #ffffff !important;
     line-height: 1.03em;
     text-align: center;
@@ -6197,8 +6270,10 @@ html:has(body.page-immobilien) {
     background-attachment: scroll;
     background-color: #043c43;
     padding: 80px 70px 60px;
-    min-height: 90vh;
-    height: 90vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -6231,7 +6306,7 @@ html:has(body.page-immobilien) {
 .page-philosophie .hero--philosophie .hero-text h1 {
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 56px;
+    font-size: 72px;
     color: #ffffff !important;
     line-height: 1.03em;
     text-align: center;
@@ -6672,140 +6747,26 @@ html:has(body.page-immobilien) {
     margin-top: 80px;
 }
 
-/* Philosophie Mega-Trend-Kacheln: vertikal zentriert, gehoverte öffnet sich nach oben und unten */
-.page-philosophie .megatrend-grid {
+/* Philosophie Mega-Trends: gleiche Markup/Logik wie Erbanlage (.flipbox-grid / .flip-box in components.css) */
+.page-philosophie .megatrend-grid.flipbox-grid {
     margin-top: 40px;
-    display: flex;
-    gap: 24px;
-    align-items: center;
-    flex-wrap: wrap;
 }
 
-.page-philosophie .flip-card {
-    flex: 1 1 0;
-    min-width: 180px;
-    min-height: 0;
-    perspective: none;
-    transition: transform 0.5s var(--ease-smooth), opacity 0.5s var(--ease-smooth), flex 0.6s var(--ease-smooth), margin-top 0.5s var(--ease-smooth);
-    cursor: var(--cursor-default);
-    transform: scale(0.95);
-    opacity: 0.8;
-    transform-origin: center center;
-}
-
-.page-philosophie .flip-card:hover {
-    flex: 2 1 0;
-    transform: scale(1.06);
-    opacity: 1;
-    margin-top: -15px;
-}
-
-/* Nach Scroll (anim.is-visible) Kacheln weiterhin 0.8, nur bei Hover 1 */
-.page-philosophie .flip-card.anim.is-visible {
-    opacity: 0.8;
-}
-
-.page-philosophie .flip-card.anim.is-visible:hover {
-    opacity: 1;
-}
-
-.page-philosophie .flip-card-inner {
-    position: relative;
-    width: 100%;
-    height: 280px;
-    min-height: 280px;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
+/* Farbe/Schatten der Kachel: wie Core-Satellite (components .flip-box-inner); nur Icon/Typo hier */
+.page-philosophie .megatrend-grid .flip-box-icon {
     color: #ffffff;
-    background: rgba(4, 60, 67, 0.40);
-    backdrop-filter: blur(28px) saturate(1.15);
-    -webkit-backdrop-filter: blur(28px) saturate(1.15);
-    border: 1px solid rgba(144, 180, 178, 0.25);
-    box-shadow: var(--img-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    transition: box-shadow 0.5s var(--ease-smooth), height 0.5s var(--ease-smooth), min-height 0.5s var(--ease-smooth);
-    overflow: hidden;
-}
-
-/* Gehoverte Kachel öffnet sich nach oben und unten (+50px oben, +50px unten) */
-.page-philosophie .flip-card:hover .flip-card-inner {
-    box-shadow: var(--img-shadow-hover);
-    height: 380px;
-    min-height: 380px;
-}
-
-.page-philosophie .flip-card-front,
-.page-philosophie .flip-card-back {
-    position: static;
-    inset: auto;
-    padding: 0 0 16px;
-    backface-visibility: visible;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 12px;
-    background: transparent;
-}
-
-.page-philosophie .flip-card-front {
-    flex-shrink: 0;
-}
-
-.page-philosophie .flip-card-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 56px;
-    font-size: 32px;
-    color: #ffffff;
-    line-height: 1;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
+    border-color: rgba(255, 255, 255, 0.2);
     background: rgba(255, 255, 255, 0.12);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-.page-philosophie .flip-card-icon i {
-    font-size: inherit;
-}
-
-.page-philosophie .flip-card-front h4 {
-    font-family: var(--font-heading);
-    font-weight: 600;
+.page-philosophie .megatrend-grid .flip-box-front h4 {
     font-size: 18px;
     line-height: 1.2em;
-    margin: 0;
 }
 
-.page-philosophie .flip-card-back {
-    padding: 8px 0 0;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transform: translateY(20px);
-    transition: max-height 0.4s var(--ease-smooth), opacity 0.6s var(--ease-smooth), transform 0.6s var(--ease-smooth);
-}
-
-/* Fließtext erst nach vollständig geöffneter Box (0.5s) langsam von unten einblenden */
-.page-philosophie .flip-card:hover .flip-card-back {
-    max-height: 220px;
-    opacity: 1;
-    transform: translateY(0);
-    transition: max-height 0.35s var(--ease-smooth) 0.5s, opacity 0.65s var(--ease-smooth) 0.5s, transform 0.65s var(--ease-smooth) 0.5s;
-}
-
-.page-philosophie .flip-card-back p {
-    font-family: var(--font-body);
-    font-weight: 300;
-    font-size: 18px;
+.page-philosophie .megatrend-grid .flip-box-back p {
     line-height: 1.8em;
-    margin: 0;
 }
 
 .page-philosophie .invest-outro p {
@@ -7112,18 +7073,6 @@ html:has(body.page-immobilien) {
         max-width: 100%;
     }
 
-    .page-philosophie .megatrend-grid {
-        flex-direction: column;
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .page-philosophie .flip-card,
-    .page-philosophie .flip-card:hover {
-        flex: 1 1 auto;
-        min-width: 0;
-    }
-
     .page-philosophie .steps-grid {
         margin-bottom: 120px;
     }
@@ -7240,30 +7189,14 @@ html:has(body.page-immobilien) {
 
 @media (hover: none),
 (pointer: coarse) {
-    .page-philosophie .flip-card .flip-card-inner {
-        height: auto;
-        min-height: 280px;
-    }
-
-    .page-philosophie .flip-card .flip-card-back {
-        max-height: 220px;
-        opacity: 1;
-        transform: translateY(0);
-        transition: none;
-    }
-
-    .page-philosophie .flip-card.anim.is-visible {
-        opacity: 1;
-    }
-
     .page-investment .approach-tile__inner {
         position: relative;
         inset: auto;
         height: auto;
         min-height: 0;
-        padding: 20px 18px;
+        padding: 16px 18px;
         justify-content: flex-start;
-        gap: 12px;
+        gap: 6px;
     }
 
     .page-investment .approach-tile {
@@ -7604,6 +7537,8 @@ html:has(body.page-immobilien) {
     .page-erbanlage .hero.hero--erbanlage,
     .page-immobilien .hero.hero--immobilien,
     .page-philosophie .hero.hero--philosophie {
+        min-height: max(560px, 100vh);
+        min-height: max(560px, 100dvh);
         min-height: max(560px, 100svh);
         height: auto !important;
         padding: 100px clamp(20px, 5vw, 32px) clamp(28px, 7vw, 44px) !important;
@@ -7653,7 +7588,7 @@ html:has(body.page-immobilien) {
         max-width: 11ch;
         margin: 0 0 14px !important;
         padding-bottom: 0 !important;
-        font-size: clamp(2.25rem, 9vw, 3.5rem) !important;
+        font-size: clamp(2.25rem, 9vw, 4.5rem) !important;
         line-height: 0.98 !important;
         text-align: left !important;
     }
@@ -7726,7 +7661,7 @@ html:has(body.page-immobilien) {
 
     .page-home .hero--slider .hero-slide-title {
         margin-bottom: 14px;
-        font-size: clamp(2.25rem, 10vw, 3.25rem);
+        font-size: clamp(2.25rem, 10vw, 4.5rem);
     }
 
     .page-home .hero--slider .hero-slide-subtitle {
@@ -7769,7 +7704,7 @@ html:has(body.page-immobilien) {
     }
 
     .testimonials-track {
-        padding: 8px 12px 14px !important;
+        padding: 20px 12px 40px !important;
         cursor: auto;
         -webkit-mask-image: none !important;
         mask-image: none !important;
@@ -7786,22 +7721,9 @@ html:has(body.page-immobilien) {
         padding: 24px 20px;
     }
 
-    .testimonial-percent {
-        font-size: 42px;
-    }
-
-    .testimonial-ersparnis {
-        padding-bottom: 18px;
-        font-size: 18px;
-    }
-
     .testimonial-quote-wrap {
         min-height: 0;
         padding-left: 18px;
-    }
-
-    .testimonials-nav {
-        margin-top: 20px;
     }
 
     .timeline-card__toggle {
@@ -7995,9 +7917,10 @@ html:has(body.page-immobilien) {
 
 @media (max-width: 767px) {
     .page-home .hero.hero--slider {
-        min-height: 0;
-        height: 80vh;
-        height: 80dvh;
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: 100vh;
+        height: 100dvh;
     }
 
     .page-home .hero--slider .hero-slide-content {
@@ -8008,7 +7931,7 @@ html:has(body.page-immobilien) {
     }
 
     .page-home .hero--slider .hero-slide-title {
-        font-size: clamp(2rem, 9vw, 2.75rem);
+        font-size: clamp(2rem, 9vw, 4.5rem);
     }
 
     .page-home .hero--slider .hero-slide-subtitle {
@@ -8022,7 +7945,9 @@ html:has(body.page-immobilien) {
     .page-erbanlage .hero.hero--erbanlage,
     .page-immobilien .hero.hero--immobilien,
     .page-philosophie .hero.hero--philosophie {
-        min-height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        min-height: 100svh;
         padding-top: 94px !important;
         padding-right: 20px !important;
         padding-left: 20px !important;
@@ -8039,7 +7964,7 @@ html:has(body.page-immobilien) {
     .page-immobilien .hero--immobilien .hero-text h1,
     .page-philosophie .hero--philosophie .hero-text h1 {
         max-width: 9ch;
-        font-size: clamp(2rem, 10vw, 2.85rem) !important;
+        font-size: clamp(2rem, 10vw, 4.5rem) !important;
     }
 
     .page-investment .hero--investment .hero-text h1,
@@ -8082,9 +8007,10 @@ html:has(body.page-immobilien) {
 
 @media (max-width: 480px) {
     .page-home .hero.hero--slider {
-        min-height: 0;
-        height: 80vh;
-        height: 80dvh;
+        min-height: 100vh;
+        min-height: 100dvh;
+        height: 100vh;
+        height: 100dvh;
     }
 
     .page-home .hero--slider .hero-slide-content {
@@ -8098,7 +8024,7 @@ html:has(body.page-immobilien) {
     .page-home .hero--slider .hero-slide-title {
         max-width: 8ch;
         margin-bottom: 10px;
-        font-size: clamp(2.1rem, 10vw, 2.8rem);
+        font-size: clamp(1.75rem, 9vw, 4.5rem);
         line-height: 0.98;
     }
 
@@ -8159,7 +8085,7 @@ html:has(body.page-immobilien) {
     .page-erbanlage .hero--erbanlage .hero-text h1,
     .page-immobilien .hero--immobilien .hero-text h1,
     .page-philosophie .hero--philosophie .hero-text h1 {
-        font-size: 32px !important;
+        font-size: clamp(28px, 12vw, 72px) !important;
     }
 }
 
