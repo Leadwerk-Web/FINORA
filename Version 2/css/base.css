@@ -17,9 +17,11 @@
   --color-muted: #5B6D6B;
   --color-scrollbar-track: #7a8a88; /* dunkler Finora-Ton für Scrollbar-Track */
 
-  /* Typography */
-  --font-heading: 'Plus Jakarta Sans', Helvetica, Arial, Lucida, sans-serif;
+  /* Typography — einheitlich Montserrat; Fließtext-Basis 18px */
+  --font-heading: 'Montserrat', Helvetica, Arial, Lucida, sans-serif;
   --font-body: 'Montserrat', Helvetica, Arial, Lucida, sans-serif;
+  --font-size-text: 18px;
+  --font-size-h2: 50px;
 
   /* Spacing (8px grid) */
   --space-xs: 8px;
@@ -89,8 +91,9 @@
   --container-padding: clamp(20px, 4vw, 32px);
   --container-padding-sm: clamp(16px, 3vw, 20px);
 
-  /* Header height - Hero startet darunter (kein Überlappen) */
+  /* Header: fixiert über Inhalt; dynamische Höhe per JS (--header-bar-height) */
   --header-height: 72px;
+  --header-bar-height: 108px;
 
   /* Custom cursor: Cursor.svg in mittlerem Petrol (#266063), Hotspot an der Pfeilspitze */
   --cursor-default: url("../assets/images/Cursor.svg") 24 21, auto;
@@ -119,6 +122,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-bar-height, 108px) + 12px);
   overflow-x: hidden;
   background: var(--color-primary-dark);
   scrollbar-color: var(--color-teal) var(--color-scrollbar-track); /* Firefox: Thumb | Track (dunkler Finora) */
@@ -128,7 +132,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-body);
-  font-size: clamp(14px, 0.45vw + 12px, 15px);
+  font-size: var(--font-size-text);
   font-weight: 300;
   line-height: 1.8em;
   color: var(--color-text);
@@ -188,6 +192,8 @@ h1, h2, h3, h4, h5, h6 {
 
 h2 {
   color: #191919;
+  font-size: var(--font-size-h2);
+  line-height: 1.2;
 }
 
 p {

@@ -5,27 +5,43 @@
 
 /* --- 5. HEADER --- */
 .site-header {
-  position: sticky;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
+  width: 100%;
   z-index: 9999;
-  background-color: rgba(4, 60, 67, 0.88);
-  background-image: none;
-  backdrop-filter: blur(24px) saturate(1.5);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  border-bottom: 1px solid rgba(144, 180, 178, 0.15);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
-  transition: background-color 0.6s var(--ease-smooth),
-    border-color 0.6s var(--ease-smooth),
-    box-shadow 0.6s var(--ease-smooth);
+  background: rgba(4, 60, 67, 0.38);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(4, 60, 67, 0.22) 100%
+  );
+  backdrop-filter: blur(22px) saturate(1.45);
+  -webkit-backdrop-filter: blur(22px) saturate(1.45);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 8px 32px rgba(0, 0, 0, 0.12);
+  transition: background 0.45s var(--ease-smooth),
+    border-color 0.45s var(--ease-smooth),
+    box-shadow 0.45s var(--ease-smooth),
+    backdrop-filter 0.45s var(--ease-smooth);
   padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .site-header.is-scrolled {
-  background-color: rgba(4, 60, 67, 0.88);
-  border-bottom-color: rgba(144, 180, 178, 0.15);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+  background: rgba(4, 60, 67, 0.78);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(4, 60, 67, 0.5) 100%
+  );
+  backdrop-filter: blur(28px) saturate(1.55);
+  -webkit-backdrop-filter: blur(28px) saturate(1.55);
+  border-bottom-color: rgba(144, 180, 178, 0.22);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 12px 40px rgba(0, 0, 0, 0.18);
 }
 
 /* Gleiche Breite wie Inhaltsbereich (70px wie Hero) - Logo und Inhalt bilden eine vertikale Linie */
@@ -34,9 +50,14 @@
   align-items: center;
   width: 100%;
   margin: 0 auto;
-  padding: 25px 70px;
+  padding: 22px 70px;
   z-index: 3;
   box-sizing: border-box;
+  transition: padding 0.4s var(--ease-out-expo);
+}
+
+.site-header.is-scrolled .header-row {
+  padding: 12px 70px;
 }
 
 .header-logo {
@@ -47,6 +68,30 @@
 .header-logo img {
   max-width: 100%;
   height: auto;
+  display: block;
+  transform-origin: left center;
+  transition: transform 0.4s var(--ease-out-expo);
+}
+
+.site-header.is-scrolled .header-logo img {
+  transform: scale(0.86);
+}
+
+.site-header.is-scrolled .nav-menu li>a {
+  padding: 8px 28px;
+}
+
+.site-header.is-scrolled .nav-menu li>a::after {
+  bottom: 5px;
+}
+
+.site-header.is-scrolled .header-cta .icon-phone {
+  font-size: 24px;
+}
+
+/* Erster Inhaltsblock ohne Hero (z. B. Impressum/Datenschutz) unter fixem Header */
+.site-header+.content-section {
+  padding-top: max(2rem, calc(var(--header-bar-height, 108px) + 28px));
 }
 
 .header-nav {
@@ -80,7 +125,7 @@
   border-radius: 10px;
   color: var(--color-white);
   font-family: var(--font-heading);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 500;
   cursor: var(--cursor-pointer);
   transition: background 0.25s var(--ease-smooth), border-color 0.25s var(--ease-smooth), color 0.25s var(--ease-smooth);
@@ -138,7 +183,7 @@
   padding: 10px 18px;
   color: var(--color-white);
   font-family: var(--font-heading);
-  font-size: 15px;
+  font-size: 18px;
   transition: background 0.2s, color 0.2s;
 }
 
@@ -173,7 +218,7 @@
 
 .nav-menu li a {
   font-family: var(--font-heading);
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 300;
   color: var(--color-white) !important;
   padding: 12px 28px;
@@ -248,7 +293,7 @@
 }
 
 .nav-menu li .sub-menu li a {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 300;
   padding: 12px 25px;
   border-bottom: 1px solid rgba(144, 180, 178, 0.2);
@@ -301,13 +346,13 @@
   padding: 12px 20px;
   color: var(--color-white);
   font-family: var(--font-heading);
-  font-size: 16px;
+  font-size: 18px;
   border-bottom: 1px solid rgba(144, 180, 178, 0.3);
 }
 
 .mobile-menu .sub-menu a {
   padding-left: 40px;
-  font-size: 14px;
+  font-size: 18px;
   color: var(--color-white);
 }
 
@@ -339,13 +384,14 @@
   min-height: 90dvh;
   height: 90vh;
   height: 90dvh;
-  padding: 80px clamp(20px, 5vw, 70px) 60px;
+  padding: calc(var(--header-bar-height, 108px) + 28px) clamp(20px, 5vw, 70px) 60px;
   background: var(--color-primary-dark);
   display: flex;
   flex-direction: column;
   justify-content: center;
   overflow: hidden;
   box-sizing: border-box;
+  transition: padding-top 0.4s var(--ease-out-expo);
 }
 
 /* Inner page heroes: 100vh, Abstände wie Über Finora (70px links/rechts), overflow hidden */
@@ -353,16 +399,16 @@
 .hero.hero--investment,
 .hero.hero--immobilien,
 .hero.hero--erbanlage {
-  padding: 80px clamp(20px, 5vw, 70px) 60px;
+  padding: calc(var(--header-bar-height, 108px) + 28px) clamp(20px, 5vw, 70px) 60px;
   min-height: 90vh;
   min-height: 90dvh;
   height: 90vh;
   height: 90dvh;
   overflow: hidden;
-  background-size: cover;
-  background-position: center;
+  background-size: cover, cover;
+  background-position: center, center;
   background-attachment: scroll;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat, no-repeat;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -370,7 +416,7 @@
 }
 
 .hero.hero--altersvorsorge {
-  background-image: url(../assets/images/X8A7478.jpg);
+  background-image: url(../assets/images/X8A7339.jpg);
 }
 
 .hero.hero--investment {
@@ -389,7 +435,7 @@
 .hero.hero--ueber,
 .hero.hero--kontakt,
 .hero.hero--philosophie {
-  padding: 80px clamp(20px, 5vw, 70px) 60px;
+  padding: calc(var(--header-bar-height, 108px) + 28px) clamp(20px, 5vw, 70px) 60px;
   min-height: 90vh;
   min-height: 90dvh;
   height: 90vh;
@@ -455,7 +501,7 @@
 }
 
 .hero .hero-subtitle {
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.8em;
   margin: 0 0 24px;
 }
@@ -559,7 +605,7 @@
   margin: 0 auto 12px;
   padding: 4px 12px 5px;
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: 18px;
   font-weight: 500;
   letter-spacing: 0.03em;
   color: rgba(255, 255, 255, 0.9);
@@ -614,7 +660,7 @@
 .hero-subtitle {
   font-family: var(--font-heading);
   font-weight: 200;
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.8em;
   color: rgba(255, 255, 255, 0.85);
   text-align: center;
@@ -767,16 +813,25 @@
   border: none;
   box-shadow: none;
   position: relative;
+  box-sizing: border-box;
+  text-decoration: none;
   transition: transform 0.5s var(--ease-out-expo),
     box-shadow 0.5s var(--ease-out-expo),
     background 0.4s var(--ease-smooth);
-  cursor: default;
+  cursor: pointer;
 }
 
 .hero-services .service-item:hover {
   transform: translateY(-6px) scale(1.05);
   box-shadow: var(--glow-accent);
   background: rgba(144, 180, 178, 0.26);
+  opacity: 1;
+}
+
+.hero-services .service-item:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  opacity: 1;
 }
 
 .hero-services .service-icon {
@@ -914,7 +969,7 @@
   min-height: 0;
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.75em;
   margin-bottom: var(--space-md);
   color: var(--color-muted);
@@ -994,7 +1049,7 @@
   position: relative;
   z-index: 2;
   max-width: clamp(280px, 46vw, 495px);
-  margin: clamp(-260px, -26vw, -180px) 0 0 clamp(40px, 6vw, 80px);
+  margin: calc(clamp(-260px, -26vw, -180px) + 110px) 0 0 clamp(40px, 6vw, 80px);
   padding: clamp(18px, 2.4vw, 28px) clamp(18px, 2.6vw, 32px);
   background: rgba(4, 60, 67, 0.45);
   backdrop-filter: blur(24px) saturate(1.4);
@@ -1023,7 +1078,7 @@
 .fs-body {
   color: var(--color-white);
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.6;
   font-weight: 400;
   margin: 0;
@@ -1108,7 +1163,7 @@
 /* Desktop overrides */
 @media (min-width: 981px) {
   .fs-visual img {
-    transform: scale(0.7);
+    transform: scale(0.8);
     transform-origin: left top;
     transition: transform 0.4s ease, opacity 0.4s ease;
   }
@@ -1125,7 +1180,7 @@
     border-radius: 32px 32px 10vw 32px;
     overflow: hidden;
     padding: 48px 48px 40px 48px;
-    margin-top: -480px;
+    margin-top: -370px;
     margin-left: 130px;
     margin-bottom: 0;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -1176,15 +1231,17 @@
 
 .why-finora-left .subtitle {
   font-family: var(--font-heading);
-  font-size: 17px;
+  font-size: 21px;
+  font-weight: 500;
   line-height: 1.6em;
-  color: var(--color-text);
+  color: #191919;
+  padding-top: 10px;
 }
 
 .why-finora-left .about-text {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.8em;
   margin: 50px 0 60px;
 }
@@ -1230,7 +1287,7 @@
   min-width: 36px;
   height: 36px;
   margin-right: 15px;
-  font-size: 14px;
+  font-size: 18px;
   color: var(--color-accent);
   background: rgba(144, 180, 178, 0.08);
   border: 1px solid rgba(144, 180, 178, 0.15);
@@ -1259,7 +1316,7 @@
 .blurb-content p {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.75em;
   color: var(--color-muted);
 }
@@ -1769,7 +1826,7 @@
 
 .testimonial-label {
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1794,7 +1851,7 @@
 .testimonial-text {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.7em;
   color: #333;
   margin-bottom: 20px;
@@ -1841,7 +1898,7 @@
   background: rgba(144, 180, 178, 0.25);
   color: #043c43;
   font-family: var(--font-heading);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.02em;
   display: flex;
@@ -1858,7 +1915,7 @@
 
 .testimonial-role {
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 18px;
   color: #666;
   font-weight: 400;
 }
@@ -1868,7 +1925,7 @@
   background: none;
   border: none;
   color: #2d7a7e;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   font-family: var(--font-heading);
   cursor: var(--cursor-pointer);
@@ -1890,17 +1947,18 @@
 .faq .row {
   display: flex;
   flex-wrap: wrap;
-  min-height: 100vh;
+  align-items: stretch;
 }
 
 .faq-left {
-  width: 40%;
-  background-position: right 26% center;
-  background-size: contain;
+  width: 45%;
+  background-position: center top;
+  background-size: cover;
   background-repeat: no-repeat;
   border-radius: 0 0 10vw 0;
   overflow: hidden;
-  min-height: 500px;
+  min-height: 0;
+  align-self: stretch;
 }
 
 .faq-left--no-image {
@@ -1909,8 +1967,12 @@
 }
 
 .faq-right {
-  width: 60%;
-  padding: 5% 4%;
+  width: 55%;
+  padding: 5% 5%;
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  box-sizing: border-box;
 }
 
 .faq-right h2 {
@@ -2000,7 +2062,7 @@
   padding-top: 0;
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.8em;
   transition: max-height 0.4s var(--ease-out-expo), padding-top 0.3s var(--ease-smooth);
 }
@@ -2016,6 +2078,60 @@
 
 .accordion-content p strong {
   font-weight: 700;
+}
+
+/* --- 12b. BACK TO TOP (sitewide, main.js) --- */
+.back-to-top {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  z-index: 10000;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-teal);
+  color: var(--color-white);
+  box-shadow: var(--shadow-md);
+  cursor: var(--cursor-pointer);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.35s var(--ease-smooth),
+    visibility 0.35s var(--ease-smooth),
+    transform 0.35s var(--ease-out-expo),
+    background-color 0.25s var(--ease-smooth),
+    box-shadow 0.25s var(--ease-smooth);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  background: var(--color-accent);
+  color: var(--color-primary-dark);
+  box-shadow: var(--shadow-lg);
+}
+
+.back-to-top:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.back-to-top i {
+  font-size: 1.1rem;
+  line-height: 1;
 }
 
 /* --- 13. FOOTER --- */
@@ -2073,14 +2189,15 @@
 .footer-desc {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.8em;
   color: var(--color-white);
 }
 
 .footer-col h4 {
   font-family: var(--font-heading);
-  font-size: 25px;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--color-white);
   margin-top: 50px;
   margin-bottom: 20px;
@@ -2091,7 +2208,7 @@
   color: var(--color-white);
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .footer-col ul li a {
@@ -2130,14 +2247,14 @@
   font-family: ETmodules;
   font-weight: 400;
   color: var(--color-white);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.8em;
 }
 
 .footer-contact p {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.8em;
   color: var(--color-white);
 }
@@ -2160,7 +2277,7 @@
   color: var(--color-white);
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: clamp(13px, 3.5vw, 16px);
+  font-size: 15px;
 }
 
 .footer-bottom a {
@@ -2617,7 +2734,7 @@
 
   .fs-count {
     font-family: var(--font-body);
-    font-size: 12px;
+    font-size: 18px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--color-white);
@@ -2633,7 +2750,7 @@
 
   .fs-card {
     max-width: none;
-    margin: 18px 16px 24px 16px;
+    margin: 128px 16px 24px 16px;
     border-radius: 32px 32px 48px 32px;
     padding: 24px 22px 28px 22px;
   }
@@ -2658,10 +2775,6 @@
 
   .why-finora-left h2 {
     font-size: 45px;
-  }
-
-  .why-finora-left .subtitle {
-    font-size: 21px;
   }
 
   .why-finora-left .about-text h3 {
@@ -2721,11 +2834,13 @@
   .faq-left {
     width: 100%;
     min-height: 300px;
+    background-size: cover;
+    background-position: center top;
   }
 
   .faq-right {
     width: 100%;
-    padding: 40px 20px;
+    padding: 40px 5%;
   }
 
   .faq-right h2 {
@@ -2902,7 +3017,7 @@
   }
 
   .how-step p {
-    font-size: 15px;
+    font-size: 18px;
   }
 
   .how-grid {
@@ -2933,7 +3048,7 @@
   }
 
   .faq-intro {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .accordion-title {
@@ -2946,7 +3061,7 @@
   }
 
   .accordion-content {
-    font-size: 15px;
+    font-size: 18px;
   }
 
   .slider-section {
@@ -2983,7 +3098,7 @@
   }
 
   .pillar-card .card-desc {
-    font-size: 15px;
+    font-size: 18px;
   }
 
   .pillar-card .card-icon {
@@ -2993,7 +3108,7 @@
 
   .btn {
     padding: 12px 28px;
-    font-size: 14px;
+    font-size: 18px;
     max-width: 100%;
     word-wrap: break-word;
   }
@@ -3011,17 +3126,17 @@
   }
 
   .footer-col h4 {
-    font-size: 18px;
+    font-size: 15px;
     margin-top: 24px;
     margin-bottom: 12px;
   }
 
   .footer-desc {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .footer-col ul li {
-    font-size: 14px;
+    font-size: 15px;
     line-height: 2.2em;
   }
 
@@ -3034,7 +3149,7 @@
   }
 
   .testimonial-ersparnis {
-    font-size: 14px;
+    font-size: 18px;
     padding-bottom: 24px;
   }
 
@@ -3043,7 +3158,7 @@
   }
 
   .accordion-title {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .accordion-item {
@@ -3382,7 +3497,7 @@
 
 .tab-nav button {
   font-family: var(--font-heading);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.5);
   background: none;
@@ -3425,7 +3540,7 @@
 .tab-panel li {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.8em;
   color: var(--color-white);
 }
@@ -3433,7 +3548,7 @@
 .tab-panel p {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.8em;
   color: var(--color-white);
 }
@@ -3449,7 +3564,7 @@
 
 .audience-nav a {
   font-family: var(--font-heading);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--color-white);
   border: 2px solid var(--color-white);
@@ -3562,7 +3677,7 @@
 .timeline-item p {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.8em;
 }
 
@@ -3575,7 +3690,7 @@
 .timeline-item li {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.8em;
 }
 
@@ -3714,7 +3829,7 @@
 .timeline.timeline--horizontal .timeline-item__card h4 {
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 17px;
+  font-size: 18px;
   color: var(--color-primary);
   margin: 0 0 8px;
   line-height: 1.3;
@@ -3723,7 +3838,7 @@
 .timeline.timeline--horizontal .timeline-item__card p {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 14.5px;
+  font-size: 18px;
   line-height: 1.65;
   color: #555;
   margin: 0 0 8px;
@@ -3743,7 +3858,7 @@
 .timeline.timeline--horizontal .timeline-item__card li {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 14.5px;
+  font-size: 18px;
   line-height: 1.65;
   color: #555;
   padding-left: 14px;
@@ -3789,7 +3904,7 @@
   cursor: pointer;
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 18px;
   color: var(--color-primary);
   letter-spacing: 0.02em;
   transition: color 0.2s ease, gap 0.2s ease;
@@ -3802,7 +3917,7 @@
 
 .timeline-card__toggle-arrow {
   display: inline-block;
-  font-size: 11px;
+  font-size: 18px;
   transition: transform 0.35s ease;
 }
 
@@ -3942,7 +4057,7 @@
 .flip-grid .flip-back p {
   font-family: var(--font-body);
   font-weight: 400;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.6em;
   margin: 0;
 }
@@ -3975,7 +4090,7 @@
 .contact-section-intro {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.8;
   color: var(--color-text);
   margin: 0 0 1.5em;
@@ -3990,7 +4105,7 @@
   display: block;
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 16px;
+  font-size: 18px;
   color: var(--color-text);
   margin-bottom: 6px;
 }
@@ -4000,7 +4115,7 @@
 .contact-form textarea {
   width: 100%;
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 18px;
   padding: 12px 14px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -4034,14 +4149,15 @@
 
 .contact-form .checkbox-group label {
   font-weight: 300;
-  font-size: 14px;
+  font-size: 18px;
   margin-bottom: 0;
 }
 
-.contact-form .btn-submit {
+/* Ohne .btn--dark: Fallback; mit .btn--dark gelten .btn / .btn--dark (z. B. Kontakt) */
+.contact-form .btn-submit:not(.btn--dark) {
   display: inline-block;
   font-family: var(--font-heading);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--color-white);
   background: var(--color-text);
@@ -4052,7 +4168,7 @@
   transition: background 0.3s;
 }
 
-.contact-form .btn-submit:hover {
+.contact-form .btn-submit:not(.btn--dark):hover {
   background: var(--color-accent);
 }
 
@@ -4080,7 +4196,7 @@
 .contact-info-col .info-block p {
   font-family: var(--font-body);
   font-weight: 300;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.8em;
 }
 
@@ -4132,7 +4248,7 @@
   }
 
   .tab-nav button {
-    font-size: 14px;
+    font-size: 18px;
     padding: 10px 14px;
   }
 
@@ -4150,7 +4266,7 @@
   }
 
   .audience-block>p {
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 20px;
   }
   .timeline:not(.timeline--horizontal)::before {
@@ -4232,7 +4348,7 @@
   .contact-form input[type="email"],
   .contact-form textarea {
     padding: 14px 16px;
-    font-size: 16px;
+    font-size: 18px;
     /* prevents zoom on focus in iOS */
   }
 }
@@ -4307,7 +4423,7 @@
 .target-group-card li {
   margin-bottom: 10px;
   color: #666;
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .icon-list-item {
@@ -4425,7 +4541,7 @@
 }
 
 .flip-box-back p {
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1.6;
   margin: 0;
   font-family: var(--font-body);
@@ -4435,7 +4551,7 @@
 
 .flip-box-back .btn--light {
   padding: 8px 20px;
-  font-size: 14px;
+  font-size: 18px;
   background: transparent;
   border: 1px solid white;
   color: white;

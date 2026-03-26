@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card: 'Karte',
             timelineMore: 'Mehr lesen',
             contactSuccess: 'Vielen Dank für deine Nachricht! Wir melden uns in Kürze bei dir.',
+            backToTop: 'Nach oben',
         },
         en: {
             menuOpen: 'Open menu',
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card: 'Card',
             timelineMore: 'Read more',
             contactSuccess: "Thanks for your message! We'll get back to you shortly.",
+            backToTop: 'Back to top',
         },
     };
     const t = copy[locale];
@@ -201,34 +203,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const isCoarsePointer = window.matchMedia('(hover: none), (pointer: coarse)').matches;
     const enableDecorativeMotion = !prefersReducedMotion.matches && !isCoarsePointer;
     const howSection = document.querySelector('.how-it-works');
-    if (header || heroSection) {
+    if (header) {
         const scrollThreshold = 50;
         let ticking = false;
+
+        function runScrollFrame() {
+            const y = window.scrollY || document.documentElement.scrollTop;
+            const compact = y > scrollThreshold;
+            header.classList.toggle('is-scrolled', compact);
+            document.documentElement.style.setProperty(
+                '--header-bar-height',
+                compact ? '68px' : '104px'
+            );
+
+            if (enableDecorativeMotion && heroSection && y < window.innerHeight) {
+                const parallaxY = y * 0.3;
+                const parallaxOpacity = 1 - (y / window.innerHeight) * 0.4;
+                heroSection.style.setProperty('--parallax-y', parallaxY + 'px');
+                const heroText = heroSection.querySelector('.hero-text');
+                if (heroText) {
+                    heroText.style.transform = 'translateY(' + (parallaxY * 0.5) + 'px)';
+                    heroText.style.opacity = Math.max(parallaxOpacity, 0);
+                }
+            }
+            if (enableDecorativeMotion && howSection) {
+                const rect = howSection.getBoundingClientRect();
+                const parallaxY = rect.top * 0.35;
+                howSection.style.setProperty('--how-parallax-y', parallaxY + 'px');
+            }
+            ticking = false;
+        }
+
         window.addEventListener('scroll', () => {
             if (!ticking) {
-                requestAnimationFrame(() => {
-                    const y = window.scrollY;
-                    if (header) header.classList.toggle('is-scrolled', y > scrollThreshold);
-                    if (enableDecorativeMotion && heroSection && y < window.innerHeight) {
-                        const parallaxY = y * 0.3;
-                        const parallaxOpacity = 1 - (y / window.innerHeight) * 0.4;
-                        heroSection.style.setProperty('--parallax-y', parallaxY + 'px');
-                        const heroText = heroSection.querySelector('.hero-text');
-                        if (heroText) {
-                            heroText.style.transform = 'translateY(' + (parallaxY * 0.5) + 'px)';
-                            heroText.style.opacity = Math.max(parallaxOpacity, 0);
-                        }
-                    }
-                    if (enableDecorativeMotion && howSection) {
-                        const rect = howSection.getBoundingClientRect();
-                        const parallaxY = rect.top * 0.35;
-                        howSection.style.setProperty('--how-parallax-y', parallaxY + 'px');
-                    }
-                    ticking = false;
-                });
+                requestAnimationFrame(runScrollFrame);
                 ticking = true;
             }
         }, { passive: true });
+
+        runScrollFrame();
 
         if (enableDecorativeMotion && howSection) {
             const setHowParallax = () => {
@@ -921,5 +934,42 @@ document.addEventListener('DOMContentLoaded', () => {
             counterObserver.observe(el);
         });
     }
+
+    // =========================================================
+    // Back to top (sitewide)
+    // =========================================================
+    const backToTopBtn = document.createElement('button');
+    backToTopBtn.type = 'button';
+    backToTopBtn.className = 'back-to-top';
+    backToTopBtn.setAttribute('aria-label', t.backToTop);
+    backToTopBtn.setAttribute('aria-hidden', 'true');
+    backToTopBtn.tabIndex = -1;
+    backToTopBtn.innerHTML = '<i class="fa-solid fa-chevron-up" aria-hidden="true"></i>';
+    document.body.appendChild(backToTopBtn);
+
+    const backToTopThreshold = 320;
+    const prefersReducedMotionTop = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function syncBackToTop() {
+        const y = window.scrollY || document.documentElement.scrollTop;
+        const menuOpen = document.body.classList.contains('has-mobile-menu-open');
+        const show = y > backToTopThreshold && !menuOpen;
+        backToTopBtn.classList.toggle('is-visible', show);
+        backToTopBtn.setAttribute('aria-hidden', show ? 'false' : 'true');
+        backToTopBtn.tabIndex = show ? 0 : -1;
+    }
+
+    window.addEventListener('scroll', syncBackToTop, { passive: true });
+    const backToTopBodyObserver = new MutationObserver(syncBackToTop);
+    backToTopBodyObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    syncBackToTop();
+
+    backToTopBtn.addEventListener('click', function () {
+        window.scrollTo({
+            top: 0,
+            behavior: prefersReducedMotionTop ? 'auto' : 'smooth',
+        });
+        backToTopBtn.blur();
+    });
 
 });
