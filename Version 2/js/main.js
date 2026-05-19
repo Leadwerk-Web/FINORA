@@ -920,6 +920,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================
+    // Tech Expats: System-Diagramm (kompakt + Lightbox)
+    // =========================================================
+    const techDiagramOpen = document.querySelector('[data-tech-diagram-open]');
+    const techDiagramDialog = document.querySelector('[data-tech-diagram-dialog]');
+    const techDiagramDialogBody = document.querySelector('[data-tech-diagram-dialog-body]');
+    const techDiagramSource = document.querySelector('[data-tech-diagram-source]');
+
+    if (techDiagramOpen && techDiagramDialog && techDiagramDialogBody && techDiagramSource) {
+        let diagramCloned = false;
+
+        function closeTechDiagram() {
+            if (techDiagramDialog.open) {
+                techDiagramDialog.close();
+            }
+            document.body.classList.remove('has-tech-diagram-open');
+        }
+
+        function openTechDiagram() {
+            if (!diagramCloned) {
+                const clone = techDiagramSource.cloneNode(true);
+                clone.removeAttribute('aria-hidden');
+                clone.removeAttribute('data-tech-diagram-source');
+                techDiagramDialogBody.appendChild(clone);
+                diagramCloned = true;
+            }
+            techDiagramDialog.showModal();
+            document.body.classList.add('has-tech-diagram-open');
+            const closeBtn = techDiagramDialog.querySelector('[data-tech-diagram-close]');
+            if (closeBtn) closeBtn.focus();
+        }
+
+        techDiagramOpen.addEventListener('click', openTechDiagram);
+
+        const techDiagramClose = techDiagramDialog.querySelector('[data-tech-diagram-close]');
+        if (techDiagramClose) {
+            techDiagramClose.addEventListener('click', closeTechDiagram);
+        }
+
+        techDiagramDialog.addEventListener('click', function (e) {
+            if (e.target === techDiagramDialog) {
+                closeTechDiagram();
+            }
+        });
+
+        techDiagramDialog.addEventListener('cancel', closeTechDiagram);
+    }
+
+    // =========================================================
     // Back to top (sitewide)
     // =========================================================
     const backToTopBtn = document.createElement('button');
