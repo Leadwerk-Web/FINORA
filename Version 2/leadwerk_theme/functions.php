@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LEADWERK_THEME_VERSION', '1.0.6' );
+define( 'LEADWERK_THEME_VERSION', '1.1.4' );
 define( 'LEADWERK_THEME_DIR', get_template_directory() );
 define( 'LEADWERK_THEME_URI', get_template_directory_uri() );
 
@@ -53,6 +53,9 @@ function leadwerk_theme_enqueue_assets() {
 	wp_enqueue_style( 'leadwerk-theme-base', LEADWERK_THEME_URI . '/css/base.css', array( 'leadwerk-theme-core' ), LEADWERK_THEME_VERSION );
 	wp_enqueue_style( 'leadwerk-theme-components', LEADWERK_THEME_URI . '/css/components.css', array( 'leadwerk-theme-base' ), LEADWERK_THEME_VERSION );
 	wp_enqueue_style( 'leadwerk-theme-static', LEADWERK_THEME_URI . '/css/styles.css', array( 'leadwerk-theme-components' ), LEADWERK_THEME_VERSION );
+	if ( leadwerk_theme_is_source_key( 'finora-tech-expats-v1' ) ) {
+		wp_enqueue_style( 'leadwerk-theme-tech-expats', LEADWERK_THEME_URI . '/css/tech-expats.css', array( 'leadwerk-theme-static' ), LEADWERK_THEME_VERSION );
+	}
 	if ( function_exists( 'leadwerk_theme_get_structured_inline_styles' ) ) {
 		wp_add_inline_style( 'leadwerk-theme-static', leadwerk_theme_get_structured_inline_styles() );
 	}
@@ -1010,7 +1013,7 @@ function leadwerk_theme_is_source_key( $source_key ) {
 function leadwerk_theme_is_service_page() {
 	return in_array(
 		leadwerk_theme_get_current_source_key(),
-		array( 'finora-retirement-v1', 'finora-investment-v1', 'finora-real-estate-v1', 'finora-inheritance-v1' ),
+		array( 'finora-retirement-v1', 'finora-investment-v1', 'finora-real-estate-v1', 'finora-inheritance-v1', 'finora-tech-expats-v1' ),
 		true
 	);
 }

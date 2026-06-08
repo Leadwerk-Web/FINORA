@@ -139,6 +139,24 @@ class Leadwerk_Content_Schema {
 					'final_cta'      => self::layout_center_cta( 'final_cta' ),
 				),
 			),
+			'finora_tech_expats_sections' => array(
+				'label'       => 'FINORA Tech Expats',
+				'description' => 'Sektionen der Tech-Expats-Seite in fester Reihenfolge bearbeiten.',
+				'source_keys' => array( 'finora-tech-expats-v1' ),
+				'layouts'     => array(
+					'hero'         => self::layout_tech_hero(),
+					'pain_points'  => self::layout_tech_pain_points(),
+					'audience'     => self::layout_tech_audience(),
+					'solution'     => self::layout_tech_solution(),
+					'pillars'      => self::layout_tech_pillars(),
+					'mid_cta'      => self::layout_center_cta( 'tech_mid_cta' ),
+					'value'        => self::layout_tech_value(),
+					'process'      => self::layout_tech_process(),
+					'testimonials' => self::layout_tech_testimonials(),
+					'faq'          => self::layout_faq(),
+					'final_cta'    => self::layout_tech_final_cta(),
+				),
+			),
 			'impressum_page'              => array(
 				'label'             => 'FINORA Impressum',
 				'description'       => 'Impressum ueber Leadwerk Fields bearbeiten. Der Inhalt wird in das Seiten-HTML synchronisiert.',
@@ -555,6 +573,200 @@ class Leadwerk_Content_Schema {
 			'template' => 'hero',
 			'fields'   => $fields,
 		);
+	}
+
+	protected static function layout_tech_hero() {
+		return array(
+			'label'    => 'Tech Hero',
+			'template' => 'tech_hero',
+			'fields'   => array_merge(
+				array(
+					'title'          => self::heading_html( 'Titel' ),
+					'subtitle'       => self::textarea( 'Untertitel' ),
+					'background'     => self::image( 'Hintergrundbild' ),
+					'background_alt' => self::text( 'Hintergrundbild Alt-Text' ),
+					'services'       => self::repeater(
+						'Hero Themen',
+						array(
+							'icon_class' => self::text( 'Icon CSS Klasse' ),
+							'title'      => self::heading_html( 'Titel' ),
+							'page_key'   => self::text( 'Zielseite (source_key)' ),
+							'url'        => self::url( 'URL / Anchor' ),
+						),
+						'Thema hinzufuegen'
+					),
+				),
+				self::button_fields( 'cta' )
+			),
+		);
+	}
+
+	protected static function layout_tech_pain_points() {
+		return array(
+			'label'    => 'Herausforderungen',
+			'template' => 'tech_pain_points',
+			'fields'   => array(
+				'title' => self::heading_html( 'Titel' ),
+				'intro' => self::textarea( 'Einleitung' ),
+				'items' => self::repeater(
+					'Karten',
+					array(
+						'icon_class' => self::text( 'Icon CSS Klasse' ),
+						'label'      => self::text( 'Kategorie' ),
+						'title'      => self::text( 'Titel' ),
+						'content'    => self::editor( 'Text' ),
+					),
+					'Karte hinzufuegen'
+				),
+			),
+		);
+	}
+
+	protected static function layout_tech_audience() {
+		return array(
+			'label'    => 'Tech Zielgruppe',
+			'template' => 'tech_audience',
+			'fields'   => array(
+				'title'    => self::heading_html( 'Titel' ),
+				'intro'    => self::textarea( 'Einleitung' ),
+				'personas' => self::repeater(
+					'Rollen',
+					array(
+						'icon_class' => self::text( 'Icon CSS Klasse' ),
+						'label'      => self::text( 'Bezeichnung' ),
+					),
+					'Rolle hinzufuegen'
+				),
+			),
+		);
+	}
+
+	protected static function layout_tech_solution() {
+		return array(
+			'label'    => 'Kevin / Beratung',
+			'template' => 'tech_solution',
+			'fields'   => array_merge(
+				array(
+					'title'     => self::heading_html( 'Titel' ),
+					'body'      => self::editor( 'Text' ),
+					'image'     => self::image( 'Bild' ),
+					'image_alt' => self::text( 'Bild Alt-Text' ),
+					'items'     => self::repeater(
+						'Vertrauenspunkte',
+						array(
+							'icon_class' => self::text( 'Icon CSS Klasse' ),
+							'text'       => self::text( 'Text' ),
+						),
+						'Punkt hinzufuegen'
+					),
+				),
+				self::button_fields( 'cta' )
+			),
+		);
+	}
+
+	protected static function layout_tech_value() {
+		return array(
+			'label'    => 'Tech Mehrwert',
+			'template' => 'tech_value',
+			'fields'   => array(
+				'title'          => self::heading_html( 'Titel' ),
+				'intro'          => self::textarea( 'Einleitung' ),
+				'points'         => self::repeater(
+					'Mehrwert-Punkte',
+					array(
+						'icon_class' => self::text( 'Icon CSS Klasse' ),
+						'content'    => self::editor( 'Text' ),
+					),
+					'Punkt hinzufuegen'
+				),
+				'diagram_columns'=> self::repeater(
+					'Diagramm-Spalten',
+					array(
+						'title' => self::text( 'Spaltentitel' ),
+						'items' => self::repeater(
+							'Eintraege',
+							array(
+								'icon_class' => self::text( 'Icon CSS Klasse' ),
+								'text'       => self::text( 'Text' ),
+							),
+							'Eintrag hinzufuegen'
+						),
+					),
+					'Spalte hinzufuegen'
+				),
+				'open_hint'      => self::text( 'Vergroessern-Hinweis' ),
+				'dialog_title'   => self::text( 'Dialogtitel' ),
+			),
+		);
+	}
+
+	protected static function layout_tech_pillars() {
+		return array(
+			'label'    => 'Tech Leistungssaeulen',
+			'template' => 'tech_pillars',
+			'fields'   => array(
+				'title' => self::heading_html( 'Titel' ),
+				'items' => self::repeater(
+					'Karten',
+					array(
+						'icon_class'      => self::text( 'Icon CSS Klasse' ),
+						'title'           => self::text( 'Titel' ),
+						'description'     => self::editor( 'Beschreibung' ),
+						'button_label'    => self::text( 'Button Text' ),
+						'button_page_key' => self::text( 'Button Zielseite (source_key)' ),
+						'button_url'      => self::url( 'Button URL (Fallback/extern)' ),
+					),
+					'Karte hinzufuegen'
+				),
+			),
+		);
+	}
+
+	protected static function layout_tech_final_cta() {
+		return array(
+			'label'    => 'Abschluss-CTA',
+			'template' => 'tech_final_cta',
+			'fields'   => array_merge(
+				array(
+					'title'       => self::heading_html( 'Titel' ),
+					'body'        => self::editor( 'Text' ),
+					'sticky_meta' => self::text( 'Mobiler Sticky CTA Zusatz' ),
+				),
+				self::button_fields( 'primary_cta' ),
+				self::button_fields( 'secondary_cta' ),
+				self::button_fields( 'sticky_cta' )
+			),
+		);
+	}
+
+	protected static function layout_tech_process() {
+		return array(
+			'label'    => 'Tech Ablauf',
+			'template' => 'tech_process',
+			'fields'   => array_merge(
+				array(
+					'title' => self::heading_html( 'Titel' ),
+					'steps' => self::repeater(
+						'Schritte',
+						array(
+							'icon_class' => self::text( 'Icon CSS Klasse' ),
+							'title'      => self::text( 'Titel' ),
+							'content'    => self::editor( 'Text' ),
+						),
+						'Schritt hinzufuegen'
+					),
+				),
+				self::button_fields( 'cta' )
+			),
+		);
+	}
+
+	protected static function layout_tech_testimonials() {
+		$layout             = self::layout_testimonials();
+		$layout['label']    = 'Tech Testimonials';
+		$layout['template'] = 'tech_testimonials';
+		return $layout;
 	}
 
 	/**

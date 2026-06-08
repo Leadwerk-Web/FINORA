@@ -96,6 +96,33 @@ function leadwerk_theme_render_exact_layout_section( $layout_key, $layout_schema
 	$template = (string) ( $layout_schema['template'] ?? $layout_key );
 
 	switch ( $template ) {
+		case 'tech_hero':
+			leadwerk_theme_bind_exact_tech_hero( $xpath, $section_node, $section );
+			break;
+		case 'tech_pain_points':
+			leadwerk_theme_bind_exact_tech_pain_points( $xpath, $section_node, $section );
+			break;
+		case 'tech_audience':
+			leadwerk_theme_bind_exact_tech_audience( $xpath, $section_node, $section );
+			break;
+		case 'tech_solution':
+			leadwerk_theme_bind_exact_tech_solution( $xpath, $section_node, $section );
+			break;
+		case 'tech_pillars':
+			leadwerk_theme_bind_exact_tech_pillars( $xpath, $section_node, $section );
+			break;
+		case 'tech_value':
+			leadwerk_theme_bind_exact_tech_value( $xpath, $section_node, $section );
+			break;
+		case 'tech_process':
+			leadwerk_theme_bind_exact_tech_process( $xpath, $section_node, $section );
+			break;
+		case 'tech_testimonials':
+			leadwerk_theme_bind_exact_tech_testimonials( $xpath, $section_node, $section );
+			break;
+		case 'tech_final_cta':
+			leadwerk_theme_bind_exact_tech_final_cta( $xpath, $section_node, $section );
+			break;
 		case 'hero':
 			leadwerk_theme_bind_exact_hero( $xpath, $section_node, $section, false !== strpos( (string) $template_html, 'class="btn' ) );
 			break;
@@ -200,7 +227,37 @@ function leadwerk_theme_render_exact_layout_section( $layout_key, $layout_schema
 			break;
 	}
 
+	if ( 0 === strpos( $template, 'tech_' ) ) {
+		leadwerk_theme_mark_tech_contact_links( $xpath, $section_node );
+	}
+
 	return leadwerk_theme_dom_outer_html( $section_node );
+}
+
+/**
+ * Preserve the Tech Expats navigation context on links to the contact page.
+ *
+ * @param DOMXPath $xpath XPath instance.
+ * @param DOMNode  $section_node Section root.
+ * @return void
+ */
+function leadwerk_theme_mark_tech_contact_links( $xpath, $section_node ) {
+	$lang        = leadwerk_theme_get_current_lang();
+	$contact_url = leadwerk_theme_get_page_url( 'finora-contact-v1', $lang );
+	$contact_path = untrailingslashit( (string) wp_parse_url( $contact_url, PHP_URL_PATH ) );
+	$links       = leadwerk_theme_dom_query( $xpath, './/a[@href]', $section_node );
+
+	foreach ( $links as $link ) {
+		if ( ! $link instanceof DOMElement ) {
+			continue;
+		}
+
+		$href      = $link->getAttribute( 'href' );
+		$href_path = untrailingslashit( (string) wp_parse_url( $href, PHP_URL_PATH ) );
+		if ( '' !== $contact_path && $contact_path === $href_path ) {
+			leadwerk_theme_dom_set_attr( $link, 'href', add_query_arg( 'from', 'tech-expats', $href ) );
+		}
+	}
 }
 
 function leadwerk_theme_get_source_template_map() {
@@ -213,6 +270,7 @@ function leadwerk_theme_get_source_template_map() {
 		'finora-investment-v1'  => 'investment-beratung.html',
 		'finora-real-estate-v1' => 'immobilien-beratung.html',
 		'finora-inheritance-v1' => 'erbanlage-beratung.html',
+		'finora-tech-expats-v1' => 'tech-expats.html',
 		'finora-impressum-v1'   => 'impressum.html',
 		'finora-datenschutz-v1' => 'datenschutz.html',
 		'finora-404-v1'         => '404.html',
@@ -229,6 +287,7 @@ function leadwerk_theme_get_source_template_body_class_map() {
 		'finora-investment-v1'  => 'page-investment',
 		'finora-real-estate-v1' => 'page-immobilien',
 		'finora-inheritance-v1' => 'page-erbanlage',
+		'finora-tech-expats-v1' => 'page-tech-expats',
 		'finora-impressum-v1'   => 'page-legal',
 		'finora-datenschutz-v1' => 'page-legal',
 		'finora-404-v1'         => 'page-404 header-scrolled',
@@ -375,10 +434,18 @@ function leadwerk_theme_render_exact_site_header() {
 	$lang            = leadwerk_theme_get_current_lang();
 	$strings         = leadwerk_theme_get_theme_strings( $lang );
 	$current_key     = leadwerk_theme_get_current_source_key();
+	$from_tech       = 'finora-contact-v1' === $current_key
+		&& isset( $_GET['from'] )
+		&& 'tech-expats' === sanitize_key( wp_unslash( $_GET['from'] ) );
 	$home_url        = leadwerk_theme_get_page_url( 'finora-home-v1', $lang, home_url( '/' ) );
 	$language_url    = leadwerk_theme_get_alternate_language_url();
 	$de_url          = leadwerk_theme_get_page_url( $current_key, 'de', home_url( '/' ) );
 	$en_url          = leadwerk_theme_get_page_url( $current_key, 'en', home_url( '/en/' ) );
+	if ( $from_tech ) {
+		$language_url = add_query_arg( 'from', 'tech-expats', $language_url );
+		$de_url       = add_query_arg( 'from', 'tech-expats', $de_url );
+		$en_url       = add_query_arg( 'from', 'tech-expats', $en_url );
+	}
 	$is_service_page = leadwerk_theme_is_service_page();
 	$service_label   = $strings['services_menu_label'] ?? 'Leistungen';
 	$lang_group_label = $strings['header_language_group_label'] ?? ( 'en' === $lang ? 'Choose language' : 'Sprache wählen' );
@@ -493,6 +560,74 @@ function leadwerk_theme_render_exact_site_header() {
 
 	leadwerk_theme_dom_set_attr( $mobile_locale_link, 'href', $language_url );
 	leadwerk_theme_dom_set_text( $mobile_locale_link, $other_short );
+
+	if ( 'finora-tech-expats-v1' === $current_key ) {
+		$contact_url = add_query_arg( 'from', 'tech-expats', leadwerk_theme_get_page_url( 'finora-contact-v1', $lang ) );
+		$contact_nav = $nav_anchors[3] ?? null;
+		$contact_link = $contact_nav instanceof DOMElement ? leadwerk_theme_dom_first( $xpath, './a[1]', $contact_nav ) : null;
+		leadwerk_theme_dom_set_attr( $contact_link, 'href', $contact_url );
+
+		$mobile_contact_link = $mobile_links[3] ?? null;
+		leadwerk_theme_dom_set_attr( $mobile_contact_link, 'href', $contact_url );
+
+		if ( $header_logo_link instanceof DOMElement && $header_logo_img instanceof DOMElement && $header_logo_link->parentNode ) {
+			$header_logo_link->parentNode->insertBefore( $header_logo_img, $header_logo_link );
+			$header_logo_link->parentNode->removeChild( $header_logo_link );
+		}
+
+		foreach ( $nav_anchors as $index => $nav_item ) {
+			if ( 3 !== $index && $nav_item instanceof DOMNode && $nav_item->parentNode ) {
+				$nav_item->parentNode->removeChild( $nav_item );
+			}
+		}
+
+		$mobile_sub_menu = leadwerk_theme_dom_first( $xpath, './/*[contains(concat(" ", normalize-space(@class), " "), " mobile-menu ")]/*[contains(concat(" ", normalize-space(@class), " "), " sub-menu ")]', $header );
+		if ( $mobile_sub_menu instanceof DOMNode && $mobile_sub_menu->parentNode ) {
+			$mobile_sub_menu->parentNode->removeChild( $mobile_sub_menu );
+		}
+
+		foreach ( $mobile_links as $index => $mobile_link ) {
+			if ( ! in_array( $index, array( 3, 4 ), true ) && $mobile_link instanceof DOMNode && $mobile_link->parentNode ) {
+				$mobile_link->parentNode->removeChild( $mobile_link );
+			}
+		}
+	}
+
+	if ( $from_tech ) {
+		$tech_url = leadwerk_theme_get_page_url( 'finora-tech-expats-v1', $lang );
+		$tech_nav = $nav_anchors[3] ?? null;
+		$tech_link = $tech_nav instanceof DOMElement ? leadwerk_theme_dom_first( $xpath, './a[1]', $tech_nav ) : null;
+		leadwerk_theme_dom_set_attr( $tech_link, 'href', $tech_url );
+		leadwerk_theme_dom_set_text( $tech_link, 'Tech Expats' );
+		leadwerk_theme_dom_toggle_class( $tech_link, 'is-active', false );
+
+		if ( $header_logo_link instanceof DOMElement && $header_logo_img instanceof DOMElement && $header_logo_link->parentNode ) {
+			$header_logo_link->parentNode->insertBefore( $header_logo_img, $header_logo_link );
+			$header_logo_link->parentNode->removeChild( $header_logo_link );
+		}
+
+		foreach ( $nav_anchors as $index => $nav_item ) {
+			if ( 3 !== $index && $nav_item instanceof DOMNode && $nav_item->parentNode ) {
+				$nav_item->parentNode->removeChild( $nav_item );
+			}
+		}
+
+		$mobile_sub_menu = leadwerk_theme_dom_first( $xpath, './/*[contains(concat(" ", normalize-space(@class), " "), " mobile-menu ")]/*[contains(concat(" ", normalize-space(@class), " "), " sub-menu ")]', $header );
+		if ( $mobile_sub_menu instanceof DOMNode && $mobile_sub_menu->parentNode ) {
+			$mobile_sub_menu->parentNode->removeChild( $mobile_sub_menu );
+		}
+
+		$mobile_tech_link = $mobile_links[3] ?? null;
+		leadwerk_theme_dom_set_attr( $mobile_tech_link, 'href', $tech_url );
+		leadwerk_theme_dom_set_text( $mobile_tech_link, 'Tech Expats' );
+		leadwerk_theme_dom_toggle_class( $mobile_tech_link, 'is-active', false );
+
+		foreach ( $mobile_links as $index => $mobile_link ) {
+			if ( ! in_array( $index, array( 3, 4 ), true ) && $mobile_link instanceof DOMNode && $mobile_link->parentNode ) {
+				$mobile_link->parentNode->removeChild( $mobile_link );
+			}
+		}
+	}
 
 	foreach ( array(
 		$cursor instanceof DOMNode ? leadwerk_theme_dom_outer_html( $cursor ) : '',
@@ -1065,6 +1200,191 @@ function leadwerk_theme_bind_exact_hero( $xpath, $section, $value, $has_button =
 
 	if ( $has_button ) {
 		leadwerk_theme_bind_exact_button( $xpath, $section, './/a[contains(@class,"btn")][1]', (string) ( $value['cta_label'] ?? '' ), (string) ( $value['cta_page_key'] ?? '' ), (string) ( $value['cta_url'] ?? '' ) );
+	}
+}
+
+function leadwerk_theme_bind_exact_icon_class( $xpath, $context, $query, $class_name ) {
+	$icon = leadwerk_theme_dom_first( $xpath, $query, $context );
+	if ( $icon instanceof DOMElement && '' !== trim( (string) $class_name ) ) {
+		leadwerk_theme_dom_set_attr( $icon, 'class', trim( (string) $class_name ) );
+	}
+}
+
+function leadwerk_theme_bind_exact_tech_hero( $xpath, $section, $value ) {
+	leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/h1[1]', $section ), (string) ( $value['title'] ?? '' ), 'heading' );
+	leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"hero-slide-subtitle")][1]', $section ), (string) ( $value['subtitle'] ?? '' ) );
+	leadwerk_theme_bind_exact_button( $xpath, $section, './/a[contains(@class,"btn")][1]', (string) ( $value['cta_label'] ?? '' ), (string) ( $value['cta_page_key'] ?? '' ), (string) ( $value['cta_url'] ?? '' ) );
+	if ( $section instanceof DOMElement ) {
+		$image_url = leadwerk_theme_get_exact_image_url( (int) ( $value['background'] ?? 0 ), '' );
+		if ( '' !== $image_url ) {
+			leadwerk_theme_dom_set_attr(
+				$section,
+				'style',
+				"background-image:linear-gradient(to left,rgba(4,60,67,.42) 0%,rgba(4,60,67,.62) 50%,rgba(4,60,67,.82) 100%),url('" . esc_url_raw( $image_url ) . "');"
+			);
+		}
+	}
+
+	$items = isset( $value['services'] ) && is_array( $value['services'] ) ? array_values( $value['services'] ) : array();
+	$nodes = leadwerk_theme_dom_ensure_count( leadwerk_theme_dom_query( $xpath, './/*[contains(@class,"hero-services")]//*[contains(@class,"service-item")]', $section ), count( $items ) );
+	foreach ( $nodes as $index => $node ) {
+		$item = $items[ $index ] ?? array();
+		if ( ! $node instanceof DOMElement || ! is_array( $item ) ) {
+			continue;
+		}
+		leadwerk_theme_dom_set_attr( $node, 'href', leadwerk_theme_resolve_exact_href( (string) ( $item['page_key'] ?? '' ), (string) ( $item['url'] ?? '' ) ) );
+		leadwerk_theme_bind_exact_icon_class( $xpath, $node, './/i[1]', (string) ( $item['icon_class'] ?? '' ) );
+		leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/div[last()]', $node ), (string) ( $item['title'] ?? '' ), 'heading' );
+	}
+}
+
+function leadwerk_theme_bind_exact_tech_pain_points( $xpath, $section, $value ) {
+	leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/h2[1]', $section ), (string) ( $value['title'] ?? '' ), 'heading' );
+	leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"section-heading")]//p[1]', $section ), (string) ( $value['intro'] ?? '' ) );
+	$items = isset( $value['items'] ) && is_array( $value['items'] ) ? array_values( $value['items'] ) : array();
+	$nodes = leadwerk_theme_dom_ensure_count( leadwerk_theme_dom_query( $xpath, './/*[contains(@class,"tech-pain-card")]', $section ), count( $items ) );
+	foreach ( $nodes as $index => $node ) {
+		$item = $items[ $index ] ?? array();
+		if ( ! is_array( $item ) ) {
+			continue;
+		}
+		leadwerk_theme_bind_exact_icon_class( $xpath, $node, './/i[1]', (string) ( $item['icon_class'] ?? '' ) );
+		leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"tech-pain-card__label")][1]', $node ), (string) ( $item['label'] ?? '' ) );
+		leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/h3[1]', $node ), (string) ( $item['title'] ?? '' ) );
+		leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/p[1]', $node ), (string) ( $item['content'] ?? '' ), 'paragraph' );
+	}
+}
+
+function leadwerk_theme_bind_exact_tech_audience( $xpath, $section, $value ) {
+	leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/h2[1]', $section ), (string) ( $value['title'] ?? '' ), 'heading' );
+	leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"section-heading")]//p[1]', $section ), (string) ( $value['intro'] ?? '' ) );
+	$items = isset( $value['personas'] ) && is_array( $value['personas'] ) ? array_values( $value['personas'] ) : array();
+	$nodes = leadwerk_theme_dom_ensure_count( leadwerk_theme_dom_query( $xpath, './/*[contains(@class,"tech-persona-pill")]', $section ), count( $items ) );
+	foreach ( $nodes as $index => $node ) {
+		$item = $items[ $index ] ?? array();
+		if ( ! $node instanceof DOMNode || ! is_array( $item ) ) {
+			continue;
+		}
+		$icon = leadwerk_theme_dom_first( $xpath, './/i[1]', $node );
+		leadwerk_theme_bind_exact_icon_class( $xpath, $node, './/i[1]', (string) ( $item['icon_class'] ?? '' ) );
+		$icon_html = leadwerk_theme_dom_outer_html( $icon );
+		leadwerk_theme_dom_set_inner_html( $node, $icon_html . esc_html( (string) ( $item['label'] ?? '' ) ) );
+	}
+}
+
+function leadwerk_theme_bind_exact_tech_solution( $xpath, $section, $value ) {
+	leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/h2[1]', $section ), (string) ( $value['title'] ?? '' ), 'heading' );
+	leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"col-text")]//p[1]', $section ), (string) ( $value['body'] ?? '' ), 'paragraph' );
+	leadwerk_theme_bind_exact_image( $xpath, $section, './/*[contains(@class,"tech-coach-image")][1]', (int) ( $value['image'] ?? 0 ), (string) ( $value['image_alt'] ?? '' ) );
+	leadwerk_theme_bind_exact_button( $xpath, $section, './/a[contains(@class,"btn-section")][1]', (string) ( $value['cta_label'] ?? '' ), (string) ( $value['cta_page_key'] ?? '' ), (string) ( $value['cta_url'] ?? '' ) );
+
+	$items = isset( $value['items'] ) && is_array( $value['items'] ) ? array_values( $value['items'] ) : array();
+	$nodes = leadwerk_theme_dom_ensure_count( leadwerk_theme_dom_query( $xpath, './/*[contains(@class,"tech-trust-list")]/li', $section ), count( $items ) );
+	foreach ( $nodes as $index => $node ) {
+		$item = $items[ $index ] ?? array();
+		if ( ! is_array( $item ) ) {
+			continue;
+		}
+		$icon_wrap = leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"tech-trust-list__icon")][1]', $node );
+		leadwerk_theme_bind_exact_icon_class( $xpath, $node, './/i[1]', (string) ( $item['icon_class'] ?? '' ) );
+		$icon_html = leadwerk_theme_dom_outer_html( $icon_wrap );
+		leadwerk_theme_dom_set_inner_html( $node, $icon_html . esc_html( (string) ( $item['text'] ?? '' ) ) );
+	}
+}
+
+function leadwerk_theme_bind_exact_tech_value( $xpath, $section, $value ) {
+	leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/h2[1]', $section ), (string) ( $value['title'] ?? '' ), 'heading' );
+	leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"section-heading")]//p[1]', $section ), (string) ( $value['intro'] ?? '' ) );
+
+	$points = isset( $value['points'] ) && is_array( $value['points'] ) ? array_values( $value['points'] ) : array();
+	$point_nodes = leadwerk_theme_dom_ensure_count( leadwerk_theme_dom_query( $xpath, './/*[contains(@class,"tech-value-list")]/li', $section ), count( $points ) );
+	foreach ( $point_nodes as $index => $node ) {
+		$item = $points[ $index ] ?? array();
+		leadwerk_theme_bind_exact_icon_class( $xpath, $node, './/i[1]', (string) ( $item['icon_class'] ?? '' ) );
+		$content_node = leadwerk_theme_dom_first( $xpath, './span[last()]', $node );
+		leadwerk_theme_dom_set_inner_html( $content_node, (string) ( $item['content'] ?? '' ) );
+	}
+
+	$columns = isset( $value['diagram_columns'] ) && is_array( $value['diagram_columns'] ) ? array_values( $value['diagram_columns'] ) : array();
+	$column_nodes = leadwerk_theme_dom_ensure_count( leadwerk_theme_dom_query( $xpath, './/*[contains(@class,"tech-system-diagram")][1]/*[contains(@class,"tech-system-col")]', $section ), count( $columns ) );
+	foreach ( $column_nodes as $column_index => $column_node ) {
+		$column = $columns[ $column_index ] ?? array();
+		if ( ! is_array( $column ) ) {
+			continue;
+		}
+		leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"tech-system-col__title")][1]', $column_node ), (string) ( $column['title'] ?? '' ) );
+		$items = isset( $column['items'] ) && is_array( $column['items'] ) ? array_values( $column['items'] ) : array();
+		$item_nodes = leadwerk_theme_dom_ensure_count( leadwerk_theme_dom_query( $xpath, './/li', $column_node ), count( $items ) );
+		foreach ( $item_nodes as $item_index => $item_node ) {
+			$item = $items[ $item_index ] ?? array();
+			$icon = leadwerk_theme_dom_first( $xpath, './/i[1]', $item_node );
+			leadwerk_theme_bind_exact_icon_class( $xpath, $item_node, './/i[1]', (string) ( $item['icon_class'] ?? '' ) );
+			$icon_html = leadwerk_theme_dom_outer_html( $icon );
+			leadwerk_theme_dom_set_inner_html( $item_node, $icon_html . esc_html( (string) ( $item['text'] ?? '' ) ) );
+		}
+	}
+
+	$hint = leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"tech-diagram-open__hint")][1]', $section );
+	$hint_icon = leadwerk_theme_dom_outer_html( leadwerk_theme_dom_first( $xpath, './/i[1]', $hint ) );
+	leadwerk_theme_dom_set_inner_html( $hint, $hint_icon . ' ' . esc_html( (string) ( $value['open_hint'] ?? '' ) ) );
+	leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"tech-diagram-dialog__title")][1]', $section ), (string) ( $value['dialog_title'] ?? '' ) );
+}
+
+function leadwerk_theme_bind_exact_tech_pillars( $xpath, $section, $value ) {
+	leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/h2[1]', $section ), (string) ( $value['title'] ?? '' ), 'heading' );
+	$items = isset( $value['items'] ) && is_array( $value['items'] ) ? array_values( $value['items'] ) : array();
+	$nodes = leadwerk_theme_dom_ensure_count( leadwerk_theme_dom_query( $xpath, './/*[contains(@class,"pillar-card")]', $section ), count( $items ) );
+	foreach ( $nodes as $index => $node ) {
+		$item = $items[ $index ] ?? array();
+		if ( ! is_array( $item ) ) {
+			continue;
+		}
+		leadwerk_theme_bind_exact_icon_class( $xpath, $node, './/i[1]', (string) ( $item['icon_class'] ?? '' ) );
+		leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/h3[1]', $node ), (string) ( $item['title'] ?? '' ) );
+		leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"card-desc")][1]', $node ), (string) ( $item['description'] ?? '' ), 'paragraph' );
+		leadwerk_theme_bind_exact_button( $xpath, $node, './/a[contains(@class,"btn")][1]', (string) ( $item['button_label'] ?? '' ), (string) ( $item['button_page_key'] ?? '' ), (string) ( $item['button_url'] ?? '' ) );
+	}
+}
+
+function leadwerk_theme_bind_exact_tech_final_cta( $xpath, $section, $value ) {
+	leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/h2[1]', $section ), (string) ( $value['title'] ?? '' ), 'heading' );
+	leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/p[1]', $section ), (string) ( $value['body'] ?? '' ), 'paragraph' );
+	leadwerk_theme_bind_exact_button( $xpath, $section, './/*[contains(@class,"tech-final-cta__actions")]//a[contains(@class,"btn")][1]', (string) ( $value['primary_cta_label'] ?? '' ), (string) ( $value['primary_cta_page_key'] ?? '' ), (string) ( $value['primary_cta_url'] ?? '' ) );
+	leadwerk_theme_bind_exact_button( $xpath, $section, './/*[contains(@class,"tech-final-cta__actions")]//a[contains(@class,"btn")][2]', (string) ( $value['secondary_cta_label'] ?? '' ), (string) ( $value['secondary_cta_page_key'] ?? '' ), (string) ( $value['secondary_cta_url'] ?? '' ) );
+	$sticky_button = leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"sticky-mobile-cta__btn")][1]', $section );
+	leadwerk_theme_dom_set_attr( $sticky_button, 'href', leadwerk_theme_resolve_exact_href( (string) ( $value['sticky_cta_page_key'] ?? '' ), (string) ( $value['sticky_cta_url'] ?? '' ) ) );
+	leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"sticky-mobile-cta__label")][1]', $section ), (string) ( $value['sticky_cta_label'] ?? '' ) );
+	leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"sticky-mobile-cta__meta")][1]', $section ), (string) ( $value['sticky_meta'] ?? '' ) );
+}
+
+function leadwerk_theme_bind_exact_tech_process( $xpath, $section, $value ) {
+	leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/h2[1]', $section ), (string) ( $value['title'] ?? '' ), 'heading' );
+	$steps = isset( $value['steps'] ) && is_array( $value['steps'] ) ? array_values( $value['steps'] ) : array();
+	$nodes = leadwerk_theme_dom_ensure_count( leadwerk_theme_dom_query( $xpath, './/*[contains(@class,"how-step")]', $section ), count( $steps ) );
+	foreach ( $nodes as $index => $node ) {
+		$item = $steps[ $index ] ?? array();
+		if ( ! is_array( $item ) ) {
+			continue;
+		}
+		leadwerk_theme_bind_exact_icon_class( $xpath, $node, './/*[contains(@class,"step-icon")]//i[1]', (string) ( $item['icon_class'] ?? '' ) );
+		leadwerk_theme_dom_set_text( leadwerk_theme_dom_first( $xpath, './/h4[1]', $node ), (string) ( $item['title'] ?? '' ) );
+		leadwerk_theme_set_placeholder_markup( leadwerk_theme_dom_first( $xpath, './/p[1]', $node ), (string) ( $item['content'] ?? '' ), 'paragraph' );
+	}
+	leadwerk_theme_bind_exact_button( $xpath, $section, './/a[contains(@class,"btn")][last()]', (string) ( $value['cta_label'] ?? '' ), (string) ( $value['cta_page_key'] ?? '' ), (string) ( $value['cta_url'] ?? '' ) );
+}
+
+function leadwerk_theme_bind_exact_tech_testimonials( $xpath, $section, $value ) {
+	leadwerk_theme_bind_exact_testimonials( $xpath, $section, $value );
+	$items = isset( $value['items'] ) && is_array( $value['items'] ) ? array_values( $value['items'] ) : array();
+	$nodes = leadwerk_theme_dom_query( $xpath, './/*[contains(@class,"testimonial-card")]', $section );
+	foreach ( $nodes as $index => $node ) {
+		$item = $items[ $index ] ?? array();
+		$name = leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"testimonial-name")][1]', $node );
+		if ( ! $name instanceof DOMNode || ! is_array( $item ) ) {
+			continue;
+		}
+		$badge = '<span class="tech-placeholder-badge" aria-label="Platzhalter">Placeholder</span>';
+		leadwerk_theme_dom_set_inner_html( $name, esc_html( (string) ( $item['name'] ?? '' ) ) . $badge );
 	}
 }
 

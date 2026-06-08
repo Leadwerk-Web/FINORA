@@ -901,6 +901,24 @@ class Leadwerk_ACF_Filler {
 		}
 
 		switch ( (string) ( $layout_schema['template'] ?? $layout_key ) ) {
+			case 'tech_hero':
+				return $this->parse_tech_hero( $section_node );
+			case 'tech_pain_points':
+				return $this->parse_tech_pain_points( $section_node );
+			case 'tech_audience':
+				return $this->parse_tech_audience( $section_node );
+			case 'tech_solution':
+				return $this->parse_tech_solution( $section_node );
+			case 'tech_pillars':
+				return $this->parse_tech_pillars( $section_node );
+			case 'tech_value':
+				return $this->parse_tech_value( $section_node );
+			case 'tech_process':
+				return $this->parse_tech_process( $section_node );
+			case 'tech_testimonials':
+				return $this->parse_tech_testimonials( $section_node );
+			case 'tech_final_cta':
+				return $this->parse_tech_final_cta( $section_node );
 			case 'hero_slider':
 				return $this->parse_hero_slider( $section_node );
 			case 'pillars':
@@ -1011,6 +1029,192 @@ class Leadwerk_ACF_Filler {
 			),
 			$button
 		);
+	}
+
+	protected function parse_tech_hero( $section_node ) {
+		$services = array();
+		$background = $this->resolve_image_field( 'assets/images/Tech-Hero.jpg' );
+		foreach ( $this->query_nodes( $section_node, './/*[contains(@class,"hero-services")]//*[contains(@class,"service-item")]' ) as $item ) {
+			$link       = $this->parse_link_target( $this->attr( $item, '.', 'href' ) );
+			$icon_class = $this->attr( $item, './/i[1]', 'class' );
+			$services[] = array(
+				'icon_class' => $icon_class,
+				'title'      => $this->html( $item, './/div[last()]' ),
+				'page_key'   => $link['page_key'],
+				'url'        => $link['url'],
+			);
+		}
+
+		return array_merge(
+			array(
+				'title'          => $this->html( $section_node, './/h1[1]' ),
+				'subtitle'       => $this->text( $section_node, './/*[contains(@class,"hero-slide-subtitle")][1]' ),
+				'background'     => $background['id'],
+				'background_alt' => 'Tech Professionals',
+				'services'       => $services,
+			),
+			$this->parse_button( $section_node )
+		);
+	}
+
+	protected function parse_tech_pain_points( $section_node ) {
+		$items = array();
+		foreach ( $this->query_nodes( $section_node, './/*[contains(@class,"tech-pain-card")]' ) as $card ) {
+			$items[] = array(
+				'icon_class' => $this->attr( $card, './/i[1]', 'class' ),
+				'label'      => $this->text( $card, './/*[contains(@class,"tech-pain-card__label")][1]' ),
+				'title'      => $this->text( $card, './/h3[1]' ),
+				'content'    => $this->html( $card, './/p[1]' ),
+			);
+		}
+
+		return array(
+			'title' => $this->html( $section_node, './/h2[1]' ),
+			'intro' => $this->text( $section_node, './/*[contains(@class,"section-heading")]//p[1]' ),
+			'items' => $items,
+		);
+	}
+
+	protected function parse_tech_audience( $section_node ) {
+		$personas = array();
+		foreach ( $this->query_nodes( $section_node, './/*[contains(@class,"tech-persona-pill")]' ) as $item ) {
+			$label = trim( preg_replace( '/\s+/', ' ', (string) $item->textContent ) );
+			$personas[] = array(
+				'icon_class' => $this->attr( $item, './/i[1]', 'class' ),
+				'label'      => $label,
+			);
+		}
+
+		return array(
+			'title'    => $this->html( $section_node, './/h2[1]' ),
+			'intro'    => $this->text( $section_node, './/*[contains(@class,"section-heading")]//p[1]' ),
+			'personas' => $personas,
+		);
+	}
+
+	protected function parse_tech_solution( $section_node ) {
+		$image = $this->parse_image_fields( $section_node, './/*[contains(@class,"tech-coach-image")][1]' );
+		$items = array();
+		foreach ( $this->query_nodes( $section_node, './/*[contains(@class,"tech-trust-list")]/li' ) as $item ) {
+			$items[] = array(
+				'icon_class' => $this->attr( $item, './/i[1]', 'class' ),
+				'text'       => trim( preg_replace( '/\s+/', ' ', (string) $item->textContent ) ),
+			);
+		}
+
+		return array_merge(
+			array(
+				'title'     => $this->html( $section_node, './/h2[1]' ),
+				'body'      => $this->html( $section_node, './/*[contains(@class,"col-text")]//p[1]' ),
+				'image'     => $image['id'],
+				'image_alt' => $image['alt'],
+				'items'     => $items,
+			),
+			$this->parse_button( $section_node )
+		);
+	}
+
+	protected function parse_tech_value( $section_node ) {
+		$points = array();
+		foreach ( $this->query_nodes( $section_node, './/*[contains(@class,"tech-value-list")]/li' ) as $item ) {
+			$points[] = array(
+				'icon_class' => $this->attr( $item, './/i[1]', 'class' ),
+				'content'    => $this->html( $item, './span[last()]' ),
+			);
+		}
+
+		$columns = array();
+		foreach ( $this->query_nodes( $section_node, './/*[contains(@class,"tech-system-diagram")][1]/*[contains(@class,"tech-system-col")]' ) as $column ) {
+			$column_items = array();
+			foreach ( $this->query_nodes( $column, './/li' ) as $item ) {
+				$column_items[] = array(
+					'icon_class' => $this->attr( $item, './/i[1]', 'class' ),
+					'text'       => trim( preg_replace( '/\s+/', ' ', (string) $item->textContent ) ),
+				);
+			}
+			$columns[] = array(
+				'title' => $this->text( $column, './/*[contains(@class,"tech-system-col__title")][1]' ),
+				'items' => $column_items,
+			);
+		}
+
+		return array(
+			'title'           => $this->html( $section_node, './/h2[1]' ),
+			'intro'           => $this->text( $section_node, './/*[contains(@class,"section-heading")]//p[1]' ),
+			'points'          => $points,
+			'diagram_columns' => $columns,
+			'open_hint'       => $this->text( $section_node, './/*[contains(@class,"tech-diagram-open__hint")][1]' ),
+			'dialog_title'    => $this->text( $section_node, './/*[contains(@class,"tech-diagram-dialog__title")][1]' ),
+		);
+	}
+
+	protected function parse_tech_pillars( $section_node ) {
+		$value = $this->parse_pillars( $section_node );
+		$cards = $this->query_nodes( $section_node, './/*[contains(@class,"pillar-card")]' );
+		foreach ( $cards as $index => $card ) {
+			if ( isset( $value['items'][ $index ] ) ) {
+				$value['items'][ $index ]['icon_class'] = $this->attr( $card, './/i[1]', 'class' );
+				unset( $value['items'][ $index ]['icon'], $value['items'][ $index ]['icon_alt'] );
+			}
+		}
+		return $value;
+	}
+
+	protected function parse_tech_final_cta( $section_node ) {
+		$buttons  = $this->query_nodes( $section_node, './/*[contains(@class,"tech-final-cta__actions")]//a[contains(@class,"btn")]' );
+		$primary  = isset( $buttons[0] ) ? $this->parse_button( $buttons[0], '.' ) : array();
+		$secondary = isset( $buttons[1] ) ? $this->parse_button( $buttons[1], '.' ) : array();
+		$sticky = $this->parse_button( $section_node, './/*[contains(@class,"sticky-mobile-cta__btn")][1]' );
+		$sticky['cta_label'] = $this->text( $section_node, './/*[contains(@class,"sticky-mobile-cta__label")][1]' );
+
+		return array_merge(
+			array(
+				'title'       => $this->html( $section_node, './/h2[1]' ),
+				'body'        => $this->html( $section_node, './/p[1]' ),
+				'sticky_meta' => $this->text( $section_node, './/*[contains(@class,"sticky-mobile-cta__meta")][1]' ),
+			),
+			$this->prefix_button_fields( $primary, 'primary_cta' ),
+			$this->prefix_button_fields( $secondary, 'secondary_cta' ),
+			$this->prefix_button_fields( $sticky, 'sticky_cta' )
+		);
+	}
+
+	protected function parse_tech_process( $section_node ) {
+		$steps = array();
+		foreach ( $this->query_nodes( $section_node, './/*[contains(@class,"how-step")]' ) as $step ) {
+			$steps[] = array(
+				'icon_class' => $this->attr( $step, './/*[contains(@class,"step-icon")]//i[1]', 'class' ),
+				'title'      => $this->text( $step, './/h4[1]' ),
+				'content'    => $this->html( $step, './/p[1]' ),
+			);
+		}
+
+		return array_merge(
+			array(
+				'title' => $this->html( $section_node, './/h2[1]' ),
+				'steps' => $steps,
+			),
+			$this->parse_button( $section_node, './/a[contains(@class,"btn")][last()]' )
+		);
+	}
+
+	protected function parse_tech_testimonials( $section_node ) {
+		$value = $this->parse_testimonials( $section_node );
+		$cards = $this->query_nodes( $section_node, './/*[contains(@class,"testimonial-card")]' );
+		foreach ( $cards as $index => $card ) {
+			$name_node = $this->first_node( $card, './/*[contains(@class,"testimonial-name")][1]');
+			if ( ! $name_node instanceof DOMNode || ! isset( $value['items'][ $index ] ) ) {
+				continue;
+			}
+			$name = '';
+			foreach ( $name_node->childNodes as $child ) {
+				if ( $child instanceof DOMText ) {
+					$name .= $child->nodeValue;
+				}
+			}
+			$value['items'][ $index ]['name'] = trim( preg_replace( '/\s+/', ' ', $name ) );
+		}
+		return $value;
 	}
 
 	/**
@@ -2369,6 +2573,7 @@ class Leadwerk_ACF_Filler {
 			'investment-beratung.html'  => 'finora-investment-v1',
 			'immobilien-beratung.html'  => 'finora-real-estate-v1',
 			'erbanlage-beratung.html'   => 'finora-inheritance-v1',
+			'tech-expats.html'          => 'finora-tech-expats-v1',
 			'impressum.html'            => 'finora-impressum-v1',
 			'datenschutz.html'          => 'finora-datenschutz-v1',
 			'en/index.html'             => 'finora-home-v1',
@@ -2379,6 +2584,7 @@ class Leadwerk_ACF_Filler {
 			'en/investment-beratung.html' => 'finora-investment-v1',
 			'en/immobilien-beratung.html' => 'finora-real-estate-v1',
 			'en/erbanlage-beratung.html'  => 'finora-inheritance-v1',
+			'en/tech-expats.html'          => 'finora-tech-expats-v1',
 			'en/impressum.html'         => 'finora-impressum-v1',
 			'en/datenschutz.html'       => 'finora-datenschutz-v1',
 		);

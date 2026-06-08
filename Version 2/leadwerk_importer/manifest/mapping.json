@@ -77,6 +77,15 @@
       "post_status": "publish"
     },
     {
+      "source_key": "finora-tech-expats-v1",
+      "field_name": "finora_tech_expats_sections",
+      "source_file": "tech-expats.html",
+      "title": "Tech Expats",
+      "slug": "tech-expats",
+      "target_type": "page",
+      "post_status": "publish"
+    },
+    {
       "source_key": "finora-impressum-v1",
       "field_name": "impressum_page",
       "source_file": "impressum.html",

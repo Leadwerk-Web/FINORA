@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Leadwerk Fields
  * Description: Lightweight ACF Pro replacement – provides get_field/update_field API using native post_meta. No external dependencies.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Leadwerk
  * Text Domain: leadwerk-fields
  * Requires at least: 6.0
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LEADWERK_FIELDS_VERSION', '1.0.0' );
+define( 'LEADWERK_FIELDS_VERSION', '1.1.0' );
 define( 'LEADWERK_FIELDS_PATH', plugin_dir_path( __FILE__ ) );
 
 require_once LEADWERK_FIELDS_PATH . 'includes/class-leadwerk-content-schema.php';

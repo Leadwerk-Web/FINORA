@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Leadwerk Importer
  * Description: Import FINORA static content into WordPress pages, media, fields and DE/EN translation structure.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Leadwerk
  * Text Domain: leadwerk-importer
  * Requires at least: 6.0
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LEADWERK_IMPORTER_VERSION', '1.0.0' );
+define( 'LEADWERK_IMPORTER_VERSION', '1.1.0' );
 define( 'LEADWERK_IMPORTER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LEADWERK_IMPORTER_URL', plugin_dir_url( __FILE__ ) );
 
