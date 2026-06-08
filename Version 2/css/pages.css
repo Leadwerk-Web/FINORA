@@ -12,11 +12,11 @@
 /* Hero: 100vh Desktop - Slider (Leistungen-Style) oder Fallback */
 .page-home .hero {
     background-color: #043c43;
-    min-height: 100vh;
-    min-height: 100dvh;
-    height: 100vh;
-    height: 100dvh;
-    padding: 80px 70px 60px;
+    min-height: calc(100vh - var(--header-flow-offset, 108px));
+    min-height: calc(100dvh - var(--header-flow-offset, 108px));
+    height: calc(100vh - var(--header-flow-offset, 108px));
+    height: calc(100dvh - var(--header-flow-offset, 108px));
+    padding: 40px 70px 60px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -29,12 +29,14 @@
     position: relative;
     background: none;
     padding: 0;
-    min-height: 100vh;
-    min-height: 100dvh;
-    height: 100vh;
-    height: 100dvh;
+    margin-top: var(--header-flow-offset, 108px);
+    min-height: calc(100vh - var(--header-flow-offset, 108px));
+    min-height: calc(100dvh - var(--header-flow-offset, 108px));
+    height: calc(100vh - var(--header-flow-offset, 108px));
+    height: calc(100dvh - var(--header-flow-offset, 108px));
     width: 100%;
     overflow: hidden;
+    touch-action: pan-y;
 }
 
 .page-home .hero.hero--slider::after {
@@ -89,7 +91,7 @@
     text-align: center;
     max-width: 720px;
     margin: 0 auto;
-    padding: calc(var(--header-bar-height, 108px) + 32px) 70px 140px;
+    padding: 32px 70px 140px;
     box-sizing: border-box;
     transition: padding-top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -370,7 +372,7 @@
 
 @media (max-width: 767px) {
     .page-home .hero {
-        padding-top: 60px;
+        padding-top: calc(var(--header-flow-offset, 86px) + 16px);
         padding-bottom: 40px;
         padding-right: max(16px, env(safe-area-inset-right));
         padding-left: max(16px, env(safe-area-inset-left));
@@ -1479,6 +1481,15 @@ html:has(body.page-immobilien) {
     color: #ffffff;
 }
 
+.page-immobilien .final-cta-section h2,
+.page-immobilien .final-cta-section .section-heading h2 {
+    font-family: var(--font-heading);
+    font-weight: 300;
+    font-size: 44px;
+    line-height: 1.2em;
+    margin-bottom: 20px;
+}
+
 .page-immobilien .final-cta-section h2 strong {
     color: #ffffff;
 }
@@ -1486,6 +1497,18 @@ html:has(body.page-immobilien) {
 @media (max-width: 1024px) {
     .page-immobilien .final-cta-section {
         background-attachment: scroll;
+    }
+
+    .page-immobilien .final-cta-section h2,
+    .page-immobilien .final-cta-section .section-heading h2 {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 767px) {
+    .page-immobilien .final-cta-section h2,
+    .page-immobilien .final-cta-section .section-heading h2 {
+        font-size: 18px;
     }
 }
 
@@ -1739,11 +1762,12 @@ html:has(body.page-immobilien) {
     background-repeat: no-repeat, no-repeat;
     background-attachment: scroll;
     background-color: #043c43;
-    padding: 80px 70px 60px;
-    min-height: 100vh;
-    min-height: 100dvh;
-    height: 100vh;
-    height: 100dvh;
+    margin-top: var(--header-flow-offset, 108px);
+    padding: 40px 70px 60px;
+    min-height: calc(100vh - var(--header-flow-offset, 108px));
+    min-height: calc(100dvh - var(--header-flow-offset, 108px));
+    height: calc(100vh - var(--header-flow-offset, 108px));
+    height: calc(100dvh - var(--header-flow-offset, 108px));
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -2235,11 +2259,12 @@ html:has(body.page-immobilien) {
     background-position: center, center;
     background-repeat: no-repeat, no-repeat;
     background-color: #043c43;
-    padding: 80px 70px 60px;
-    min-height: 100vh;
-    min-height: 100dvh;
-    height: 100vh;
-    height: 100dvh;
+    margin-top: var(--header-flow-offset, 108px);
+    padding: 40px 70px 60px;
+    min-height: calc(100vh - var(--header-flow-offset, 108px));
+    min-height: calc(100dvh - var(--header-flow-offset, 108px));
+    height: calc(100vh - var(--header-flow-offset, 108px));
+    height: calc(100dvh - var(--header-flow-offset, 108px));
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -2480,6 +2505,279 @@ html:has(body.page-immobilien) {
     border-bottom-color: var(--color-primary);
 }
 
+.page-kontakt .contact-form-card .wpforms-container,
+.page-kontakt .contact-form-card .wpforms-container-full,
+.page-kontakt .contact-form-card .wpforms-form {
+    margin: 0;
+}
+
+.page-kontakt .contact-form-card .wpforms-field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.page-kontakt .contact-form-card .wpforms-field {
+    margin: 0;
+    padding: 0;
+}
+
+.page-kontakt .contact-form-card .wpforms-field.wpforms-field-text[data-field-id="4"] {
+    display: none !important;
+}
+
+.page-kontakt .contact-form-card .wpforms-field-label,
+.page-kontakt .contact-form-card legend.wpforms-field-label {
+    display: block;
+    margin: 0 0 10px;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+    color: var(--color-primary);
+}
+
+.page-kontakt .contact-form-card .wpforms-required-label {
+    color: var(--color-teal);
+    font-weight: 600;
+}
+
+.page-kontakt .contact-form-card .wpforms-field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.page-kontakt .contact-form-card .wpforms-field-row-block {
+    width: 100%;
+    max-width: none;
+}
+
+.page-kontakt .contact-form-card .wpforms-field-sublabel {
+    display: none;
+}
+
+.page-kontakt .contact-form-card input[type="text"],
+.page-kontakt .contact-form-card input[type="email"],
+.page-kontakt .contact-form-card textarea {
+    width: 100% !important;
+    min-height: 56px;
+    border: 1px solid rgba(4, 60, 67, 0.14);
+    border-radius: 16px;
+    padding: 16px 18px;
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #191919;
+    background: #fbfbfa;
+    box-shadow: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.page-kontakt .contact-form-card textarea {
+    min-height: 168px;
+    padding-top: 18px;
+    resize: vertical;
+}
+
+.page-kontakt .contact-form-card input::placeholder,
+.page-kontakt .contact-form-card textarea::placeholder {
+    color: #8a999c;
+    opacity: 1;
+}
+
+.page-kontakt .contact-form-card input:hover,
+.page-kontakt .contact-form-card textarea:hover {
+    border-color: rgba(4, 60, 67, 0.22);
+    background: #ffffff;
+}
+
+.page-kontakt .contact-form-card input:focus,
+.page-kontakt .contact-form-card textarea:focus {
+    outline: none;
+    border-color: rgba(38, 96, 99, 0.58);
+    box-shadow: 0 0 0 3px rgba(38, 96, 99, 0.12);
+    background: #ffffff;
+}
+
+.page-kontakt .contact-form-card .wpforms-field-description {
+    display: none;
+}
+
+.page-kontakt .contact-form-card .wpforms-field-checkbox legend.wpforms-field-label {
+    margin-bottom: 0;
+    line-height: 0;
+}
+
+.page-kontakt .contact-form-card .wpforms-field-checkbox ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.page-kontakt .contact-form-card .wpforms-field-checkbox li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.page-kontakt .contact-form-card .wpforms-field-checkbox input[type="checkbox"] {
+    width: 20px !important;
+    height: 20px !important;
+    margin: 4px 0 0;
+    accent-color: var(--color-teal);
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.page-kontakt .contact-form-card .wpforms-field-checkbox .wpforms-field-label-inline {
+    margin: 0;
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--color-text);
+}
+
+.page-kontakt .contact-form-card .wpforms-field-checkbox .wpforms-field-label-inline a {
+    color: var(--color-teal);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(38, 96, 99, 0.35);
+}
+
+.page-kontakt .contact-form-card .wpforms-field-checkbox .wpforms-field-label-inline a:hover {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+.page-kontakt .contact-form-card .wpforms-submit-container {
+    margin: 8px 0 0;
+    padding: 0;
+}
+
+.page-kontakt .contact-form-card .wpforms-submit {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    padding: 14px 26px !important;
+    border: 1px solid #1f1f1f !important;
+    border-radius: 999px !important;
+    background: #1f1f1f !important;
+    color: #ffffff !important;
+    font-family: var(--font-heading);
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 1;
+    box-shadow: none !important;
+    transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+.page-kontakt .contact-form-card .wpforms-submit:hover,
+.page-kontakt .contact-form-card .wpforms-submit:focus-visible {
+    background: #2b2b2b !important;
+    border-color: #2b2b2b !important;
+    transform: translateY(-1px);
+}
+
+.page-kontakt .contact-form-card .wpforms-submit:focus-visible {
+    outline: 3px solid rgba(38, 96, 99, 0.22);
+    outline-offset: 3px;
+}
+
+.page-kontakt .kontakt-form-col .wpforms-container,
+.page-kontakt .kontakt-form-col .wpforms-container-full,
+.page-kontakt .kontakt-form-col .wpforms-form {
+    margin: 0;
+}
+
+.page-kontakt .kontakt-form-col .wpforms-field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.page-kontakt .kontakt-form-col .wpforms-field {
+    margin: 0;
+    padding: 0;
+}
+
+.page-kontakt .kontakt-form-col .wpforms-field[hidden],
+.page-kontakt .kontakt-form-col .wpforms-field.wpforms-field-text[data-field-id="4"] {
+    display: none !important;
+}
+
+.page-kontakt .kontakt-form-col .wpforms-field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.page-kontakt .kontakt-form-col .wpforms-field-row-block {
+    width: 100%;
+    max-width: none;
+}
+
+.page-kontakt .kontakt-form-col .wpforms-field-sublabel,
+.page-kontakt .kontakt-form-col .wpforms-field-description {
+    display: none !important;
+}
+
+.page-kontakt .kontakt-form-col input[type="text"],
+.page-kontakt .kontakt-form-col input[type="email"],
+.page-kontakt .kontakt-form-col textarea {
+    width: 100% !important;
+    min-height: 56px;
+    border: 1px solid rgba(4, 60, 67, 0.14);
+    border-radius: 16px;
+    padding: 16px 18px;
+    font-size: 18px;
+    line-height: 1.5;
+    color: #191919;
+    background: #fbfbfa;
+    box-shadow: none;
+}
+
+.page-kontakt .kontakt-form-col textarea {
+    min-height: 168px;
+    padding-top: 18px;
+}
+
+.page-kontakt .kontakt-form-col .wpforms-field-checkbox ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.page-kontakt .kontakt-form-col .wpforms-field-checkbox li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.page-kontakt .kontakt-form-col .wpforms-field-checkbox .wpforms-field-label-inline {
+    margin: 0;
+    line-height: 1.65;
+}
+
+.page-kontakt .kontakt-form-col .wpforms-submit {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    padding: 14px 26px !important;
+    border: 1px solid #1f1f1f !important;
+    border-radius: 999px !important;
+    background: #1f1f1f !important;
+    color: #ffffff !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 1;
+    box-shadow: none !important;
+}
+
 .page-kontakt .kontakt-info-col {
     display: flex;
     flex-direction: column;
@@ -2682,10 +2980,12 @@ html:has(body.page-immobilien) {
 
     .page-kontakt .kontakt-layout {
         grid-template-columns: 1fr;
+        row-gap: 36px;
     }
 
     .page-kontakt .kontakt-info-col {
         flex-direction: column;
+        gap: 16px;
     }
 
     .page-kontakt .kontakt-info-card {
@@ -2741,11 +3041,12 @@ html:has(body.page-immobilien) {
     background-repeat: no-repeat, no-repeat;
     background-attachment: scroll;
     background-color: #043c43;
-    padding: 80px 70px 60px;
-    min-height: 100vh;
-    min-height: 100dvh;
-    height: 100vh;
-    height: 100dvh;
+    margin-top: var(--header-flow-offset, 108px);
+    padding: 40px 70px 60px;
+    min-height: calc(100vh - var(--header-flow-offset, 108px));
+    min-height: calc(100dvh - var(--header-flow-offset, 108px));
+    height: calc(100vh - var(--header-flow-offset, 108px));
+    height: calc(100dvh - var(--header-flow-offset, 108px));
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -3652,8 +3953,6 @@ html:has(body.page-immobilien) {
 
 /* Bild bis zum linken Viewport-Rand: kein Container-Padding/Margin links */
 .page-investment .section-results .container--wide {
-    padding-left: 0;
-    margin-left: 0;
     margin-right: auto;
 }
 
@@ -4125,11 +4424,12 @@ html:has(body.page-immobilien) {
     background-repeat: no-repeat, no-repeat;
     background-attachment: scroll;
     background-color: #043c43;
-    padding: 80px 70px 60px;
-    min-height: 100vh;
-    min-height: 100dvh;
-    height: 100vh;
-    height: 100dvh;
+    margin-top: var(--header-flow-offset, 108px);
+    padding: 40px 70px 60px;
+    min-height: calc(100vh - var(--header-flow-offset, 108px));
+    min-height: calc(100dvh - var(--header-flow-offset, 108px));
+    height: calc(100vh - var(--header-flow-offset, 108px));
+    height: calc(100dvh - var(--header-flow-offset, 108px));
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -5173,11 +5473,12 @@ html:has(body.page-immobilien) {
     background-repeat: no-repeat, no-repeat;
     background-attachment: scroll;
     background-color: #043c43;
-    padding: 80px 70px 60px;
-    min-height: 100vh;
-    min-height: 100dvh;
-    height: 100vh;
-    height: 100dvh;
+    margin-top: var(--header-flow-offset, 108px);
+    padding: 40px 70px 60px;
+    min-height: calc(100vh - var(--header-flow-offset, 108px));
+    min-height: calc(100dvh - var(--header-flow-offset, 108px));
+    height: calc(100vh - var(--header-flow-offset, 108px));
+    height: calc(100dvh - var(--header-flow-offset, 108px));
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -6269,11 +6570,12 @@ html:has(body.page-immobilien) {
     background-repeat: no-repeat, no-repeat;
     background-attachment: scroll;
     background-color: #043c43;
-    padding: 80px 70px 60px;
-    min-height: 100vh;
-    min-height: 100dvh;
-    height: 100vh;
-    height: 100dvh;
+    margin-top: var(--header-flow-offset, 108px);
+    padding: 40px 70px 60px;
+    min-height: calc(100vh - var(--header-flow-offset, 108px));
+    min-height: calc(100dvh - var(--header-flow-offset, 108px));
+    height: calc(100vh - var(--header-flow-offset, 108px));
+    height: calc(100dvh - var(--header-flow-offset, 108px));
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -7242,7 +7544,7 @@ html:has(body.page-immobilien) {
    ========================================================================== */
 
 .page-legal .legal-content {
-    padding-top: 160px;
+    padding-top: 80px;
     padding-bottom: 80px;
     background: var(--color-bg);
 }
@@ -7314,9 +7616,119 @@ html:has(body.page-immobilien) {
     font-weight: 600;
 }
 
+.page-404 .legal-content {
+    color: var(--color-primary-dark);
+}
+
+.page-404 .site-header + .content-section {
+    margin-top: 0;
+}
+
+.page-404 .legal-content .container--narrow > div {
+    grid-template-columns: minmax(390px, 0.95fr) minmax(420px, 1.05fr) !important;
+}
+
+.page-404 .legal-title {
+    color: var(--color-primary-dark) !important;
+    font-size: clamp(3.15rem, 4.6vw, 4.75rem) !important;
+    line-height: 1.02 !important;
+    max-width: 12.5ch;
+    text-shadow: none;
+}
+
+.page-404 .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin: 0 0 20px;
+    padding: 8px 12px;
+    color: var(--color-teal);
+    background: rgba(144, 180, 178, 0.16);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.page-404 .legal-body {
+    color: #516365 !important;
+}
+
+.page-404 .legal-body p {
+    color: #516365;
+}
+
+.page-404 .legal-body strong {
+    color: var(--color-primary-dark);
+}
+
+.page-404 .anim,
+.page-404 .anim.is-visible {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    animation: none !important;
+}
+
+.page-404 .legal-body .btn {
+    border-color: rgba(4, 60, 67, 0.18);
+    color: var(--color-primary-dark);
+}
+
+.page-404 .legal-body .btn-primary {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-white);
+    box-shadow: 0 18px 36px rgba(4, 60, 67, 0.18);
+}
+
+.page-404 .legal-body .btn:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-primary-dark);
+}
+
+.page-404 .legal-body a:not(.btn) {
+    border: 1px solid rgba(4, 60, 67, 0.08);
+}
+
+.page-404 .legal-body a:not(.btn):hover {
+    transform: translateY(-2px);
+    border-color: rgba(38, 96, 99, 0.28);
+    box-shadow: 0 18px 38px rgba(31, 42, 46, 0.12) !important;
+}
+
+@media (max-width: 980px) {
+    .page-404 .legal-title {
+        font-size: clamp(3.1rem, 5.6vw, 4rem) !important;
+        line-height: 1 !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .page-404 .legal-content .container--narrow > div {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .page-404 .legal-title {
+        font-size: 3rem !important;
+        line-height: 1 !important;
+    }
+
+    .page-404 .legal-body {
+        font-size: 17px;
+    }
+
+    .page-404 .legal-body .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 @media (max-width: 980px) {
     .page-legal .legal-content {
-        padding-top: 130px;
+        padding-top: 72px;
         padding-bottom: 60px;
     }
 
@@ -7332,7 +7744,7 @@ html:has(body.page-immobilien) {
 
 @media (max-width: 767px) {
     .page-legal .legal-content {
-        padding-top: 110px;
+        padding-top: 56px;
         padding-bottom: 48px;
     }
 
@@ -7374,6 +7786,16 @@ html:has(body.page-immobilien) {
     }
 }
 
+@media (max-width: 500px) {
+    .page-legal .legal-body.anim,
+    .page-legal .legal-body.anim.is-visible {
+        opacity: 1 !important;
+        animation: none !important;
+        transform: none !important;
+        filter: none !important;
+    }
+}
+
 /* ============================================================
    MOBILE QA REMEDIATION OVERRIDES
    Shared fixes added after page-specific exports so they win
@@ -7390,12 +7812,8 @@ html:has(body.page-immobilien) {
     }
 
     .site-header {
-        background: rgba(4, 60, 67, 0.42);
-        background-image: linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.07) 0%,
-            rgba(4, 60, 67, 0.28) 100%
-        );
+        background: var(--color-primary-dark);
+        background-image: none;
         border-bottom-color: rgba(255, 255, 255, 0.12);
         backdrop-filter: blur(20px) saturate(1.4);
         -webkit-backdrop-filter: blur(20px) saturate(1.4);
@@ -7404,12 +7822,8 @@ html:has(body.page-immobilien) {
     }
 
     .site-header.is-scrolled {
-        background: rgba(4, 60, 67, 0.82);
-        background-image: linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.04) 0%,
-            rgba(4, 60, 67, 0.55) 100%
-        );
+        background: var(--color-primary-dark);
+        background-image: none;
         border-bottom-color: rgba(144, 180, 178, 0.2);
         backdrop-filter: blur(26px) saturate(1.5);
         -webkit-backdrop-filter: blur(26px) saturate(1.5);
@@ -7537,12 +7951,13 @@ html:has(body.page-immobilien) {
     .page-erbanlage .hero.hero--erbanlage,
     .page-immobilien .hero.hero--immobilien,
     .page-philosophie .hero.hero--philosophie {
-        min-height: max(560px, 100vh);
-        min-height: max(560px, 100dvh);
-        min-height: max(560px, 100svh);
+        margin-top: var(--header-flow-offset, 96px);
+        min-height: max(560px, calc(100vh - var(--header-flow-offset, 96px)));
+        min-height: max(560px, calc(100dvh - var(--header-flow-offset, 96px)));
+        min-height: max(560px, calc(100svh - var(--header-flow-offset, 96px)));
         height: auto !important;
-        padding: 100px clamp(20px, 5vw, 32px) clamp(28px, 7vw, 44px) !important;
-        justify-content: flex-start !important;
+        padding: 32px clamp(20px, 5vw, 32px) clamp(28px, 7vw, 44px) !important;
+        justify-content: flex-end !important;
         background-attachment: scroll !important;
     }
 
@@ -7558,7 +7973,7 @@ html:has(body.page-immobilien) {
         min-height: 0;
         margin: 0 !important;
         padding: 0 !important;
-        align-items: flex-start !important;
+        align-items: flex-end !important;
         justify-content: flex-start !important;
     }
 
@@ -7656,7 +8071,7 @@ html:has(body.page-immobilien) {
 
     .page-home .hero--slider .hero-slide-content {
         max-width: 100%;
-        padding: 104px clamp(16px, 4vw, 24px) 148px !important;
+        padding: 32px clamp(16px, 4vw, 24px) 148px !important;
     }
 
     .page-home .hero--slider .hero-slide-title {
@@ -7917,14 +8332,17 @@ html:has(body.page-immobilien) {
 
 @media (max-width: 767px) {
     .page-home .hero.hero--slider {
+        margin-top: 0 !important;
         min-height: 100vh;
         min-height: 100dvh;
         height: 100vh;
         height: 100dvh;
+        padding: 0 !important;
     }
 
     .page-home .hero--slider .hero-slide-content {
-        padding-top: 94px !important;
+        justify-content: flex-end;
+        padding-top: calc(var(--header-flow-offset, 86px) + 24px) !important;
         padding-right: 20px !important;
         padding-left: 20px !important;
         padding-bottom: 32px !important;
@@ -7945,10 +8363,11 @@ html:has(body.page-immobilien) {
     .page-erbanlage .hero.hero--erbanlage,
     .page-immobilien .hero.hero--immobilien,
     .page-philosophie .hero.hero--philosophie {
+        margin-top: 0 !important;
         min-height: 100vh;
         min-height: 100dvh;
         min-height: 100svh;
-        padding-top: 94px !important;
+        padding-top: calc(var(--header-flow-offset, 86px) + 24px) !important;
         padding-right: 20px !important;
         padding-left: 20px !important;
         padding-bottom: 32px !important;
@@ -8014,8 +8433,8 @@ html:has(body.page-immobilien) {
     }
 
     .page-home .hero--slider .hero-slide-content {
-        justify-content: flex-start;
-        padding-top: 94px !important;
+        justify-content: flex-end;
+        padding-top: calc(var(--header-flow-offset, 86px) + 20px) !important;
         padding-right: 16px !important;
         padding-left: 16px !important;
         padding-bottom: 32px !important;
@@ -8065,6 +8484,73 @@ html:has(body.page-immobilien) {
 
     .page-home .hero--slider .hero-slider-next {
         right: 10px;
+    }
+}
+
+@media (max-width: 430px) {
+    .page-home .hero--slider .hero-slide-content {
+        padding-top: calc(var(--header-flow-offset, 86px) + 18px) !important;
+        padding-bottom: 28px !important;
+    }
+
+    .page-home .hero--slider .hero-slide-title {
+        max-width: 7.4ch;
+        font-size: clamp(1.55rem, 8.5vw, 2.9rem);
+    }
+
+    .page-home .hero--slider .hero-slide-subtitle {
+        max-width: 18ch;
+        font-size: 16px;
+        line-height: 1.45;
+    }
+
+    .page-home .hero--slider .hero-slide-content .btn {
+        width: min(100%, 276px);
+        padding: 12px 20px;
+    }
+
+    .page-home .hero--slider .hero-microcopy {
+        font-size: 16px;
+    }
+
+    .page-home .hero--slider .hero-slider-arrow {
+        display: none;
+    }
+
+    .page-altersvorsorge .hero--altersvorsorge .hero-text h1,
+    .page-ueber .hero--ueber .hero-text h1,
+    .page-kontakt .hero--kontakt .hero-text h1,
+    .page-investment .hero--investment .hero-text h1,
+    .page-erbanlage .hero--erbanlage .hero-text h1,
+    .page-immobilien .hero--immobilien .hero-text h1,
+    .page-philosophie .hero--philosophie .hero-text h1 {
+        max-width: 8.6ch;
+        font-size: clamp(30px, 9.5vw, 48px) !important;
+        line-height: 1.02;
+    }
+
+    .page-altersvorsorge .hero--altersvorsorge .hero-subtitle,
+    .page-ueber .hero--ueber .hero-subtitle,
+    .page-kontakt .hero--kontakt .hero-subtitle,
+    .page-investment .hero--investment .hero-subtitle,
+    .page-erbanlage .hero--erbanlage .hero-subtitle,
+    .page-immobilien .hero--immobilien .hero-subtitle,
+    .page-philosophie .hero--philosophie .hero-subtitle {
+        max-width: 28ch;
+        font-size: 16px !important;
+        line-height: 1.5;
+    }
+
+    .page-altersvorsorge .hero .btn,
+    .page-ueber .hero .btn,
+    .page-kontakt .hero .btn,
+    .page-investment .hero .btn,
+    .page-erbanlage .hero .btn,
+    .page-immobilien .hero .btn,
+    .page-philosophie .hero .btn {
+        width: min(100%, 276px);
+        justify-content: center;
+        text-align: center;
     }
 }
 
@@ -9062,6 +9548,7 @@ body.has-tech-diagram-open {
 }
 
 /* Einheitliche H2-Größe siteweit (überschreibt seitenbezogene font-size-Regeln) */
+<<<<<<< Updated upstream
 h2 {
     font-size: var(--font-size-h2) !important;
 }
@@ -9069,4 +9556,287 @@ h2 {
 /* Tech Expats: H2 visuell konsistent mit anderen Service-Seiten */
 .page-tech-expats h2 {
     font-size: clamp(26px, 3vw, 46px) !important;
+=======
+@media (max-width: 761px) {
+    h2 {
+        font-size: clamp(32px, 8.2vw, var(--font-size-h2)) !important;
+        line-height: 1.08;
+    }
+}
+
+@media (max-width: 761px) {
+    .page-philosophie .philosophie-break {
+        padding: 72px 18px;
+    }
+
+    .page-philosophie .philosophie-break .section-heading {
+        max-width: min(100%, 340px);
+        margin: 0 auto;
+    }
+
+    .page-philosophie .philosophie-break .section-heading h2 {
+        max-width: 10ch;
+        margin: 0 auto 20px !important;
+        font-size: clamp(30px, 8.6vw, 38px) !important;
+        line-height: 1.08 !important;
+        text-wrap: balance;
+        overflow-wrap: anywhere;
+    }
+
+    .page-philosophie .philosophie-break .section-heading p {
+        max-width: 24ch;
+        margin: 0 auto 28px !important;
+        font-size: clamp(17px, 4.7vw, 19px);
+        line-height: 1.65;
+    }
+
+    .page-kontakt .contact-form-card .wpforms-field-row {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .page-kontakt .kontakt-form-col .wpforms-field-row {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .page-kontakt .contact-form-card .wpforms-submit {
+        min-width: 0;
+        width: auto;
+    }
+}
+
+@media (min-width: 768px) {
+    .page-home .hero.hero--slider,
+    .page-altersvorsorge .hero.hero--altersvorsorge,
+    .page-ueber .hero.hero--ueber,
+    .page-investment .hero.hero--investment,
+    .page-erbanlage .hero.hero--erbanlage,
+    .page-immobilien .hero.hero--immobilien {
+        --hero-media-ratio: 0.6667;
+    }
+
+    .page-philosophie .hero.hero--philosophie {
+        --hero-media-ratio: 0.5927;
+    }
+
+    .page-kontakt .hero.hero--kontakt {
+        --hero-media-ratio: 0.5625;
+    }
+
+    .page-home .hero.hero--slider,
+    .page-altersvorsorge .hero.hero--altersvorsorge,
+    .page-ueber .hero.hero--ueber,
+    .page-kontakt .hero.hero--kontakt,
+    .page-investment .hero.hero--investment,
+    .page-erbanlage .hero.hero--erbanlage,
+    .page-immobilien .hero.hero--immobilien,
+    .page-philosophie .hero.hero--philosophie {
+        margin-top: 0 !important;
+        min-height: max(100vh, calc(100vw * var(--hero-media-ratio, 0.6667))) !important;
+        min-height: max(100dvh, calc(100vw * var(--hero-media-ratio, 0.6667))) !important;
+        height: auto !important;
+    }
+
+    .page-home .hero--slider .hero-slide-content {
+        padding-top: calc(var(--header-flow-offset, 108px) + 32px) !important;
+    }
+
+    .page-altersvorsorge .hero.hero--altersvorsorge,
+    .page-ueber .hero.hero--ueber,
+    .page-kontakt .hero.hero--kontakt,
+    .page-investment .hero.hero--investment,
+    .page-erbanlage .hero.hero--erbanlage,
+    .page-immobilien .hero.hero--immobilien,
+    .page-philosophie .hero.hero--philosophie {
+        padding-top: calc(var(--header-flow-offset, 108px) + 40px) !important;
+    }
+
+    .page-kontakt .hero--kontakt .hero-content {
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    .page-kontakt .hero--kontakt .hero-text {
+        width: min(100%, 760px) !important;
+        max-width: 760px !important;
+        margin: 0 auto !important;
+        padding-right: 0 !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .page-home .hero.hero--slider,
+    .page-altersvorsorge .hero.hero--altersvorsorge,
+    .page-ueber .hero.hero--ueber,
+    .page-kontakt .hero.hero--kontakt,
+    .page-investment .hero.hero--investment,
+    .page-erbanlage .hero.hero--erbanlage,
+    .page-immobilien .hero.hero--immobilien,
+    .page-philosophie .hero.hero--philosophie {
+        min-height: 75vh !important;
+        min-height: 75dvh !important;
+        min-height: 75svh !important;
+        height: auto !important;
+    }
+
+    .page-home .hero--slider .hero-slide-content,
+    .page-altersvorsorge .hero--altersvorsorge .hero-content,
+    .page-ueber .hero--ueber .hero-content,
+    .page-kontakt .hero--kontakt .hero-content,
+    .page-investment .hero--investment .hero-content,
+    .page-erbanlage .hero--erbanlage .hero-content,
+    .page-immobilien .hero--immobilien .hero-content,
+    .page-philosophie .hero--philosophie .hero-content {
+        width: 100% !important;
+        max-width: 560px !important;
+        margin: 0 auto !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .page-home .hero--slider .hero-slide-content {
+        justify-content: flex-end !important;
+    }
+
+    .page-home .hero--slider .hero-slide-title,
+    .page-home .hero--slider .hero-slide-subtitle,
+    .page-home .hero--slider .hero-slide-content .btn,
+    .page-home .hero--slider .hero-microcopy,
+    .page-home .hero--slider .hero-services {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+    }
+
+    .page-altersvorsorge .hero--altersvorsorge .hero-text,
+    .page-ueber .hero--ueber .hero-text,
+    .page-kontakt .hero--kontakt .hero-text,
+    .page-investment .hero--investment .hero-text,
+    .page-erbanlage .hero--erbanlage .hero-text,
+    .page-immobilien .hero--immobilien .hero-text,
+    .page-philosophie .hero--philosophie .hero-text {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .page-altersvorsorge .hero--altersvorsorge .hero-text h1,
+    .page-ueber .hero--ueber .hero-text h1,
+    .page-kontakt .hero--kontakt .hero-text h1,
+    .page-investment .hero--investment .hero-text h1,
+    .page-erbanlage .hero--erbanlage .hero-text h1,
+    .page-immobilien .hero--immobilien .hero-text h1,
+    .page-philosophie .hero--philosophie .hero-text h1 {
+        max-width: 9.5ch !important;
+        margin: 0 auto 14px !important;
+        text-align: center !important;
+    }
+
+    .page-altersvorsorge .hero--altersvorsorge .hero-subtitle,
+    .page-ueber .hero--ueber .hero-subtitle,
+    .page-kontakt .hero--kontakt .hero-subtitle,
+    .page-investment .hero--investment .hero-subtitle,
+    .page-erbanlage .hero--erbanlage .hero-subtitle,
+    .page-immobilien .hero--immobilien .hero-subtitle,
+    .page-philosophie .hero--philosophie .hero-subtitle,
+    .page-altersvorsorge .hero--altersvorsorge .hero-microcopy,
+    .page-ueber .hero--ueber .hero-microcopy,
+    .page-kontakt .hero--kontakt .hero-microcopy,
+    .page-investment .hero--investment .hero-microcopy,
+    .page-erbanlage .hero--erbanlage .hero-microcopy,
+    .page-immobilien .hero--immobilien .hero-microcopy,
+    .page-philosophie .hero--philosophie .hero-microcopy,
+    .page-altersvorsorge .hero--altersvorsorge .hero-text>div[style*="text-align"],
+    .page-ueber .hero--ueber .hero-text>div[style*="text-align"],
+    .page-kontakt .hero--kontakt .hero-text>div[style*="text-align"],
+    .page-investment .hero--investment .hero-text>div[style*="text-align"],
+    .page-erbanlage .hero--erbanlage .hero-text>div[style*="text-align"],
+    .page-immobilien .hero--immobilien .hero-text>div[style*="text-align"],
+    .page-philosophie .hero--philosophie .hero-text>div[style*="text-align"] {
+        width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        text-align: center !important;
+    }
+
+    .page-altersvorsorge .hero .hero-badge,
+    .page-ueber .hero .hero-badge,
+    .page-kontakt .hero .hero-badge,
+    .page-investment .hero .hero-badge,
+    .page-erbanlage .hero .hero-badge,
+    .page-immobilien .hero .hero-badge,
+    .page-philosophie .hero .hero-badge,
+    .page-altersvorsorge .hero .btn,
+    .page-ueber .hero .btn,
+    .page-kontakt .hero .btn,
+    .page-investment .hero .btn,
+    .page-erbanlage .hero .btn,
+    .page-immobilien .hero .btn,
+    .page-philosophie .hero .btn {
+        align-self: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+    }
+
+    .page-kontakt .kontakt-layout {
+        row-gap: 52px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .page-home .hero--slider .hero-slide-title {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+    }
+}
+
+@media (max-width: 430px) {
+    .page-home .hero--slider .hero-slide-content {
+        max-width: min(100%, 328px) !important;
+        padding-right: 18px !important;
+        padding-left: 18px !important;
+        padding-bottom: 30px !important;
+    }
+
+    .page-home .hero--slider .hero-slide-title {
+        max-width: 10.6ch !important;
+        margin: 0 auto 12px !important;
+        font-size: clamp(1.88rem, 9vw, 2.9rem) !important;
+        line-height: 1 !important;
+    }
+
+    .page-home .hero--slider .hero-slide-subtitle {
+        max-width: 22ch !important;
+        margin: 0 auto 18px !important;
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+    }
+
+    .page-home .hero--slider .hero-slide-content .btn {
+        width: min(100%, 284px) !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .page-home .hero--slider .hero-slide-content {
+        max-width: min(100%, 304px) !important;
+        padding-right: 16px !important;
+        padding-left: 16px !important;
+    }
+
+    .page-home .hero--slider .hero-slide-title {
+        max-width: 9.6ch !important;
+        font-size: clamp(1.72rem, 8.8vw, 2.55rem) !important;
+    }
+
+    .page-home .hero--slider .hero-slide-subtitle {
+        max-width: 20ch !important;
+        font-size: 15px !important;
+    }
+>>>>>>> Stashed changes
 }
