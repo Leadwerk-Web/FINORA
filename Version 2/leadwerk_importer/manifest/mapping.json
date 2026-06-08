@@ -1,0 +1,107 @@
+{
+  "version": "2",
+  "site_title": "Finora Investment Studio",
+  "site_tagline": "Unabhaengige Investmentberatung fuer Vermoegensaufbau, Altersvorsorge, Immobilien und Steuern.",
+  "pages": [
+    {
+      "source_key": "finora-home-v1",
+      "field_name": "finora_home_sections",
+      "source_file": "index.html",
+      "title": "Finora",
+      "slug": "home",
+      "target_type": "page",
+      "post_status": "publish",
+      "is_front_page": true
+    },
+    {
+      "source_key": "finora-about-v1",
+      "field_name": "finora_about_sections",
+      "source_file": "ueber-finora.html",
+      "title": "Ueber Finora",
+      "slug": "ueber-finora",
+      "target_type": "page",
+      "post_status": "publish"
+    },
+    {
+      "source_key": "finora-philosophy-v1",
+      "field_name": "finora_philosophy_sections",
+      "source_file": "finora-philosophie.html",
+      "title": "Finora-Philosophie",
+      "slug": "finora-philosophie",
+      "target_type": "page",
+      "post_status": "publish"
+    },
+    {
+      "source_key": "finora-contact-v1",
+      "field_name": "finora_contact_sections",
+      "source_file": "kontakt.html",
+      "title": "Kontakt",
+      "slug": "kontakt",
+      "target_type": "page",
+      "post_status": "publish"
+    },
+    {
+      "source_key": "finora-retirement-v1",
+      "field_name": "finora_retirement_sections",
+      "source_file": "altersvorsorge.html",
+      "title": "Altersvorsorge-Beratung",
+      "slug": "altersvorsorge",
+      "target_type": "page",
+      "post_status": "publish"
+    },
+    {
+      "source_key": "finora-investment-v1",
+      "field_name": "finora_investment_sections",
+      "source_file": "investment-beratung.html",
+      "title": "Investment-Beratung",
+      "slug": "investment-beratung",
+      "target_type": "page",
+      "post_status": "publish"
+    },
+    {
+      "source_key": "finora-real-estate-v1",
+      "field_name": "finora_real_estate_sections",
+      "source_file": "immobilien-beratung.html",
+      "title": "Immobilien-Beratung",
+      "slug": "immobilien-beratung",
+      "target_type": "page",
+      "post_status": "publish"
+    },
+    {
+      "source_key": "finora-inheritance-v1",
+      "field_name": "finora_inheritance_sections",
+      "source_file": "erbanlage-beratung.html",
+      "title": "Erbanlage-Beratung",
+      "slug": "erbanlage-beratung",
+      "target_type": "page",
+      "post_status": "publish"
+    },
+    {
+      "source_key": "finora-impressum-v1",
+      "field_name": "impressum_page",
+      "source_file": "impressum.html",
+      "title": "Impressum",
+      "slug": "impressum",
+      "target_type": "page",
+      "post_status": "publish"
+    },
+    {
+      "source_key": "finora-datenschutz-v1",
+      "field_name": "datenschutz_page",
+      "source_file": "datenschutz.html",
+      "title": "Datenschutz",
+      "slug": "datenschutz",
+      "target_type": "page",
+      "post_status": "publish"
+    },
+    {
+      "source_key": "finora-404-v1",
+      "field_name": "impressum_page",
+      "source_file": "404.html",
+      "title": "404",
+      "slug": "404",
+      "target_type": "page",
+      "post_status": "publish"
+    }
+  ]
+}

@@ -11,12 +11,8 @@
   right: 0;
   width: 100%;
   z-index: 9999;
-  background: rgba(4, 60, 67, 0.38);
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(4, 60, 67, 0.22) 100%
-  );
+  background: var(--color-primary-dark);
+  background-image: none;
   backdrop-filter: blur(22px) saturate(1.45);
   -webkit-backdrop-filter: blur(22px) saturate(1.45);
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
@@ -31,12 +27,8 @@
 }
 
 .site-header.is-scrolled {
-  background: rgba(4, 60, 67, 0.78);
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    rgba(4, 60, 67, 0.5) 100%
-  );
+  background: var(--color-primary-dark);
+  background-image: none;
   backdrop-filter: blur(28px) saturate(1.55);
   -webkit-backdrop-filter: blur(28px) saturate(1.55);
   border-bottom-color: rgba(144, 180, 178, 0.22);
@@ -91,7 +83,15 @@
 
 /* Erster Inhaltsblock ohne Hero (z. B. Impressum/Datenschutz) unter fixem Header */
 .site-header+.content-section {
-  padding-top: max(2rem, calc(var(--header-bar-height, 108px) + 28px));
+  margin-top: var(--header-flow-offset, 108px);
+}
+
+.site-header+.hero {
+  margin-top: var(--header-flow-offset, 108px);
+  min-height: calc(100vh - var(--header-flow-offset, 108px));
+  min-height: calc(100dvh - var(--header-flow-offset, 108px));
+  height: calc(100vh - var(--header-flow-offset, 108px));
+  height: calc(100dvh - var(--header-flow-offset, 108px));
 }
 
 .header-nav {
@@ -221,7 +221,7 @@
   font-size: 18px;
   font-weight: 300;
   color: var(--color-white) !important;
-  padding: 12px 28px;
+  padding: 10px 26px;
   display: block;
   text-decoration: none;
   position: relative;
@@ -231,9 +231,9 @@
 .nav-menu li a::after {
   content: '';
   position: absolute;
-  left: 28px;
-  right: 28px;
-  bottom: 10px;
+  left: 26px;
+  right: 26px;
+  bottom: 8px;
   height: 1px;
   background: rgba(144, 180, 178, 0.4);
   opacity: 0;
@@ -358,7 +358,9 @@
 
 .mobile-menu a.mobile-menu-locale {
   margin-top: 8px;
-  border-top: 1px solid rgba(144, 180, 178, 0.3);
+  padding-top: 16px;
+  border-top: 0;
+  border-bottom: 0;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -384,7 +386,7 @@
   min-height: 100dvh;
   height: 100vh;
   height: 100dvh;
-  padding: calc(var(--header-bar-height, 108px) + 28px) clamp(20px, 5vw, 70px) 60px;
+  padding: 40px clamp(20px, 5vw, 70px) 60px;
   background: var(--color-primary-dark);
   display: flex;
   flex-direction: column;
@@ -399,7 +401,7 @@
 .hero.hero--investment,
 .hero.hero--immobilien,
 .hero.hero--erbanlage {
-  padding: calc(var(--header-bar-height, 108px) + 28px) clamp(20px, 5vw, 70px) 60px;
+  padding: 40px clamp(20px, 5vw, 70px) 60px;
   min-height: 100vh;
   min-height: 100dvh;
   height: 100vh;
@@ -435,7 +437,7 @@
 .hero.hero--ueber,
 .hero.hero--kontakt,
 .hero.hero--philosophie {
-  padding: calc(var(--header-bar-height, 108px) + 28px) clamp(20px, 5vw, 70px) 60px;
+  padding: 40px clamp(20px, 5vw, 70px) 60px;
   min-height: 100vh;
   min-height: 100dvh;
   height: 100vh;
@@ -1048,6 +1050,11 @@
 .fs-card {
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 12px;
   max-width: clamp(280px, 46vw, 495px);
   margin: calc(clamp(-260px, -26vw, -180px) + 110px) 0 0 clamp(40px, 6vw, 80px);
   padding: clamp(18px, 2.4vw, 28px) clamp(18px, 2.6vw, 32px);
@@ -1068,7 +1075,8 @@
 }
 
 .fs-card h3 {
-  margin: 0 0 10px;
+  width: 100%;
+  margin: 0;
   font-size: clamp(16px, 1vw + 12px, 19px);
   color: var(--color-white);
   font-weight: 700;
@@ -1076,6 +1084,8 @@
 }
 
 .fs-body {
+  width: 100%;
+  flex: 1 1 auto;
   color: var(--color-white);
   font-family: var(--font-body);
   font-size: 18px;
@@ -1842,9 +1852,19 @@
 }
 
 /* Ausgeklappt: voller Text per JS (max-height); Zitat-Bereich wächst mit Inhalt */
-.testimonial-card[data-expanded="true"] .testimonial-quote-wrap {
+.testimonial-card[data-expanded="true"] .testimonial-quote-wrap,
+.testimonial-card[data-force-expanded="true"] .testimonial-quote-wrap {
   flex: 0 1 auto;
   min-height: 0;
+}
+
+.testimonial-card[data-force-expanded="true"] .testimonial-text {
+  max-height: none;
+  overflow: visible;
+}
+
+.testimonial-card[data-force-expanded="true"] .lw-more-btn {
+  display: none !important;
 }
 
 /* Autor-Footer: Initials-Kreis + Name + Rolle (Leadwerk-Style) */
@@ -2581,7 +2601,7 @@
   }
 
   .hero-content {
-    margin: 24px auto 0;
+    margin: auto auto 0;
   }
 
   .hero-text {
@@ -2842,7 +2862,7 @@
   }
 
   .hero-content {
-    margin: 16px auto 0;
+    margin: auto auto 0;
     padding-top: 0;
   }
 
@@ -3051,7 +3071,7 @@
 
   .fs-card {
     padding: 20px 18px;
-    min-height: 40vh ;
+    min-height: 0;
   }
 }
 
@@ -3364,9 +3384,6 @@
   line-height: 1.2em;
 }
 
-.section-heading h2 strong {
-  font-weight: 700;
-}
 
 .section-heading p {
   font-family: var(--font-body);

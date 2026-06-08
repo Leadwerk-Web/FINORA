@@ -1,0 +1,14 @@
+/*
+Theme Name: Leadwerk Theme - FINORA
+Theme URI: https://finora.de
+Description: WordPress Theme for FINORA Investment Studio.
+Version: 1.0.0
+Author: Leadwerk
+Text Domain: leadwerk-theme
+Requires at least: 6.0
+Requires PHP: 7.4
+*/
+
+body {
+	margin: 0;
+}
