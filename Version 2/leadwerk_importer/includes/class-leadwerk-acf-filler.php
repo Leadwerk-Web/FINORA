@@ -1199,22 +1199,7 @@ class Leadwerk_ACF_Filler {
 	}
 
 	protected function parse_tech_testimonials( $section_node ) {
-		$value = $this->parse_testimonials( $section_node );
-		$cards = $this->query_nodes( $section_node, './/*[contains(@class,"testimonial-card")]' );
-		foreach ( $cards as $index => $card ) {
-			$name_node = $this->first_node( $card, './/*[contains(@class,"testimonial-name")][1]');
-			if ( ! $name_node instanceof DOMNode || ! isset( $value['items'][ $index ] ) ) {
-				continue;
-			}
-			$name = '';
-			foreach ( $name_node->childNodes as $child ) {
-				if ( $child instanceof DOMText ) {
-					$name .= $child->nodeValue;
-				}
-			}
-			$value['items'][ $index ]['name'] = trim( preg_replace( '/\s+/', ' ', $name ) );
-		}
-		return $value;
+		return $this->parse_testimonials( $section_node );
 	}
 
 	/**

@@ -1055,4 +1055,13 @@ body.has-tech-diagram-open {
     }
 }
 
+/* Bold-Anteile: bei leichtem Eltern-Gewicht (300) reicht „bolder“ oft nur 400 — explizit 700 */
+.page-tech-expats h2 strong {
+    font-weight: 700;
+}
+
+.page-tech-expats .hero--tech .hero-services .service-item strong {
+    font-weight: 700;
+}
+
 /* Einheitliche H2-Größe siteweit (überschreibt seitenbezogene font-size-Regeln) */

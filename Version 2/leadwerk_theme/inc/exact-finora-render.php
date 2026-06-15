@@ -1375,17 +1375,6 @@ function leadwerk_theme_bind_exact_tech_process( $xpath, $section, $value ) {
 
 function leadwerk_theme_bind_exact_tech_testimonials( $xpath, $section, $value ) {
 	leadwerk_theme_bind_exact_testimonials( $xpath, $section, $value );
-	$items = isset( $value['items'] ) && is_array( $value['items'] ) ? array_values( $value['items'] ) : array();
-	$nodes = leadwerk_theme_dom_query( $xpath, './/*[contains(@class,"testimonial-card")]', $section );
-	foreach ( $nodes as $index => $node ) {
-		$item = $items[ $index ] ?? array();
-		$name = leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"testimonial-name")][1]', $node );
-		if ( ! $name instanceof DOMNode || ! is_array( $item ) ) {
-			continue;
-		}
-		$badge = '<span class="tech-placeholder-badge" aria-label="Platzhalter">Placeholder</span>';
-		leadwerk_theme_dom_set_inner_html( $name, esc_html( (string) ( $item['name'] ?? '' ) ) . $badge );
-	}
 }
 
 function leadwerk_theme_bind_exact_hero_slider( $xpath, $section, $value ) {
