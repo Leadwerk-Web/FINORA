@@ -615,6 +615,9 @@ class Leadwerk_ACF_Filler {
 				return trim( (string) $value );
 			case 'url':
 				return esc_url_raw( (string) $value );
+			case 'url_anchor':
+				$value = trim( (string) $value );
+				return 0 === strpos( $value, '#' ) ? sanitize_text_field( $value ) : esc_url_raw( $value );
 			case 'textarea':
 				return trim( (string) $value );
 			case 'classic_editor':

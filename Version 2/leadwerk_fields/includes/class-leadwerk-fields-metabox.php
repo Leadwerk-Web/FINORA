@@ -289,6 +289,7 @@ class Leadwerk_Fields_Metabox {
 		switch ( $type ) {
 			case 'text':
 			case 'url':
+			case 'url_anchor':
 				$input_type = 'url' === $type ? 'url' : 'text';
 				echo '<input type="' . esc_attr( $input_type ) . '" id="' . esc_attr( $id ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( (string) $value ) . '" class="regular-text">';
 				break;
@@ -415,6 +416,10 @@ class Leadwerk_Fields_Metabox {
 
 			case 'url':
 				return esc_url_raw( is_null( $value ) ? '' : wp_unslash( $value ) );
+
+			case 'url_anchor':
+				$value = trim( (string) ( is_null( $value ) ? '' : wp_unslash( $value ) ) );
+				return 0 === strpos( $value, '#' ) ? sanitize_text_field( $value ) : esc_url_raw( $value );
 
 			case 'textarea':
 				return sanitize_textarea_field( is_null( $value ) ? '' : wp_unslash( $value ) );

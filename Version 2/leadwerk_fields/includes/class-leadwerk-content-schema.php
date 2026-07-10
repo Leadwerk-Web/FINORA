@@ -487,6 +487,13 @@ class Leadwerk_Content_Schema {
 		);
 	}
 
+	protected static function url_anchor( $label ) {
+		return array(
+			'label' => $label,
+			'type'  => 'url_anchor',
+		);
+	}
+
 	/**
 	 * Image field definition.
 	 *
@@ -591,7 +598,7 @@ class Leadwerk_Content_Schema {
 							'icon_class' => self::text( 'Icon CSS Klasse' ),
 							'title'      => self::heading_html( 'Titel' ),
 							'page_key'   => self::text( 'Zielseite (source_key)' ),
-							'url'        => self::url( 'URL / Anchor' ),
+							'url'        => self::url_anchor( 'URL / Anchor' ),
 						),
 						'Thema hinzufuegen'
 					),
