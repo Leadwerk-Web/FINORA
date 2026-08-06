@@ -81,6 +81,15 @@ class Leadwerk_Content_Schema {
 					'contact_main' => self::layout_contact_main(),
 				),
 			),
+			'finora_danke_sections'       => array(
+				'label'       => 'FINORA Danke',
+				'description' => 'Sektionen der Danke-Seite in fester Reihenfolge bearbeiten.',
+				'source_keys' => array( 'finora-danke-v1' ),
+				'layouts'     => array(
+					'hero'       => self::layout_hero( false ),
+					'danke_main' => self::layout_danke_main(),
+				),
+			),
 			'finora_retirement_sections'  => array(
 				'label'       => 'FINORA Altersvorsorge',
 				'description' => 'Sektionen der Altersvorsorge-Seite in fester Reihenfolge bearbeiten.',
@@ -1735,6 +1744,25 @@ class Leadwerk_Content_Schema {
 					),
 					'Info Karte hinzufuegen'
 				),
+			),
+		);
+	}
+
+	/**
+	 * Thank-you page main section layout.
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected static function layout_danke_main() {
+		return array(
+			'label'    => 'Danke Hauptbereich',
+			'template' => 'danke_main',
+			'fields'   => array_merge(
+				array(
+					'body' => self::editor( 'Text' ),
+				),
+				self::button_fields( 'primary' ),
+				self::button_fields( 'secondary' )
 			),
 		);
 	}

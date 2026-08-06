@@ -1395,6 +1395,30 @@
   background: var(--color-white);
 }
 
+.section-danke-main {
+  background: var(--color-white);
+}
+
+.danke-content {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.danke-content p {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+}
+
+.danke-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
 .wpforms-field {
   margin-bottom: var(--space-3);
 }

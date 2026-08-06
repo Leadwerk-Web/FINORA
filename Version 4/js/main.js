@@ -467,8 +467,7 @@
       }
 
       if (valid) {
-        alert('Vielen Dank für Ihre Nachricht! Wir melden uns in Kürze bei Ihnen.');
-        form.reset();
+        window.location.href = 'danke.html';
       }
     });
   }

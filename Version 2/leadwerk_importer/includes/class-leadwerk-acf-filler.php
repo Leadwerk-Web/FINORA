@@ -750,6 +750,10 @@ class Leadwerk_ACF_Filler {
 				'hero'         => '.hero--kontakt',
 				'contact_main' => '.section-kontakt-main',
 			),
+			'finora_danke_sections' => array(
+				'hero'       => '.hero--danke',
+				'danke_main' => '.section-danke-main',
+			),
 			'finora_real_estate_sections' => array(
 				'hero'      => '.hero--immobilien',
 				'intro'     => '.immobilien-intro-section',
@@ -990,6 +994,8 @@ class Leadwerk_ACF_Filler {
 				return $this->parse_tax_detail( $section_node );
 			case 'contact_main':
 				return $this->parse_contact_main( $section_node );
+			case 'danke_main':
+				return $this->parse_danke_main( $section_node );
 			default:
 				return $this->empty_layout_value( $layout_key, $layout_schema );
 		}
@@ -2260,6 +2266,28 @@ class Leadwerk_ACF_Filler {
 	}
 
 	/**
+	 * Parse thank-you section.
+	 *
+	 * @param DOMNode $section_node Section node.
+	 * @return array<string,mixed>
+	 */
+	protected function parse_danke_main( $section_node ) {
+		return array_merge(
+			array(
+				'body' => $this->html( $section_node, './/*[contains(@class,"danke-content")]//p[1]' ),
+			),
+			$this->prefix_button_fields(
+				$this->parse_button( $section_node, './/*[contains(@class,"danke-actions")]//a[1]' ),
+				'primary'
+			),
+			$this->prefix_button_fields(
+				$this->parse_button( $section_node, './/*[contains(@class,"danke-actions")]//a[2]' ),
+				'secondary'
+			)
+		);
+	}
+
+	/**
 	 * Resolve a source file path.
 	 *
 	 * @param string $relative_file Relative file.
@@ -2557,6 +2585,7 @@ class Leadwerk_ACF_Filler {
 			'ueber-finora.html'         => 'finora-about-v1',
 			'finora-philosophie.html'   => 'finora-philosophy-v1',
 			'kontakt.html'              => 'finora-contact-v1',
+			'danke.html'                => 'finora-danke-v1',
 			'altersvorsorge.html'       => 'finora-retirement-v1',
 			'investment-beratung.html'  => 'finora-investment-v1',
 			'immobilien-beratung.html'  => 'finora-real-estate-v1',
@@ -2568,6 +2597,7 @@ class Leadwerk_ACF_Filler {
 			'en/ueber-finora.html'      => 'finora-about-v1',
 			'en/finora-philosophie.html'=> 'finora-philosophy-v1',
 			'en/kontakt.html'           => 'finora-contact-v1',
+			'en/danke.html'             => 'finora-danke-v1',
 			'en/altersvorsorge.html'    => 'finora-retirement-v1',
 			'en/investment-beratung.html' => 'finora-investment-v1',
 			'en/immobilien-beratung.html' => 'finora-real-estate-v1',

@@ -225,6 +225,9 @@ function leadwerk_theme_render_exact_layout_section( $layout_key, $layout_schema
 		case 'contact_main':
 			leadwerk_theme_bind_exact_contact_main( $xpath, $section_node, $section );
 			break;
+		case 'danke_main':
+			leadwerk_theme_bind_exact_danke_main( $xpath, $section_node, $section );
+			break;
 	}
 
 	if ( 0 === strpos( $template, 'tech_' ) ) {
@@ -266,6 +269,7 @@ function leadwerk_theme_get_source_template_map() {
 		'finora-about-v1'       => 'ueber-finora.html',
 		'finora-philosophy-v1'  => 'finora-philosophie.html',
 		'finora-contact-v1'     => 'kontakt.html',
+		'finora-danke-v1'       => 'danke.html',
 		'finora-retirement-v1'  => 'altersvorsorge.html',
 		'finora-investment-v1'  => 'investment-beratung.html',
 		'finora-real-estate-v1' => 'immobilien-beratung.html',
@@ -283,6 +287,7 @@ function leadwerk_theme_get_source_template_body_class_map() {
 		'finora-about-v1'       => 'page-ueber',
 		'finora-philosophy-v1'  => 'page-philosophie',
 		'finora-contact-v1'     => 'page-kontakt',
+		'finora-danke-v1'       => 'page-danke',
 		'finora-retirement-v1'  => 'page-altersvorsorge',
 		'finora-investment-v1'  => 'page-investment',
 		'finora-real-estate-v1' => 'page-immobilien',
@@ -2295,4 +2300,28 @@ function leadwerk_theme_bind_exact_contact_main( $xpath, $section, $value ) {
 	if ( $form_card ) {
 		leadwerk_theme_dom_set_trusted_inner_html( $form_card, leadwerk_theme_get_contact_form_markup() );
 	}
+}
+
+function leadwerk_theme_bind_exact_danke_main( $xpath, $section, $value ) {
+	leadwerk_theme_set_placeholder_markup(
+		leadwerk_theme_dom_first( $xpath, './/*[contains(@class,"danke-content")]//p[1]', $section ),
+		(string) ( $value['body'] ?? '' ),
+		'paragraph'
+	);
+	leadwerk_theme_bind_exact_button(
+		$xpath,
+		$section,
+		'.//*[contains(@class,"danke-actions")]//a[1]',
+		(string) ( $value['primary_label'] ?? '' ),
+		(string) ( $value['primary_page_key'] ?? '' ),
+		(string) ( $value['primary_url'] ?? '' )
+	);
+	leadwerk_theme_bind_exact_button(
+		$xpath,
+		$section,
+		'.//*[contains(@class,"danke-actions")]//a[2]',
+		(string) ( $value['secondary_label'] ?? '' ),
+		(string) ( $value['secondary_page_key'] ?? '' ),
+		(string) ( $value['secondary_url'] ?? '' )
+	);
 }

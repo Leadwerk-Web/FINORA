@@ -23,6 +23,11 @@ if ( is_file( $leadwerk_exact_render_file ) ) {
 	require_once $leadwerk_exact_render_file;
 }
 
+$leadwerk_json_ld_file = LEADWERK_THEME_DIR . '/inc/json-ld.php';
+if ( is_file( $leadwerk_json_ld_file ) ) {
+	require_once $leadwerk_json_ld_file;
+}
+
 /**
  * Theme setup.
  *
@@ -67,6 +72,9 @@ function leadwerk_theme_enqueue_assets() {
 		array(
 			'locale'              => $current_lang,
 			'defaultLang'         => $default_lang,
+			'dankeUrl'            => function_exists( 'leadwerk_theme_get_page_url' )
+				? leadwerk_theme_get_page_url( 'finora-danke-v1', $current_lang, home_url( '/danke/' ) )
+				: home_url( '/danke/' ),
 			'wpformsTranslations' => $is_default ? array() : leadwerk_theme_get_wpforms_translations( $current_lang ),
 		)
 	);

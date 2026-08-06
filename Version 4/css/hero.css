@@ -271,7 +271,8 @@
 .hero--erbanlage,
 .hero--philosophie,
 .hero--ueber,
-.hero--kontakt {
+.hero--kontakt,
+.hero--danke {
   padding: 200px 0 100px;
   position: relative;
   overflow: hidden;
@@ -285,7 +286,8 @@
 .hero--erbanlage::before,
 .hero--philosophie::before,
 .hero--ueber::before,
-.hero--kontakt::before {
+.hero--kontakt::before,
+.hero--danke::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -318,7 +320,8 @@
 .hero--erbanlage::after,
 .hero--philosophie::after,
 .hero--ueber::after,
-.hero--kontakt::after {
+.hero--kontakt::after,
+.hero--danke::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -339,7 +342,8 @@
 .hero--erbanlage .hero-content,
 .hero--philosophie .hero-content,
 .hero--ueber .hero-content,
-.hero--kontakt .hero-content {
+.hero--kontakt .hero-content,
+.hero--danke .hero-content {
   margin: 0 auto;
 }
 
@@ -350,7 +354,8 @@
 .hero--erbanlage .hero-text h1,
 .hero--philosophie .hero-text h1,
 .hero--ueber .hero-text h1,
-.hero--kontakt .hero-text h1 {
+.hero--kontakt .hero-text h1,
+.hero--danke .hero-text h1 {
   font-size: var(--fs-h1);
 }
 

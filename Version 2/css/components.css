@@ -433,10 +433,11 @@
   background-image: url(../assets/images/X8A7339.jpg);
 }
 
-/* Hero-Varianten Über Finora / Kontakt / Philosophie: 100vh, Abstände wie Investment (70px links/rechts) */
+/* Hero-Varianten Über Finora / Kontakt / Philosophie / Danke: 100vh, Abstände wie Investment (70px links/rechts) */
 .hero.hero--ueber,
 .hero.hero--kontakt,
-.hero.hero--philosophie {
+.hero.hero--philosophie,
+.hero.hero--danke {
   padding: 40px clamp(20px, 5vw, 70px) 60px;
   min-height: 100vh;
   min-height: 100dvh;
@@ -451,7 +452,8 @@
 /* Zweispaltig: Text links, Bilder rechts (wie Startseite) */
 .hero.hero--ueber .hero-content,
 .hero.hero--kontakt .hero-content,
-.hero.hero--philosophie .hero-content {
+.hero.hero--philosophie .hero-content,
+.hero.hero--danke .hero-content {
   flex: 1;
   display: flex;
   flex-direction: row;
@@ -472,7 +474,8 @@
   .hero.hero--erbanlage,
   .hero.hero--ueber,
   .hero.hero--kontakt,
-  .hero.hero--philosophie {
+  .hero.hero--philosophie,
+  .hero.hero--danke {
     background-attachment: scroll;
   }
 }

@@ -41,6 +41,16 @@
       "post_status": "publish"
     },
     {
+      "source_key": "finora-danke-v1",
+      "field_name": "finora_danke_sections",
+      "source_file": "danke.html",
+      "title": "Vielen Dank",
+      "translated_title": "Thank You",
+      "slug": "danke",
+      "target_type": "page",
+      "post_status": "publish"
+    },
+    {
       "source_key": "finora-retirement-v1",
       "field_name": "finora_retirement_sections",
       "source_file": "altersvorsorge.html",

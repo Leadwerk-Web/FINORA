@@ -458,6 +458,7 @@
 .page-altersvorsorge .hero--altersvorsorge .hero-content,
 .page-ueber .hero--ueber .hero-content,
 .page-kontakt .hero--kontakt .hero-content,
+.page-danke .hero--danke .hero-content,
 .page-investment .hero--investment .hero-content,
 .page-erbanlage .hero--erbanlage .hero-content,
 .page-immobilien .hero--immobilien .hero-content,
@@ -475,6 +476,7 @@
 .page-altersvorsorge .hero--altersvorsorge .hero-text,
 .page-ueber .hero--ueber .hero-text,
 .page-kontakt .hero--kontakt .hero-text,
+.page-danke .hero--danke .hero-text,
 .page-investment .hero--investment .hero-text,
 .page-erbanlage .hero--erbanlage .hero-text,
 .page-immobilien .hero--immobilien .hero-text,
@@ -490,6 +492,7 @@
 .page-altersvorsorge .hero--altersvorsorge .hero-text h1,
 .page-ueber .hero--ueber .hero-text h1,
 .page-kontakt .hero--kontakt .hero-text h1,
+.page-danke .hero--danke .hero-text h1,
 .page-investment .hero--investment .hero-text h1,
 .page-erbanlage .hero--erbanlage .hero-text h1,
 .page-immobilien .hero--immobilien .hero-text h1,
@@ -502,6 +505,7 @@
 .page-altersvorsorge .hero--altersvorsorge .hero-subtitle,
 .page-ueber .hero--ueber .hero-subtitle,
 .page-kontakt .hero--kontakt .hero-subtitle,
+.page-danke .hero--danke .hero-subtitle,
 .page-investment .hero--investment .hero-subtitle,
 .page-erbanlage .hero--erbanlage .hero-subtitle,
 .page-immobilien .hero--immobilien .hero-subtitle,
@@ -512,6 +516,7 @@
 .page-altersvorsorge .hero--altersvorsorge .hero-text>div[style*="text-align"],
 .page-ueber .hero--ueber .hero-text>div[style*="text-align"],
 .page-kontakt .hero--kontakt .hero-text>div[style*="text-align"],
+.page-danke .hero--danke .hero-text>div[style*="text-align"],
 .page-investment .hero--investment .hero-text>div[style*="text-align"],
 .page-erbanlage .hero--erbanlage .hero-text>div[style*="text-align"],
 .page-immobilien .hero--immobilien .hero-text>div[style*="text-align"],
@@ -525,6 +530,7 @@
     .page-altersvorsorge .hero--altersvorsorge .hero-subtitle,
     .page-ueber .hero--ueber .hero-subtitle,
     .page-kontakt .hero--kontakt .hero-subtitle,
+    .page-danke .hero--danke .hero-subtitle,
     .page-investment .hero--investment .hero-subtitle,
     .page-erbanlage .hero--erbanlage .hero-subtitle,
     .page-immobilien .hero--immobilien .hero-subtitle,
@@ -536,6 +542,7 @@
     .page-altersvorsorge .hero--altersvorsorge .hero-text .btn,
     .page-ueber .hero--ueber .hero-text .btn,
     .page-kontakt .hero--kontakt .hero-text .btn,
+    .page-danke .hero--danke .hero-text .btn,
     .page-investment .hero--investment .hero-text .btn,
     .page-erbanlage .hero--erbanlage .hero-text .btn,
     .page-immobilien .hero--immobilien .hero-text .btn,
@@ -2250,6 +2257,115 @@ html:has(body.page-immobilien) {
 
 .page-kontakt {
     background: #ffffff;
+}
+
+.page-danke {
+    background: #ffffff;
+}
+
+/* --- Danke Hero: gleiche Sprache wie Kontakt --- */
+.page-danke .hero.hero--danke {
+    background-image: linear-gradient(to left, rgba(4, 60, 67, 0.42) 0%, rgba(4, 60, 67, 0.62) 50%, rgba(4, 60, 67, 0.82) 100%), url('../assets/images/Invest-bw.png') !important;
+    background-attachment: scroll;
+    background-size: cover, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    background-color: #043c43;
+    margin-top: var(--header-flow-offset, 108px);
+    padding: 40px 70px 60px;
+    min-height: calc(100vh - var(--header-flow-offset, 108px));
+    min-height: calc(100dvh - var(--header-flow-offset, 108px));
+    height: calc(100vh - var(--header-flow-offset, 108px));
+    height: calc(100dvh - var(--header-flow-offset, 108px));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.page-danke .hero.hero--danke::after {
+    display: none;
+}
+
+.page-danke .hero--danke .hero-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.page-danke .hero--danke .hero-text {
+    flex: 1 1 420px;
+    max-width: 640px;
+}
+
+.page-danke .hero--danke .hero-text h1 {
+    color: #ffffff;
+}
+
+.page-danke .hero--danke .hero-text h1 strong {
+    color: #90b4b2;
+}
+
+.page-danke .hero--danke .hero-subtitle {
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.page-danke .hero--danke .hero-images {
+    display: none;
+}
+
+.page-danke .section-danke-main {
+    background: #ffffff;
+    padding: 80px 0 100px;
+}
+
+.page-danke .danke-content {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.page-danke .danke-content p {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: #5B6D6B;
+    margin-bottom: 2rem;
+}
+
+.page-danke .danke-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+@media (max-width: 1024px) {
+    .page-danke .hero.hero--danke {
+        padding: 40px 24px 48px;
+        height: auto;
+        min-height: calc(70vh - var(--header-flow-offset, 108px));
+    }
+}
+
+@media (max-width: 768px) {
+    .page-danke .hero.hero--danke {
+        padding: 32px 20px 40px;
+    }
+
+    .page-danke .section-danke-main {
+        padding: 56px 0 72px;
+    }
+
+    .page-danke .danke-actions .btn {
+        width: 100%;
+        text-align: center;
+    }
 }
 
 /* --- Hero: Hintergrundbild + Verlauf wie Altersvorsorge, Inline-Bild ausgeblendet --- */

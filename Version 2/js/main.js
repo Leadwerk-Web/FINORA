@@ -1078,8 +1078,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (valid) {
-                alert(t.contactSuccess);
-                contactForm.reset();
+                window.location.href = 'danke.html';
             }
         });
     }

@@ -1119,8 +1119,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (valid) {
-                alert(t.contactSuccess);
-                contactForm.reset();
+                const dankeUrl = String(leadwerkThemeData.dankeUrl || '').trim();
+                window.location.href = dankeUrl || 'danke.html';
             }
         });
     }
